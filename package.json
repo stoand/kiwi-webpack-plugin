@@ -2,7 +2,7 @@
   "name": "kiwi",
   "version": "0.0.1",
   "description": "Test Runner for the Kakoune editor",
-  "main": "src/main.ts",
+  "main": "src/Plugin.js",
   "directories": {
     "example": "examples"
   },
