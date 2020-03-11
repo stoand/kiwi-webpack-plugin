@@ -2,11 +2,13 @@
   "name": "kiwi-webpack-plugin",
   "version": "0.0.1",
   "description": "Test Runner for Webpack and the Kakoune editor",
-  "main": "src/Plugin.js",
+  "main": "dist/main.js",
   "directories": {
     "example": "examples"
   },
   "scripts": {
+  	"start": "webpack --mode development -w",
+  	"build": "webpack --mode production",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -20,7 +22,12 @@
   },
   "homepage": "https://github.com/stoand/kiwi#readme",
   "dependencies": {
+    "@types/node": "^13.9.0",
+    "@types/webpack": "^4.41.7",
+    "ts-loader": "^6.2.1",
+    "typescript": "^3.8.3",
     "v8-to-istanbul": "^4.1.2",
-    "webpack": "^4.42.0"
+    "webpack": "^4.42.0",
+    "webpack-cli": "^3.3.11"
   }
 }

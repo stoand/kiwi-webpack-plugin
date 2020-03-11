@@ -1,6 +1,6 @@
 # Kiwi - Test Runner for Kakoune
 
-## Quickstart
+## Using the Library
 
 ```
 npm i kiwi-webpack-plugin chai
@@ -42,3 +42,9 @@ Add `excludeChunks: ['kiwi-tests']` like so:
 }
 
 ```
+
+## Developing the library
+
+Run `npm start`.
+
+Run an example in the `examples` dir.

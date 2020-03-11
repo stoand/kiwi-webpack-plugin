@@ -20,7 +20,7 @@ function runTests(compiledSrc) {
     } catch (e) { console.log(e); }
 }
 
-class KiwiPlugin {
+export default class KiwiPlugin {
 	constructor(testEntry) {
     	if (typeof testEntry !== 'string') {
         	throw 'the Kiwi plugin requires a single test entry path string to be supplied to the constructor.';
@@ -44,5 +44,3 @@ class KiwiPlugin {
 		});
 	}
 }
-
-module.exports = KiwiPlugin;
