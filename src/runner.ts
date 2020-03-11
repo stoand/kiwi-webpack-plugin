@@ -1,14 +1,14 @@
-function describe(name, fn) {
+function describe(name: string, fn: Function) {
     console.log('running module', name);
     fn();
 }
 
-function it(name, fn) {
+function it(name: string, fn: Function) {
     console.log('running test', name);
     fn();
 }
 
-export default function runner(testSrc) {
+export default function runner(testSrc: string) {
     let run = new Function('describe', 'it', testSrc);
     try {
         run(describe, it);

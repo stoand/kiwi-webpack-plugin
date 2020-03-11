@@ -7,8 +7,8 @@
     "example": "examples"
   },
   "scripts": {
-  	"start": "webpack --mode development -w",
-  	"build": "webpack --mode production",
+    "start": "webpack --mode development -w",
+    "build": "webpack --mode production",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
