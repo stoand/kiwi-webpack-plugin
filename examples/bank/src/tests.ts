@@ -5,5 +5,3 @@ describe('Bank Tests', () => {
        expect(1).to.equal(2);
    });
 });
-
-console.log('todo tests');

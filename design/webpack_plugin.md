@@ -1,4 +1,4 @@
-# SPC-plugin
+# SPC-webpack_plugin
 partof: REQ-purpose
 ###
 

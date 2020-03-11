@@ -1,7 +1,7 @@
 const path = require('path');
 
 module.exports = {
-    entry: './src/plugin.ts',
+    entry: './src/webpack_plugin.ts',
     target: 'node',
     resolve: {
         extensions: [ '.tsx', '.ts', '.js' ],
