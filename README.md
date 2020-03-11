@@ -23,6 +23,13 @@ add to webpack config:
 Create `src/tests.js`
 
 ```javascript
+import { expect } from 'chai';
+
+describe('Test Module', () => {
+   it('test addition', () => {
+       expect(1+1).to.equal(2);
+   });
+});
 
 ```
 
