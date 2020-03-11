@@ -1,7 +1,7 @@
 {
-  "name": "kiwi",
+  "name": "kiwi-webpack-plugin",
   "version": "0.0.1",
-  "description": "Test Runner for the Kakoune editor",
+  "description": "Test Runner for Webpack and the Kakoune editor",
   "main": "src/Plugin.js",
   "directories": {
     "example": "examples"
@@ -11,7 +11,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/stoand/kiwi.git"
+    "url": "git+https://github.com/stoand/kiwi-webpack-plugin.git"
   },
   "author": "",
   "license": "MIT",

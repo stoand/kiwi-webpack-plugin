@@ -17,9 +17,13 @@ module.exports = {
   plugins: [
       new HtmlWebpackPlugin({
           title: 'Kiwi - Sample Bank App',
+          excludeChunks: ['kiwi-tests'],
       }),
       new KiwiPlugin('./src/tests.ts'),
   ],
+  externals: {
+      'fs': 'empty',
+  },
   resolve: {
     extensions: [ '.tsx', '.ts', '.js' ],
   },
