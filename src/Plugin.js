@@ -1,11 +1,23 @@
 const SingleEntryPlugin = require('webpack/lib/SingleEntryPlugin');
 const path = require('path');
 
-
 const entryName = 'kiwi-tests';
 
+function describe(name, fn) {
+    console.log('running module', name);
+    fn();
+}
+
+function it(name, fn) {
+    console.log('running test', name);
+    fn();
+}
+
 function runTests(compiledSrc) {
-    console.log('todo run tests', compiledSrc);
+    let run = new Function('describe', 'it', compiledSrc);
+    try {
+        run(describe, it);
+    } catch (e) { console.log(e); }
 }
 
 class KiwiPlugin {

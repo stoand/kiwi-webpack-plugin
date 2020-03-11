@@ -1,1 +1,1 @@
-document.body.innerHTML = 'bank sample app';
+document.body.innerHTML = 'bank sample ap';

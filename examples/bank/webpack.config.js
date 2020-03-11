@@ -21,9 +21,6 @@ module.exports = {
       }),
       new KiwiPlugin('./src/tests.ts'),
   ],
-  externals: {
-      'fs': 'empty',
-  },
   resolve: {
     extensions: [ '.tsx', '.ts', '.js' ],
   },
