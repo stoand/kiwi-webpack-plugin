@@ -7,4 +7,4 @@ npm i
 npm start
 ```
 
-Then `localhost:8080` in your browser.
+Then open `localhost:8080` in your browser.

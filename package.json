@@ -20,6 +20,7 @@
   },
   "homepage": "https://github.com/stoand/kiwi#readme",
   "dependencies": {
-    "v8-to-istanbul": "^4.1.2"
+    "v8-to-istanbul": "^4.1.2",
+    "webpack": "^4.42.0"
   }
 }

@@ -1,5 +1,6 @@
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const KiwiPlugin = require('../../src/Plugin');
 
 module.exports = {
   entry: './src/index.ts',
@@ -17,12 +18,12 @@ module.exports = {
       new HtmlWebpackPlugin({
           title: 'Kiwi - Sample Bank App',
       }),
+      new KiwiPlugin('./src/tests.ts'),
   ],
   resolve: {
     extensions: [ '.tsx', '.ts', '.js' ],
   },
   output: {
-    filename: 'bundle.js',
     path: path.resolve(__dirname, 'dist'),
   },
 };

@@ -8,16 +8,24 @@ Fake bank name
 
 [[.account_holder]]
 
-Fake account holder name.
+Fake account holder name
 
 [[.account_number]]
 
-Fake account number.
+Fake account number
 
 [[.list_transactions]]
 
-List of transactions with the following fields
+Page has list of transactions with the following fields
 * Description
 * Counterparty
 * Amount
 * Date
+
+[[.send_money]]
+
+The send money page has the following fields
+* Name
+* Address
+* IBAN
+* Amount
