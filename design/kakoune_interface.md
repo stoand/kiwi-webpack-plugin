@@ -2,14 +2,10 @@
 partof: REQ-purpose
 ###
 
-[[.set_line_statuses]]
+[[.status_before_code]]
 
-[[.list_failed_tests]]
+[[.label_after_code]]
 
-[[.list_all_tests]]
+[[.show_file_list]]
 
-[[.list_test_files]]
-
-[[.list_affected_files]]
-
-[[.goto_failure_source]]
+[[.show_location_list]]
