@@ -50,6 +50,21 @@ Add `excludeChunks: ['kiwi-tests']` like so:
 
 ```
 
+## Customizing Line Status Colors
+
+Add to your `~/.config/kak/kakrc`:
+
+```
+declare-option str kiwi_color_uncovered
+set-option window kiwi_color_uncovered "grey"
+
+declare-option str kiwi_color_fail
+set-option window kiwi_color_fail "yellow"
+
+declare-option str kiwi_color_success
+set-option window kiwi_color_success "green"
+```
+
 ## Developing the library
 
 Run `npm start`.
