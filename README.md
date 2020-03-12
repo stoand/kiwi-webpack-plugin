@@ -56,13 +56,16 @@ Add to your `~/.config/kak/kakrc`:
 
 ```
 declare-option str kiwi_color_uncovered
-set-option window kiwi_color_uncovered "grey"
+set-option global kiwi_color_uncovered "gray"
 
 declare-option str kiwi_color_fail
-set-option window kiwi_color_fail "yellow"
+set-option global kiwi_color_fail "yellow"
 
 declare-option str kiwi_color_success
-set-option window kiwi_color_success "green"
+set-option global kiwi_color_success "green"
+
+declare-option str kiwi_status_chars
+set-option global kiwi_status_chars "••"
 ```
 
 ## Developing the library
