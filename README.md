@@ -55,3 +55,13 @@ Add `excludeChunks: ['kiwi-tests']` like so:
 Run `npm start`.
 
 Run an example in the `examples` dir.
+
+__or__ for `console.log` debugging: 
+
+add `console.log(1)` in a source file, then
+
+```
+npm start
+# In another window
+nodemon dist/main.js
+```
