@@ -1,13 +1,17 @@
 import { execFileSync } from 'child_process';
 
+const inlineTextColor = 'Information';
 const statusChars = '••';
 const uncoveredColors = 'gray';
 const failedColors = 'red';
 const successColors = 'green';
 
 export type LineStatus = 'uncovered' | 'fail' | 'success';
-export type LineStatuses = {[line: number]: LineStatus};
-export type FileStatuses = {[file: string]: LineStatuses}; 
+export type LineStatuses = {[ line: number]: LineStatus} ;
+export type FileStatuses = {[ file: string]: LineStatuses} ;
+
+export type LineLabels = {[ line: number]: string} ;
+export type FileLabels = {[ file: string]: LineLabels} ;
 
 // #SPC-kakoune_interface.running_instances
 export function running_instances() {
@@ -30,13 +34,12 @@ function command_all(command: string) {
 export function line_statuses(file_statuses: FileStatuses) {
 
     let format_lines = (lines: LineStatuses) => Object.keys(lines).map(line =>
-    	`\\"${Number(line)+1}|{%opt{kiwi_color_${lines[Number(line)]}}}%opt{kiwi_status_chars}\\"`).join(' ');
+        `\\"${Number(line)+  1}|{%opt{kiwi_color_${lines[Number(line)]}}}%opt{kiwi_status_chars}\\"`).join(' ');
 
     let set_highlighters = Object.keys(file_statuses).map(file => 'eval %sh{ [ "$kak_buffile" = "' + file + '" ] && ' +
-    	'echo "set-option buffer kiwi_line_statuses %val{timestamp} ' + format_lines(file_statuses[file]) + '" }').join('\n');
-    
-    let commands = `
+        'echo "set-option buffer kiwi_line_statuses %val{timestamp} ' + format_lines(file_statuses[file]) + '" }').join('\n');
 
+    let commands = `
     	define-command -hidden -override kiwi_line_statuses %{
     		eval %sh{ [ -z "$kak_opt_kiwi_status_chars" ] && echo "declare-option str kiwi_status_chars; set-option window kiwi_status_chars \\"${statusChars}\\"" }
    		
@@ -44,7 +47,7 @@ export function line_statuses(file_statuses: FileStatuses) {
     		eval %sh{ [ -z "$kak_opt_kiwi_color_fail" ] && echo "declare-option str kiwi_color_fail; set-option window kiwi_color_fail \\"${failedColors}\\"" }
     		eval %sh{ [ -z "$kak_opt_kiwi_color_success" ] && echo "declare-option str kiwi_color_success; set-option window kiwi_color_success \\"${successColors}\\"" }
     		
-    		eval %sh{ [ -z "$kak_opt_kiwi_line_statuses" ] && echo "declare-option line-specs kiwi_line_statuses; addhl global/ flag-lines blue kiwi_line_statuses" }
+    		eval %sh{ [ -z "$kak_opt_kiwi_line_statuses" ] && echo "declare-option line-specs kiwi_line_statuses; addhl global/ flag-lines Default kiwi_line_statuses" }
         	
     		${set_highlighters}
     	}
@@ -54,5 +57,36 @@ export function line_statuses(file_statuses: FileStatuses) {
     	kiwi_line_statuses
     `;
 
-	command_all(commands);
+    command_all(commands);
+}
+
+line_labels({
+    '/home/andreas/kiwi/src/kakoune_interface.ts': {
+        60: 'asdf',
+    }
+});
+
+// #SPC-kakoune_interface.line_labels
+export function line_labels(file_labels: FileLabels) {
+
+    let format_lines = (lines: LineLabels) => Object.keys(lines).map(line =>
+        `\\"${Number(line)+  1}|{%opt{kiwi_color_inline_text}}${lines[Number(line)]}\\"`).join(' ');
+
+    let set_highlighters = Object.keys(file_labels).map(file => 'eval %sh{ [ "$kak_buffile" = "' + file + '" ] && ' +
+        'echo "set-option buffer kiwi_line_labels %val{timestamp} ' + format_lines(file_labels[file]) + '" }').join('\n');
+
+    let commands = `
+		eval %sh{ [ -z "$kak_opt_kiwi_color_inline_text" ] && echo "declare-option str kiwi_color_inline_text; set-option window kiwi_color_inline_text \\"${inlineTextColor}\\"" }
+    		
+    	define-command -hidden -override kiwi_line_labels %{
+    		eval %sh{ [ -z "$kak_opt_kiwi_line_labels" ] && echo "declare-option line-specs kiwi_line_labels; addhl global/ flag-lines Default kiwi_line_labels" }
+
+    		${set_highlighters}
+    	}
+    	
+    	hook global WinDisplay .* kiwi_line_labels
+    	kiwi_line_labels
+    `;
+
+    command_all(commands);
 }
