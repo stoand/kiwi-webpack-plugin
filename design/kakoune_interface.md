@@ -25,7 +25,7 @@ kiwi_color_fail
 kiwi_color_success
 ```
 
-## [[.line_labels]]
+## [[.line_notifications]]
 
 Takes a list of files and lines with text for each line.
 

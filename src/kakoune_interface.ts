@@ -60,32 +60,32 @@ export function line_statuses(file_statuses: FileStatuses) {
     command_all(commands);
 }
 
-line_labels({
+line_notifications({
     '/home/andreas/kiwi/src/kakoune_interface.ts': {
         60: 'asdf',
     }
 });
 
-// #SPC-kakoune_interface.line_labels
-export function line_labels(file_labels: FileLabels) {
+// #SPC-kakoune_interface.line_notifications
+export function line_notifications(file_notifications: FileLabels) {
 
     let format_lines = (lines: LineLabels) => Object.keys(lines).map(line =>
-        `\\"${Number(line)+  1}|{%opt{kiwi_color_inline_text}}${lines[Number(line)]}\\"`).join(' ');
+        `\\"${Number(line)+  1}|{%opt{kiwi_color_notification}}${lines[Number(line)]}\\"`).join(' ');
 
-    let set_highlighters = Object.keys(file_labels).map(file => 'eval %sh{ [ "$kak_buffile" = "' + file + '" ] && ' +
-        'echo "set-option buffer kiwi_line_labels %val{timestamp} ' + format_lines(file_labels[file]) + '" }').join('\n');
+    let set_highlighters = Object.keys(file_notifications).map(file => 'eval %sh{ [ "$kak_buffile" = "' + file + '" ] && ' +
+        'echo "set-option buffer kiwi_line_notifications %val{timestamp} ' + format_lines(file_notifications[file]) + '" }').join('\n');
 
     let commands = `
-		eval %sh{ [ -z "$kak_opt_kiwi_color_inline_text" ] && echo "declare-option str kiwi_color_inline_text; set-option window kiwi_color_inline_text \\"${inlineTextColor}\\"" }
+		eval %sh{ [ -z "$kak_opt_kiwi_color_notification" ] && echo "declare-option str kiwi_color_notification; set-option window kiwi_color_notification \\"${inlineTextColor}\\"" }
     		
-    	define-command -hidden -override kiwi_line_labels %{
-    		eval %sh{ [ -z "$kak_opt_kiwi_line_labels" ] && echo "declare-option line-specs kiwi_line_labels; addhl global/ flag-lines Default kiwi_line_labels" }
+    	define-command -hidden -override kiwi_line_notifications %{
+    		eval %sh{ [ -z "$kak_opt_kiwi_line_notifications" ] && echo "declare-option line-specs kiwi_line_notifications; addhl global/ flag-lines Default kiwi_line_notifications" }
 
     		${set_highlighters}
     	}
     	
-    	hook global WinDisplay .* kiwi_line_labels
-    	kiwi_line_labels
+    	hook global WinDisplay .* kiwi_line_notifications
+    	kiwi_line_notifications
     `;
 
     command_all(commands);
