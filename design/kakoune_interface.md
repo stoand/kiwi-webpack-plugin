@@ -2,6 +2,18 @@
 partof: REQ-purpose
 ###
 
+## [[.running_instances]]
+
+Returns a list of running kakoune instances
+
+## [[.send_command]]
+
+Sends a command to the given kakoune instances
+
+## [[.current_file]]
+
+Returns the complete file path a kakoune instance is currently editing
+
 ## [[.status_before_line]]
 
 Takes a list of files and lines and one of three statuses for each line.
