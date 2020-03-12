@@ -45,3 +45,13 @@ Lists what tests ran the current line in a non test file and failed.
 ## [[.goto_first_failure_line]]
 
 Jump to the first line that contributed to a selected failing test.
+
+## [[.set_notifications]]
+
+Displays errors and logs inline with the code they originate from.
+
+## [[.notification_as_buffer]]
+
+Displays notification on the current line as it's own buffer.
+
+This is useful for printing large objects.
