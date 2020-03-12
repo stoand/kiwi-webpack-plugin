@@ -55,8 +55,11 @@ Add `excludeChunks: ['kiwi-tests']` like so:
 Add to your `~/.config/kak/kakrc`:
 
 ```
-declare-option str kiwi_color_notification
-set-option global kiwi_color_notification "Information"
+declare-option str kiwi_color_normal_notification
+set-option global kiwi_color_normal_notification "Default"
+
+declare-option str kiwi_color_error_notification
+set-option global kiwi_color_error_notification "Error"
 
 declare-option str kiwi_color_uncovered
 set-option global kiwi_color_uncovered "gray"

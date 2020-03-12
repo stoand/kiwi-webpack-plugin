@@ -1,6 +1,8 @@
 import { execFileSync } from 'child_process';
 
-const inlineTextColor = 'Information';
+const maxNotificationLength = 30;
+const inlineNormalTextColor = 'Default';
+const inlineErrorTextColor = 'Error';
 const statusChars = '••';
 const uncoveredColors = 'gray';
 const failedColors = 'red';
@@ -10,7 +12,8 @@ export type LineStatus = 'uncovered' | 'fail' | 'success';
 export type LineStatuses = {[ line: number]: LineStatus} ;
 export type FileStatuses = {[ file: string]: LineStatuses} ;
 
-export type LineLabels = {[ line: number]: string} ;
+export type LineLabel = { color: 'normal' | 'error', text: string };
+export type LineLabels = {[ line: number]: LineLabel} ;
 export type FileLabels = {[ file: string]: LineLabels} ;
 
 // #SPC-kakoune_interface.running_instances
@@ -60,23 +63,49 @@ export function line_statuses(file_statuses: FileStatuses) {
     command_all(commands);
 }
 
-line_notifications({
+line_statuses({
     '/home/andreas/kiwi/src/kakoune_interface.ts': {
-        60: 'asdf',
+        60: 'uncovered',
+        61: 'fail',
+        62: 'uncovered',
     }
 });
+
+line_notifications({
+    '/home/andreas/kiwi/src/kakoune_interface.ts': {
+        60: { text: '1, 2, 3', color: 'error' },
+        61: { text: 'this is tons of text goe s here', color: 'normal' },
+    }
+});
+
+function fix_size(text: string, length: number) {
+    let chars = text.split('');
+    if (chars.length > length) {
+        chars = chars.splice(0, length - 3);
+        return chars.join('') + ' ..';
+    } else {
+        while (chars.length < length) chars.push(' ');
+        return chars.join('');
+    }
+}
 
 // #SPC-kakoune_interface.line_notifications
 export function line_notifications(file_notifications: FileLabels) {
 
-    let format_lines = (lines: LineLabels) => Object.keys(lines).map(line =>
-        `\\"${Number(line)+  1}|{%opt{kiwi_color_notification}}${lines[Number(line)]}\\"`).join(' ');
+    let format_lines = (lines: LineLabels) => Object.keys(lines).map(line => {
+        let { color, text } = lines[Number(line)];
+        let truncated_text = fix_size(text, maxNotificationLength);
+        let color_opt = `kiwi_color_${color}_notification`;
+        let num = Number(line)+ 1 ;
+        return `\\"${num}|{Default} {%opt{${color_opt}}}${truncated_text}\\"`;
+    }).join(' ');
 
     let set_highlighters = Object.keys(file_notifications).map(file => 'eval %sh{ [ "$kak_buffile" = "' + file + '" ] && ' +
         'echo "set-option buffer kiwi_line_notifications %val{timestamp} ' + format_lines(file_notifications[file]) + '" }').join('\n');
 
     let commands = `
-		eval %sh{ [ -z "$kak_opt_kiwi_color_notification" ] && echo "declare-option str kiwi_color_notification; set-option window kiwi_color_notification \\"${inlineTextColor}\\"" }
+		eval %sh{ [ -z "$kak_opt_kiwi_color_normal_notification" ] && echo "declare-option str kiwi_color_normal_notification; set-option window kiwi_color_normal_notification \\"${inlineNormalTextColor}\\"" }
+		eval %sh{ [ -z "$kak_opt_kiwi_color_error_notification" ] && echo "declare-option str kiwi_color_error_notification; set-option window kiwi_color_error_notification \\"${inlineErrorTextColor}\\"" }
     		
     	define-command -hidden -override kiwi_line_notifications %{
     		eval %sh{ [ -z "$kak_opt_kiwi_line_notifications" ] && echo "declare-option line-specs kiwi_line_notifications; addhl global/ flag-lines Default kiwi_line_notifications" }
