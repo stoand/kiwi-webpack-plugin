@@ -9,10 +9,6 @@ export type LineStatus = 'uncovered' | 'fail' | 'success';
 export type LineStatuses = {[line: number]: LineStatus};
 export type FileStatuses = {[file: string]: LineStatuses}; 
 
-// console.log('00000000000', send_command(running_instances()[0], 'echo 1'));
-
-line_statuses({});
-
 // #SPC-kakoune_interface.running_instances
 export function running_instances() {
     let lines = execFileSync('kak', ['-l'], { encoding: 'utf8' }).split('\n');
@@ -25,23 +21,13 @@ export function send_command(instance: string, command: string) {
     let input = "eval -client client0 '" + command + "'";
     return execFileSync('kak', ['-p', instance], { encoding: 'utf8', input });
 }
-		// eval %sh{ [ -z "$kak_opt_kiwi_color_fail" ] && 'declare-option str kiwi_color_fail; set-option window kiwi_color_fail "red"' }
-		// eval %sh{ [ -z "$kak_opt_kiwi_color_success" ] && 'declare-option str kiwi_color_success; set-option window kiwi_color_success "green"' }
 
-// SPC-kakoune_interface.line_statuses
+function command_all(command: string) {
+    running_instances().forEach(instance => send_command(instance, command));
+}
+
+// #SPC-kakoune_interface.line_statuses
 export function line_statuses(file_statuses: FileStatuses) {
-
-    file_statuses = {
-        "/home/andreas/kiwi/src/kakoune_interface.ts": {
-            0: 'uncovered',
-            1: 'uncovered',
-            2: 'fail',
-            3: 'success',
-        },
-        "/home/andreas/kiwi/src/runner.ts": {
-            3: 'success',
-        },
-    };
 
     let format_lines = (lines: LineStatuses) => Object.keys(lines).map(line =>
     	`\\"${Number(line)+1}|{%opt{kiwi_color_${lines[Number(line)]}}}%opt{kiwi_status_chars}\\"`).join(' ');
@@ -68,7 +54,5 @@ export function line_statuses(file_statuses: FileStatuses) {
     	kiwi_line_statuses
     `;
 
-    console.log(commands);
-    
-    running_instances().forEach(instance => send_command(instance, commands));
+	command_all(commands);
 }
