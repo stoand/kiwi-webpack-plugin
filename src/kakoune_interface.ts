@@ -1,6 +1,7 @@
 import { execFileSync } from 'child_process';
 
-export type LineStatuses = {[line: number]: boolean};
+export type LineStatus = 'uncovered' | 'fail' | 'success';
+export type LineStatuses = {[line: number]: LineStatus};
 export type FileStatuses = {[file: string]: LineStatuses}; 
 
 // console.log('00000000000', send_command(running_instances()[0], 'echo 1'));
@@ -24,14 +25,27 @@ export function send_command(instance: string, command: string) {
 
 // SPC-kakoune_interface.line_statuses
 export function line_statuses(file_statuses: FileStatuses) {
+
+    file_statuses = {
+        "/home/andreas/kiwi/src/kakoune_interface.ts": {
+            0: 'uncovered',
+        },
+    };
+
+    let set_highlighters = Object.keys(file_statuses).map(file => `
+    	define-command -hidden -override kiwi_line_statuses %{
+        	eval %sh{ [ "$kak_buffile" = "${file}" ] && echo "set-option buffer kiwi_line_statuses %val{timestamp} \\"1|foo\\"" }
+    	}
+    `).join();
+    
     let commands = `
 		eval %sh{ [ -z "$kak_opt_kiwi_color_uncovered" ] && echo "declare-option str kiwi_color_uncovered; set-option window kiwi_color_uncovered \\"grey\\"" }
 		eval %sh{ [ -z "$kak_opt_kiwi_color_fail" ] && echo "declare-option str kiwi_color_fail; set-option window kiwi_color_fail \\"red\\"" }
 		eval %sh{ [ -z "$kak_opt_kiwi_color_success" ] && echo "declare-option str kiwi_color_success; set-option window kiwi_color_success \\"green\\"" }
-    
-    	define-command -hidden -override kiwi_line_statuses %{
-        	echo "Hello" %val{buffile}
-    	}
+		
+		eval %sh{ [ -z "$kak_opt_kiwi_line_statuses" ] && echo "declare-option line-specs kiwi_line_statuses; addhl global/ flag-lines Default kiwi_line_statuses" }
+
+		${set_highlighters}
 
     	hook global WinDisplay .* kiwi_line_statuses
 
