@@ -16,4 +16,4 @@ let src = `
 });
 `;
 
-runner(src);
+runner().then(handleSource => handleSource(src));
