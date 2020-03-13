@@ -1,3 +1,4 @@
+// #SPC-webpack_plugin
 const SingleEntryPlugin = require('webpack/lib/SingleEntryPlugin');
 import runner from './runner';
 import './kakoune_interface';

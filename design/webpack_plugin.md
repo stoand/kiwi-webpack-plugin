@@ -2,8 +2,8 @@
 partof: REQ-purpose
 ###
 
-The webpack plugin is responsible for executing javascript
-while extracting coverage information.
+The webpack plugin provides an interface to the plugin users
+to specify where their tests are.
 
-Simply importing the plugin, and adding it to the webpack config with a 
-specified test entry file is all the user needs to do.
+It instructs webpack to build these tests and then passes the compiled source on to [[SPC-runner]] for execution.
+
