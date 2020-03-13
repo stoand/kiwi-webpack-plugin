@@ -1,5 +1,19 @@
-// Tests 
+import runner from './runner';
 
-import runner, { describe, it } from './runner';
+let src = `
+(function() {
+    let a = false;
 
-console.log('todo test runner');
+    if(a) {
+        console.log('a');
+    }
+
+    let b = true;
+    
+    if(b) {
+        console.log('b');
+    }
+});
+`;
+
+runner(src);
