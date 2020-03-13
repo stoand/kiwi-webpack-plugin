@@ -1,22 +1,10 @@
+// important: run `npm i; npm run build` in `examples/banks`
+// so that the dist files are available
+
 import runner from './runner';
 import { readFileSync } from 'fs';
 
-let src1 = `
-(function() {
-    let a = false;
+let testSrc = readFileSync('examples/bank/dist/kiwi-tests.js', { encoding: 'utf8' });
+let mapsSrc = readFileSync('examples/bank/dist/kiwi-tests.js.map', { encoding: 'utf8' });
 
-    if(a) {
-        console.log('a');
-    }
-
-    let b = true;
-    
-    if(b) {
-        console.log('b');
-    }
-});
-`;
-
-let src = readFileSync('examples/bank/dist/kiwi-tests.js', { encoding: 'utf8' });
-
-runner().then(handleSource => handleSource(src, ''));
+runner().then(handleSource => handleSource(testSrc, JSON.parse(mapsSrc)));

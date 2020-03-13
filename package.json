@@ -23,6 +23,7 @@
   "homepage": "https://github.com/stoand/kiwi#readme",
   "dependencies": {
     "@types/node": "^13.9.0",
+    "@types/source-map": "^0.5.7",
     "@types/webpack": "^4.41.7",
     "chrome-launcher": "^0.13.0",
     "chrome-remote-interface": "^0.28.1",

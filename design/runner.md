@@ -9,7 +9,7 @@ executes tests in a headless Chrome process.
 
 https://gist.github.com/paulirish/78f46a302083dd757288b5fcc660d75c
 
-[[.tst-headless_execution]]
+[[.tst-launcher]]
 
 Ensure the runner can communicate with a headless Chrome instance.
 

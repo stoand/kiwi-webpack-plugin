@@ -1,8 +1,7 @@
 let chromeLauncher = require('chrome-launcher');
 let chromeRemoteInterface = require('chrome-remote-interface');
 let toIstanbul = require('v8-to-istanbul');
-let sourceMap = require('source-map');
-import { createServer } from 'http';
+import sourceMap from 'source-map';
 
 const serverPort = 6184;
 const sourceMapStart = '//# sourceMappingURL=data:application/json;charset=utf-8;base64,';
@@ -52,35 +51,27 @@ async function reformatCoverage(coverageResult: any) {
 }
 
 export default async function runner() {
-    // Setup
-    let servedSrc = '';
- //    let server = createServer((_, res) => {
- //        res.setHeader('Content-Type', 'text/html');
- //        res.writeHead(200);
- //        res.end(htmlIndex(servedSrc));
- //    });
     
- //    server.listen(serverPort);
-    
- //    let chrome = await chromeLauncher.launch({ chromeFlags: ['--disable-gpu', '--headless'] });
- //    let { Profiler, Page } = await chromeRemoteInterface({ port: chrome.port });
+    let chrome = await chromeLauncher.launch({ chromeFlags: ['--disable-gpu', '--headless'] });
+    let { Profiler, Page } = await chromeRemoteInterface({ port: chrome.port });
 
- //    await Profiler.enable();
-	// await Page.enable();
+    await Profiler.enable();
+	await Page.enable();
 
 	// Run on every change
-	return async (testSrc: string, sourceSrc: string) => {
-    	console.log(sourceSrc);
-    	servedSrc = testSrc;
-    	
-        // await Profiler.startPreciseCoverage({ callCount: true, detailed: true });
+	return async (testSrc: string, mapsSrc: any) => {
+        await Profiler.startPreciseCoverage({ callCount: true, detailed: true });
 
-        // Page.navigate({ url: 'http://localhost:' + serverPort });
+		// Instead of starting a server and loading a page from it
+		// simply load the index with the test source embedded as an inline data object
+        let encoded = new Buffer(htmlIndex(testSrc)).toString('base64');
 
+        Page.navigate({ url: 'data:text/html;base64,' + encoded });
+               
+        await Page.loadEventFired();
         
-        // await Page.loadEventFired();
-        
-        // let { result } = await Profiler.takePreciseCoverage();
+        let { result } = await Profiler.takePreciseCoverage();
+        console.log(result);
         // try {
         // // console.log(result)
         // } catch (e) { console.log(e); }
