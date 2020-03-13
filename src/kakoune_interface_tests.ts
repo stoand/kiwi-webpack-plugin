@@ -1,10 +1,10 @@
-// Tests for function that control interaction with the Kakoune editor
+// Tests for functions that control interaction with the Kakoune editor
 
 // Since it's difficult to programatically check the state of the Kakoune
 // editor THESE TESTS REQUIRE MANUAL INTERACTION
 
 // Another purpose of these tests is to have a place to run this functionality
-// isolation while in development.
+// in isolation while in development.
 
 // How to run these tests:
 // npm i; npm start
