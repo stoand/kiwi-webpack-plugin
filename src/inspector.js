@@ -12,16 +12,17 @@ session.post('Profiler.enable', () => {
     session.post('Profiler.takePreciseCoverage', (err, v) => {
         let main = v.result.find(r => r.url.indexOf('main.ts') !== -1);
 
-        console.log(main.functions);
+        // console.log(v.result);
 
         const converter = toIstanbul(main.url);
         converter.load().then(() => {
             converter.applyCoverage(main.functions);
             console.log(converter.toIstanbul());
 
-            let a = Object.values(converter.toIstanbul())[0]
+            let a = Object.values(converter.toIstanbul())
+            console.log(a);
 
-            console.log(a.branchMap[3]);
+            // console.log(a.branchMap[3]);
             
             // console.log(JSON.stringify(converter.toIstanbul()));
         });

@@ -4,7 +4,7 @@ const KiwiPlugin = require('kiwi-webpack-plugin');
 
 module.exports = {
     entry: './src/index.ts',
-    devtool: 'inline-source-map',
+    devtool: 'source-map',
     module: {
         rules: [
             {
