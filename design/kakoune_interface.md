@@ -25,11 +25,21 @@ kiwi_color_fail
 kiwi_color_success
 ```
 
+[[.tst-line_statuses]]
+
+Ensure line statuses of all three color types can be correctly displayed.
+
 ## [[.line_notifications]]
 
 Takes a list of files and lines with text for each line.
 
 It adds a highlighter to display text after each line.
+
+[[.tst-line_notifications]]
+
+Ensure line notifications of both `normal` and `error` type can be correctly displayed.
+
+Also ensure that lines are correctly truncated.
 
 ## [[.show_location_list_command]]
 
@@ -41,6 +51,14 @@ displays a hyperlinked list of
 * line number (use line zero for the whole file)
 * (optional) colored text
 
+[[.tst-show_location_list_command]]
+
+Ensure the command opens a list of links and these links can be followed.
+
 ## [[.jump_to_line_command]]
 
 Defines a command with the given name in kakoune that jumps to a given file and line.
+
+[[.tst-jump_to_line_command]]
+
+Ensure the command works but only on lines assigned to have jump navigation.

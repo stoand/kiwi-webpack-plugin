@@ -63,21 +63,6 @@ export function line_statuses(file_statuses: FileStatuses) {
     command_all(commands);
 }
 
-line_statuses({
-    '/home/andreas/kiwi/src/kakoune_interface.ts': {
-        60: 'uncovered',
-        61: 'fail',
-        62: 'uncovered',
-    }
-});
-
-line_notifications({
-    '/home/andreas/kiwi/src/kakoune_interface.ts': {
-        60: { text: '1, 2, 3', color: 'error' },
-        61: { text: 'this is tons of text goe s here', color: 'normal' },
-    }
-});
-
 function fix_size(text: string, length: number) {
     let chars = text.split('');
     if (chars.length > length) {

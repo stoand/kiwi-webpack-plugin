@@ -1,7 +1,10 @@
 const path = require('path');
 
 module.exports = {
-    entry: './src/webpack_plugin.ts',
+    entry: {
+        main: './src/webpack_plugin.ts',
+        kakoune_interface_tests: './src/kakoune_interface_tests.ts',
+    },
     target: 'node',
     module: {
         rules: [

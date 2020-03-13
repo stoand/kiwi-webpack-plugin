@@ -50,7 +50,7 @@ Add `excludeChunks: ['kiwi-tests']` like so:
 
 ```
 
-## Customizing Line Status Colors
+## Customization Options
 
 Add to your `~/.config/kak/kakrc`:
 
@@ -82,10 +82,8 @@ Run an example in the `examples` dir.
 
 __or__ for `console.log` debugging: 
 
-add `console.log(1)` in a source file, then
+add `console.log(1)` in a source file
 
-```
-npm start
-# In another window
-nodemon dist/main.js
-```
+### Testing
+
+See instructions in `src/*_test.ts` files.
