@@ -2,13 +2,7 @@
 
 ## Using the Library
 
-You need a recent [Firefox](https://www.mozilla.org/en-US/exp/firefox/new/) browser installed.
-
-__IMPORTANT: Create Firefox profile `kiwi-tests`__
-
-Open `about:profiles` in Firefox and create a profile with the name `kiwi-tests`.
-
-If you do not create the profile you will get a `timeout error`.
+You need a recent [Google Chrome](https://www.google.com/chrome/) browser installed.
 
 ```
 npm i kiwi-webpack-plugin chai

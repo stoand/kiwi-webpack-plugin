@@ -5,11 +5,13 @@ partof: REQ-purpose
 ## [[.headless_execution]]
 
 Instead of opting for mere browser api emulation, the runner
-executes tests in a headless firefox process.
+executes tests in a headless Chrome process.
+
+https://gist.github.com/paulirish/78f46a302083dd757288b5fcc660d75c
 
 [[.tst-headless_execution]]
 
-Ensure the runner can communicate with a headless firefox instance.
+Ensure the runner can communicate with a headless Chrome instance.
 
 ## [.async]]
 
