@@ -1,9 +1,9 @@
-function describe(name: string, fn: Function) {
+export function describe(name: string, fn: Function) {
     console.log('running module', name);
     fn();
 }
 
-function it(name: string, fn: Function) {
+export function it(name: string, fn: Function) {
     console.log('running test', name);
     fn();
 }
@@ -13,5 +13,4 @@ export default function runner(testSrc: string) {
     try {
         run(describe, it);
     } catch (e) { console.log(e); }
-    
 }

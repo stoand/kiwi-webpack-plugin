@@ -86,4 +86,10 @@ add `console.log(1)` in a source file
 
 ### Testing
 
-See instructions in `src/*_test.ts` files.
+Replace`kakoune_interface_tests` with the test file of choice if needed.
+
+```
+npm i; npm start
+# In another shell session
+nodemon dist/kakoune_interface_tests.js
+```

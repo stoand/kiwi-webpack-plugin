@@ -6,11 +6,6 @@
 // Another purpose of these tests is to have a place to run this functionality
 // in isolation while in development.
 
-// How to run these tests:
-// npm i; npm start
-// # In another shell session
-// nodemon dist/kakoune_interface_tests.js
-
 import { line_statuses, line_notifications } from './kakoune_interface';
 import path from 'path';
 
