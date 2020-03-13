@@ -19,7 +19,10 @@ module.exports = {
             title: 'Kiwi - Sample Bank App',
             excludeChunks: ['kiwi-tests'],
         }),
-        new KiwiPlugin('./src/tests.ts'),
+        new KiwiPlugin({
+            testEntry: './src/tests.ts',
+            headless: true
+        }),
     ],
     resolve: {
         extensions: ['.tsx', '.ts', '.js'],

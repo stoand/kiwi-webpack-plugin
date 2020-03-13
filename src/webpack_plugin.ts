@@ -21,13 +21,13 @@ export default class KiwiPlugin {
     testEntry: string;
     initRunner: Promise<any>;
     
-    constructor(testEntry: string) {
+    constructor({ testEntry, headless } : { testEntry: string, headless: boolean }) {
         if (typeof testEntry !== 'string') {
             throw 'The Kiwi plugin requires a single test entry path string to be supplied to the constructor.';
         }
 
         this.testEntry = testEntry;
-        this.initRunner = runner();
+        this.initRunner = runner(headless);
     }
 
     apply(compiler: any) {

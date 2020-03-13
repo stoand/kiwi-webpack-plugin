@@ -16,7 +16,7 @@ add to webpack config:
 ```javascript
 {
     plugins: [
-        new KiwiPlugin('./src/tests.js'),
+        new KiwiPlugin({ testEntry: './src/tests.js', headless: true }),
     ],
 }
 
@@ -46,7 +46,7 @@ Add `excludeChunks: ['kiwi-tests']` like so:
             title: 'App',
             excludeChunks: ['kiwi-tests'],
         }),
-        new KiwiPlugin('./src/tests.js'),
+        new KiwiPlugin({ testEntry: './src/tests.js', headless: true }),
     ],
 }
 

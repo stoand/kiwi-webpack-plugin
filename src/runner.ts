@@ -50,28 +50,41 @@ async function reformatCoverage(coverageResult: any) {
     }));
 }
 
-export default async function runner() {
+export default async function runner(headless: boolean) {
     
-    let chrome = await chromeLauncher.launch({ chromeFlags: ['--disable-gpu', '--headless'] });
-    let { Profiler, Page } = await chromeRemoteInterface({ port: chrome.port });
+    let chrome = await chromeLauncher.launch({ chromeFlags: ['--disable-gpu' ].concat(headless ? ['--headless'] : []) });
+        	
+    let { Profiler, Page, Runtime } = await chromeRemoteInterface({ port: chrome.port });
 
-    await Profiler.enable();
-	await Page.enable();
+    await Promise.all([Profiler.enable(), Page.enable(), Runtime.enable()]);
 
 	// Run on every change
 	return async (testSrc: string, mapsSrc: any) => {
-        await Profiler.startPreciseCoverage({ callCount: true, detailed: true });
+        let encoded = new Buffer(htmlIndex(testSrc)).toString('base64');
+        Page.navigate({ url: 'data:text/html;base64,' + encoded });
+        await Page.loadEventFired();
+        
+		for (let i = 0; i < 200; i++) {
+    		
+        await Profiler.startPreciseCoverage({ callCount: false, detailed: true });
 
 		// Instead of starting a server and loading a page from it
 		// simply load the index with the test source embedded as an inline data object
-        let encoded = new Buffer(htmlIndex(testSrc)).toString('base64');
-
-        Page.navigate({ url: 'data:text/html;base64,' + encoded });
-               
-        await Page.loadEventFired();
         
-        let { result } = await Profiler.takePreciseCoverage();
-        console.log(result);
+		// await Page.reload();
+		// await Page.navigate({ url: 'http://google.com/' + i})
+		try {
+		await Runtime.evaluate({ expression: 'document.body.innerHTML = "asdf' + i + '"'});
+		} catch(e) { console.log(e) }
+               
+        // await Page.loadEventFired();
+        // console.log(Object.keys(Page).sort())
+        
+            let { result } = await Profiler.takePreciseCoverage();
+            console.log(i);
+        
+            // console.log(result);
+		}
         // try {
         // // console.log(result)
         // } catch (e) { console.log(e); }
