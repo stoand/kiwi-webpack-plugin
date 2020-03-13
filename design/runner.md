@@ -11,6 +11,22 @@ executes tests in a headless firefox process.
 
 Ensure the runner can communicate with a headless firefox instance.
 
+## [.async]]
+
+Support tests that run asynchronously.
+
+If a test returns a promise wait for it.
+
+Also handle errors returned by promises.
+
+[[.tst-async_run]]
+
+Ensure the runner can detect and wait for async tests to finish.
+
+[[.tst-async_error]]
+
+Ensure errors inside promises are handled correctly.
+
 # Resulting Data
 
 Takes the source code of compiled tests, runs them, and returns a list of modules.
