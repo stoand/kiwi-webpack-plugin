@@ -27,6 +27,7 @@ export default class KiwiPlugin {
         }
 
         this.testEntry = testEntry;
+            // TODO
         this.initRunner = runner(headless);
     }
 
@@ -45,6 +46,7 @@ export default class KiwiPlugin {
                 let testsAsset = compilation.assets[entryName + '.js'];
                 if (testsAsset) {
                     let { source, map } = testsAsset.sourceAndMap(sourceMapOptions);
+                    // TODO
                     this.initRunner.then(runner => runner(source, map));
                 }
 			});

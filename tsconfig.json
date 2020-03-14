@@ -63,6 +63,7 @@
     "forceConsistentCasingInFileNames": true  /* Disallow inconsistently-cased references to the same file. */
   },
   "exclude": [
+  	"src/browser_runtime.raw.js",
   	"examples",
   	"node_modules"
   ]

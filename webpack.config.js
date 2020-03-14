@@ -14,6 +14,10 @@ module.exports = {
                 use: 'ts-loader',
                 exclude: /node_modules/,
             },
+            {
+                test: /\.raw.js$/,
+                use: 'raw-loader',
+            },
         ],
     },
     resolve: {

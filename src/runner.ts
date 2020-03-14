@@ -3,18 +3,13 @@ let chromeRemoteInterface = require('chrome-remote-interface');
 let toIstanbul = require('v8-to-istanbul');
 import sourceMap from 'source-map';
 
-const serverPort = 6184;
-const sourceMapStart = '//# sourceMappingURL=data:application/json;charset=utf-8;base64,';
+export type Trace = { column: number, line: number };
+export type TestError = { message: string, trace: Trace };
+export type TestLog = { args: string[], trace: Trace };
+export type TestResult = { name: string, error?: TestError, consoleLogs: TestLog[] };
+export type TestModule = { name: string, tests: TestResult[] };
 
-export function describe(name: string, fn: Function) {
-    console.log('running module', name);
-    fn();
-}
-
-export function it(name: string, fn: Function) {
-    console.log('running test', name);
-    fn();
-}
+let browserRuntime = require('./browser_runtime.raw.js').default;
 
 function htmlIndex(testSrc: string) {
     return `
@@ -25,12 +20,8 @@ function htmlIndex(testSrc: string) {
           <meta charset="utf-8">
 
           <title>Kiwi Tests</title>
-          <script>
-          function describe() {}
-          function it() {}
-          ${testSrc}
-          </script>
-
+          <script>${browserRuntime}</script>
+          <script>${testSrc}</script>
         </head>
 
         <body>
@@ -39,16 +30,16 @@ function htmlIndex(testSrc: string) {
     `;
 }
 
-async function reformatCoverage(coverageResult: any) {
-    return Promise.all(coverageResult.map(async (file: any) => {
-        let converter = toIstanbul('/home/andreas/kiwi/examples/bank/dist/kiwi-tests.js');
-        try {
-        await converter.load();
-        converter.applyCoverage(file.functions);
-        } catch(e) { console.log(e) }
-        return converter.toIstanbul();
-    }));
-}
+// async function reformatCoverage(coverageResult: any) {
+//     return Promise.all(coverageResult.map(async (file: any) => {
+//         let converter = toIstanbul('/home/andreas/kiwi/examples/bank/dist/kiwi-tests.js');
+//         try {
+//         await converter.load();
+//         converter.applyCoverage(file.functions);
+//         } catch(e) { console.log(e) }
+//         return converter.toIstanbul();
+//     }));
+// }
 
 export default async function runner(headless: boolean) {
     
@@ -59,40 +50,24 @@ export default async function runner(headless: boolean) {
     await Promise.all([Profiler.enable(), Page.enable(), Runtime.enable()]);
 
 	// Run on every change
-	return async (testSrc: string, mapsSrc: any) => {
+	return async (testSrc: string, mapsSrc: any) : Promise<TestModule[]> => {
+    	// instead of starting a server and loading the page from it
+    	// directly load the index file with the embedded sources as a data object
         let encoded = new Buffer(htmlIndex(testSrc)).toString('base64');
         Page.navigate({ url: 'data:text/html;base64,' + encoded });
         await Page.loadEventFired();
-        
-		for (let i = 0; i < 200; i++) {
-    		
-        await Profiler.startPreciseCoverage({ callCount: false, detailed: true });
 
-		// Instead of starting a server and loading a page from it
-		// simply load the index with the test source embedded as an inline data object
+        let testResult = 'false';
+        let testCoverages = [];
+
+		while (testResult === 'false') {
+            await Profiler.startPreciseCoverage({ callCount: false, detailed: true });
+    		testResult = (await Runtime.evaluate({ expression: 'JSON.stringify(__kiwi_runNextTest())'})).result.value;
         
-		// await Page.reload();
-		// await Page.navigate({ url: 'http://google.com/' + i})
-		try {
-		await Runtime.evaluate({ expression: 'document.body.innerHTML = "asdf' + i + '"'});
-		} catch(e) { console.log(e) }
-               
-        // await Page.loadEventFired();
-        // console.log(Object.keys(Page).sort())
-        
-            let { result } = await Profiler.takePreciseCoverage();
-            console.log(i);
-        
-            // console.log(result);
+            testCoverages.push(await Profiler.takePreciseCoverage());
 		}
-        // try {
-        // // console.log(result)
-        // } catch (e) { console.log(e); }
-        // console.log(result.result[0].functions[1].ranges);
-        
-        // let run = new Function('describe', 'it', testSrc);
-        // try {
-        //     run(describe, it);
-        // } catch (e) { console.log(e); }
+		console.log(testResult);
+		
+        return JSON.parse(testResult);
 	}
 }

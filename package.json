@@ -27,6 +27,7 @@
     "@types/webpack": "^4.41.7",
     "chrome-launcher": "^0.13.0",
     "chrome-remote-interface": "^0.28.1",
+    "raw-loader": "^4.0.0",
     "source-map": "^0.7.3",
     "ts-loader": "^6.2.1",
     "typescript": "^3.8.3",
