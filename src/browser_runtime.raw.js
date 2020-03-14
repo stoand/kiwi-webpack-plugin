@@ -31,7 +31,10 @@ function __kiwi_extractTrace(stack, row) {
 function __kiwi_runNextTest() {
     let module = __kiwi_testModules[__kiwi_currentModule];
     if (!module) {
-        return __kiwi_testModules;
+        let modules = __kiwi_testModules.concat();
+        __kiwi_currentModule = 0;
+        __kiwi_testModules = [];
+        return modules;
         
     } else {
         let test = module.tests[__kiwi_currentTest];

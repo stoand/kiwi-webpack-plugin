@@ -13,13 +13,10 @@ export type TestModule = { name: string, tests: TestResult[] };
 
 
 let browserRuntime = require('./browser_runtime.raw.js').default;
-let browserRuntimeOffset = browserRuntime.split('\n').length;
-// The position of the <script> below affects source maps
-let testScriptOnLine = 8;
 
 let sourceNamePrefix = 'webpack:///';
 
-function htmlIndex(testSrc: string) {
+function htmlIndex() {
     return `
         <!doctype html>
 
@@ -29,7 +26,6 @@ function htmlIndex(testSrc: string) {
 
           <title>Kiwi Tests</title>
           <script>${browserRuntime}</script>
-          <script>${testSrc}</script>
         </head>
 
         <body>
@@ -44,8 +40,7 @@ export async function loadSourceMap(mapSrc: sourceMap.RawSourceMap) {
     let consumer = await (new sourceMap.SourceMapConsumer(mapSrc));
 
     return ({ column, line }: Position) : Position => {
-        let lineWithOffset = line - browserRuntimeOffset - testScriptOnLine;
-        let pos = consumer.originalPositionFor({ column: column, line: lineWithOffset });
+        let pos = consumer.originalPositionFor({ column: column, line });
         return {
             source: path.join(process.cwd(), (pos.source || '').slice(sourceNamePrefix.length)),
             column: pos.column || 0,
@@ -62,21 +57,22 @@ export default async function launchInstance(headless: boolean) {
     let { Profiler, Page, Runtime } = await chromeRemoteInterface({ port: chrome.port });
 
     await Promise.all([Profiler.enable(), Page.enable(), Runtime.enable()]);
-
+   	
+	// instead of starting a server and loading the page from it
+	// directly load the index file with the embedded sources as a data object
+    let encoded = new Buffer(htmlIndex()).toString('base64');
+    Page.navigate({ url: 'data:text/html;base64,' + encoded });
+    await Page.loadEventFired();
 
 	// Run on every change
 	return async (testSrc: string, mapSrc: any, lastRun: boolean) : Promise<TestModule[]> => {
 
         let mapPosition = await loadSourceMap(mapSrc);
-   	
-    	// instead of starting a server and loading the page from it
-    	// directly load the index file with the embedded sources as a data object
-        let encoded = new Buffer(htmlIndex(testSrc)).toString('base64');
-        Page.navigate({ url: 'data:text/html;base64,' + encoded });
-        await Page.loadEventFired();
 
         let testResult = 'false';
         let testCoverages = [];
+
+        await Runtime.evaluate({ expression: testSrc });
 
 		while (testResult === 'false') {
             await Profiler.startPreciseCoverage({ callCount: false, detailed: true });
@@ -102,7 +98,7 @@ export default async function launchInstance(headless: boolean) {
                     log.trace = mapPosition(log.trace);
                 });
             });
-        });;
+        });
 
         return modules;
 	}
