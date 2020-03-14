@@ -41,7 +41,8 @@ function htmlIndex(testSrc: string) {
 //     }));
 // }
 
-export default async function runner(headless: boolean) {
+// #SPC-runner.launcher
+export default async function launchInstance(headless: boolean) {
     
     let chrome = await chromeLauncher.launch({ chromeFlags: ['--disable-gpu' ].concat(headless ? ['--headless'] : []) });
         	

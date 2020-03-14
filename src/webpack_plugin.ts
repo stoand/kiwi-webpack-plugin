@@ -1,6 +1,6 @@
 // #SPC-webpack_plugin
 const SingleEntryPlugin = require('webpack/lib/SingleEntryPlugin');
-import runner from './runner';
+import launchInstance from './runner';
 import './kakoune_interface';
 
 const entryName = 'kiwi-tests';
@@ -27,7 +27,7 @@ export default class KiwiPlugin {
         }
 
         this.testEntry = testEntry;
-        this.initRunner = runner(headless);
+        this.initRunner = launchInstance(headless);
     }
 
     apply(compiler: any) {
