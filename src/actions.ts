@@ -1,8 +1,26 @@
 import { TestModule } from './runner';
-import { line_notifications, FileLabels } from './kakoune_interface';
+import { line_notifications, running_instances, FileLabels } from './kakoune_interface';
+
+const scanInterval = 150;
 
 export default function handleTestRun(modules: TestModule[]) {
+    
     setNotifications(modules);
+
+	// If new kakoune editors are opened perform actions on them
+    let knownInstances = 0;
+
+	setInterval(() => {
+    	let instanceCount = running_instances().length;
+    	
+    	if (instanceCount > knownInstances) {
+        	// New instance detected
+            setNotifications(modules);
+    	}
+    	
+        knownInstances = instanceCount;
+        
+	}, scanInterval);
 }
 
 // #SPC-actions.set_notifications
