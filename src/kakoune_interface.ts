@@ -77,6 +77,10 @@ function fix_size(text: string, length: number) {
 // #SPC-kakoune_interface.line_notifications
 export function line_notifications(file_notifications: FileLabels) {
 
+	// Editing the only line with a notification on it will cause it to "bounce" because
+	// editing a line removes its notification instantly.
+    let anti_bounce = [0, 1].map(n => `\\"${n}| ${fix_size('', maxNotificationLength)}\\"`).join(' ');
+
     let format_lines = (lines: LineLabels) => Object.keys(lines).map(line => {
         let { color, text } = lines[Number(line)];
         let truncated_text = fix_size(text, maxNotificationLength);
@@ -86,7 +90,7 @@ export function line_notifications(file_notifications: FileLabels) {
     }).join(' ');
 
     let set_highlighters = Object.keys(file_notifications).map(file => 'eval %sh{ [ "$kak_buffile" = "' + file + '" ] && ' +
-        'echo "set-option buffer kiwi_line_notifications %val{timestamp} ' + format_lines(file_notifications[file]) + '" }').join('\n');
+        'echo "set-option buffer kiwi_line_notifications %val{timestamp} ' + anti_bounce + ' ' + format_lines(file_notifications[file]) + '" }').join('\n');
 
     let commands = `
 		eval %sh{ [ -z "$kak_opt_kiwi_color_normal_notification" ] && echo "declare-option str kiwi_color_normal_notification; set-option window kiwi_color_normal_notification \\"${inlineNormalTextColor}\\"" }
