@@ -3,8 +3,8 @@ import { execFileSync } from 'child_process';
 const maxNotificationLength = 30;
 const inlineNormalTextColor = 'Default';
 const inlineErrorTextColor = 'Error';
-const statusChars = '••';
-const uncoveredColors = 'gray';
+const statusChars = '██';
+const uncoveredColors = 'StatusLine';
 const failedColors = 'red';
 const successColors = 'green';
 
@@ -36,8 +36,12 @@ function command_all(command: string) {
 // #SPC-kakoune_interface.line_statuses
 export function line_statuses(file_statuses: FileStatuses) {
 
-    let format_lines = (lines: LineStatuses) => Object.keys(lines).map(line =>
-        `\\"${Number(line)+  1}|{%opt{kiwi_color_${lines[Number(line)]}}}%opt{kiwi_status_chars}\\"`).join(' ');
+    let format_lines = (lines: LineStatuses) => Object.keys(lines).map(line => {
+        let value = lines[Number(line)];
+        let spaces = statusChars.split('').map(_ => ' ').join('');
+        let text = value == 'uncovered' ? spaces : '%opt{kiwi_status_chars}';
+        return `\\"${Number(line)+  1}|{%opt{kiwi_color_${value}}}${text}\\"`;
+    }).join(' ');
 
     let set_highlighters = Object.keys(file_statuses).map(file => 'eval %sh{ [ "$kak_buffile" = "' + file + '" ] && ' +
         'echo "set-option buffer kiwi_line_statuses %val{timestamp} ' + format_lines(file_statuses[file]) + '" }').join('\n');
