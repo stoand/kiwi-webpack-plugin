@@ -3,13 +3,20 @@ let chromeRemoteInterface = require('chrome-remote-interface');
 let toIstanbul = require('v8-to-istanbul');
 import sourceMap from 'source-map';
 
-export type Trace = { column: number, line: number };
-export type TestError = { message: string, trace: Trace };
-export type TestLog = { args: string[], trace: Trace };
+export type Position = sourceMap.NullableMappedPosition;
+
+export type TestError = { message: string, trace: Position };
+export type TestLog = { args: string[], trace: Position };
 export type TestResult = { name: string, error?: TestError, consoleLogs: TestLog[] };
 export type TestModule = { name: string, tests: TestResult[] };
 
+
 let browserRuntime = require('./browser_runtime.raw.js').default;
+let browserRuntimeOffset = browserRuntime.split('\n').length;
+// The position of the <script> below affects source maps
+let testScriptOnLine = 8;
+
+let sourceNamePrefix = 'webpack:///';
 
 function htmlIndex(testSrc: string) {
     return `
@@ -30,16 +37,18 @@ function htmlIndex(testSrc: string) {
     `;
 }
 
-// async function reformatCoverage(coverageResult: any) {
-//     return Promise.all(coverageResult.map(async (file: any) => {
-//         let converter = toIstanbul('/home/andreas/kiwi/examples/bank/dist/kiwi-tests.js');
-//         try {
-//         await converter.load();
-//         converter.applyCoverage(file.functions);
-//         } catch(e) { console.log(e) }
-//         return converter.toIstanbul();
-//     }));
-// }
+// #SPC-runner.sourcemap
+export async function loadSourceMap(mapSrc: sourceMap.RawSourceMap) {
+    
+    let consumer = await (new sourceMap.SourceMapConsumer(mapSrc));
+
+    return ({ column, line }: Position) : Position => {
+        let lineWithOffset = (line || 0) - browserRuntimeOffset - testScriptOnLine;
+        let position = consumer.originalPositionFor({ column: column || 0, line: lineWithOffset });
+        position.source = position.source && position.source.slice(sourceNamePrefix.length);
+        return position;
+    };
+}
 
 // #SPC-runner.launcher
 export default async function launchInstance(headless: boolean) {
@@ -50,8 +59,11 @@ export default async function launchInstance(headless: boolean) {
 
     await Promise.all([Profiler.enable(), Page.enable(), Runtime.enable()]);
 
+
 	// Run on every change
-	return async (testSrc: string, mapsSrc: any, lastRun: boolean) : Promise<TestModule[]> => {
+	return async (testSrc: string, mapSrc: any, lastRun: boolean) : Promise<TestModule[]> => {
+
+        let mapPosition = await loadSourceMap(mapSrc);
    	
     	// instead of starting a server and loading the page from it
     	// directly load the index file with the embedded sources as a data object
@@ -73,7 +85,20 @@ export default async function launchInstance(headless: boolean) {
     	if (lastRun) {
         	chrome.kill();
     	}
+
+    	let modules = JSON.parse(testResult);
 		
-        return JSON.parse(testResult);
+        modules.forEach((module: TestModule) => {
+            module.tests.forEach(test => {
+                if (test.error) {
+                    test.error.trace = mapPosition(test.error.trace);
+                }
+                test.consoleLogs.forEach(log => {
+                    log.trace = mapPosition(log.trace);
+                });
+            });
+        });;
+
+        return modules;
 	}
 }

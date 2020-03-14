@@ -20,6 +20,9 @@ module.exports = {
             },
         ],
     },
+    node: {
+        __dirname: true,
+    },
     resolve: {
         extensions: ['.tsx', '.ts', '.js'],
     },

@@ -7,4 +7,7 @@ import { readFileSync } from 'fs';
 let testSrc = readFileSync('examples/bank/dist/kiwi-tests.js', { encoding: 'utf8' });
 let mapsSrc = readFileSync('examples/bank/dist/kiwi-tests.js.map', { encoding: 'utf8' });
 
-launchInstance(true).then(handleSource => handleSource(testSrc, JSON.parse(mapsSrc), true));
+launchInstance(true).then(handleSource => handleSource(testSrc, JSON.parse(mapsSrc), true))
+	.then(results => {
+    	console.log(JSON.stringify(results));
+	});

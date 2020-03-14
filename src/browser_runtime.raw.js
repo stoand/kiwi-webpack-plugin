@@ -23,8 +23,8 @@ console.log = (...args) => {
 
 function __kiwi_extractTrace(stack, row) {
     let parts = stack.split('\n')[row].slice(-50).split(':');
-    let column = Number(parts[parts.length - 2]);
-    let line = Number(parts[parts.length - 1].slice(0, -1));
+    let line = Number(parts[parts.length - 2]);
+    let column = Number(parts[parts.length - 1].slice(0, -1));
     return { column, line };
 }
 
