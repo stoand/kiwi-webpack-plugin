@@ -27,12 +27,16 @@ export default class KiwiPlugin {
         }
 
         this.testEntry = testEntry;
-            // TODO
         this.initRunner = runner(headless);
     }
 
     apply(compiler: any) {
-        // console.log(compiler.hooks);
+        let watching = false;
+
+        compiler.hooks.watchRun.tap("KiwiPlugin", () => {
+            watching = true;
+        });
+        
         // Get the entry context from a entryOption hook
         compiler.hooks.entryOption.tap("KiwiPlugin", (context: any, _entry: any) => {
             // Apply the SingleEntryPlugin to add our tests file to the entries
@@ -46,8 +50,10 @@ export default class KiwiPlugin {
                 let testsAsset = compilation.assets[entryName + '.js'];
                 if (testsAsset) {
                     let { source, map } = testsAsset.sourceAndMap(sourceMapOptions);
-                    // TODO
-                    this.initRunner.then(runner => runner(source, map));
+                    this.initRunner.then(async runner => {
+                    	let results = await runner(source, map, !watching);
+                    	console.log(results);
+                	});
                 }
 			});
         });

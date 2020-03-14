@@ -11,8 +11,10 @@ describe('First Module', () => {
 });
 
 describe('Second Module', () => {
+    
    it('another working test', () => {
        expect(3).to.equal(3);
+
        console.log('hello1234');
    });
 });

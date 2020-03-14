@@ -7,4 +7,4 @@ import { readFileSync } from 'fs';
 let testSrc = readFileSync('examples/bank/dist/kiwi-tests.js', { encoding: 'utf8' });
 let mapsSrc = readFileSync('examples/bank/dist/kiwi-tests.js.map', { encoding: 'utf8' });
 
-runner(true).then(handleSource => handleSource(testSrc, JSON.parse(mapsSrc)));
+runner(true).then(handleSource => handleSource(testSrc, JSON.parse(mapsSrc), true));

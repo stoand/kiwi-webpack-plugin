@@ -50,7 +50,8 @@ export default async function runner(headless: boolean) {
     await Promise.all([Profiler.enable(), Page.enable(), Runtime.enable()]);
 
 	// Run on every change
-	return async (testSrc: string, mapsSrc: any) : Promise<TestModule[]> => {
+	return async (testSrc: string, mapsSrc: any, lastRun: boolean) : Promise<TestModule[]> => {
+   	
     	// instead of starting a server and loading the page from it
     	// directly load the index file with the embedded sources as a data object
         let encoded = new Buffer(htmlIndex(testSrc)).toString('base64');
@@ -66,7 +67,11 @@ export default async function runner(headless: boolean) {
         
             testCoverages.push(await Profiler.takePreciseCoverage());
 		}
-		console.log(testResult);
+
+		// cleanup browser instances
+    	if (lastRun) {
+        	chrome.kill();
+    	}
 		
         return JSON.parse(testResult);
 	}
