@@ -3,14 +3,22 @@ import { line_notifications, running_instances, FileLabels } from './kakoune_int
 
 const scanInterval = 150;
 
+let prevScanner: NodeJS.Timeout;
+
 export default function handleTestRun(modules: TestModule[]) {
     
     setNotifications(modules);
 
+	// disable the scanner from the previous call to this function
+	// the entire editor state is updated by every call
+    if (prevScanner) {
+        clearInterval(prevScanner);
+    }
+
 	// If new kakoune editors are opened perform actions on them
     let knownInstances = 0;
 
-	setInterval(() => {
+	prevScanner = setInterval(() => {
     	let instanceCount = running_instances().length;
     	
     	if (instanceCount > knownInstances) {
