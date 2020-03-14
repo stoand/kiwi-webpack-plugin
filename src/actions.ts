@@ -14,7 +14,10 @@ function setNotifications(modules: TestModule[]) {
         module.tests.forEach(test => {
             test.consoleLogs.forEach(log => {
                 files[log.trace.source] = files[log.trace.source] || {};
-                files[log.trace.source][log.trace.line] = { text: log.args.join(', '), color: 'normal' };
+                let existing = files[log.trace.source][log.trace.line]?.text;
+                let joinedArgs = log.args.join(', ');
+                let text = existing ? existing + ', ' + joinedArgs : joinedArgs;
+                files[log.trace.source][log.trace.line] = { text, color: 'normal' };
             });
 
             if (test.error) {

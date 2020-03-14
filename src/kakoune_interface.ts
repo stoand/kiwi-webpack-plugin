@@ -113,8 +113,6 @@ export function line_notifications(file_notifications: FileLabels) {
     	kiwi_line_notifications
     `;
 
-    console.log(commands);
-
     previously_notfied = Object.keys(file_notifications);
 
     command_all(commands);
