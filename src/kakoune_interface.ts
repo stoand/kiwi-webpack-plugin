@@ -74,6 +74,8 @@ function fix_size(text: string, length: number) {
     }
 }
 
+let previously_notfied: string[] = [];
+
 // #SPC-kakoune_interface.line_notifications
 export function line_notifications(file_notifications: FileLabels) {
 
@@ -92,6 +94,9 @@ export function line_notifications(file_notifications: FileLabels) {
     let set_highlighters = Object.keys(file_notifications).map(file => 'eval %sh{ [ "$kak_buffile" = "' + file + '" ] && ' +
         'echo "set-option buffer kiwi_line_notifications %val{timestamp} ' + anti_bounce + ' ' + format_lines(file_notifications[file]) + '" }').join('\n');
 
+    let remove_highlighters = previously_notfied.filter(file => !file_notifications[file]).map(file => 'eval %sh{ [ "$kak_buffile" = "' + file + '" ] && ' +
+        'echo "set-option buffer kiwi_line_notifications %val{timestamp} " }').join('\n');
+
     let commands = `
 		eval %sh{ [ -z "$kak_opt_kiwi_color_normal_notification" ] && echo "declare-option str kiwi_color_normal_notification; set-option window kiwi_color_normal_notification \\"${inlineNormalTextColor}\\"" }
 		eval %sh{ [ -z "$kak_opt_kiwi_color_error_notification" ] && echo "declare-option str kiwi_color_error_notification; set-option window kiwi_color_error_notification \\"${inlineErrorTextColor}\\"" }
@@ -100,11 +105,17 @@ export function line_notifications(file_notifications: FileLabels) {
     		eval %sh{ [ -z "$kak_opt_kiwi_line_notifications" ] && echo "declare-option line-specs kiwi_line_notifications; addhl global/ flag-lines Default kiwi_line_notifications" }
 
     		${set_highlighters}
+
+    		${remove_highlighters}
     	}
     	
     	hook global WinDisplay .* kiwi_line_notifications
     	kiwi_line_notifications
     `;
+
+    console.log(commands);
+
+    previously_notfied = Object.keys(file_notifications);
 
     command_all(commands);
 }
