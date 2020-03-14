@@ -3,7 +3,7 @@ let chromeRemoteInterface = require('chrome-remote-interface');
 let toIstanbul = require('v8-to-istanbul');
 import sourceMap from 'source-map';
 
-export type Position = sourceMap.NullableMappedPosition;
+export type Position = sourceMap.MappedPosition;
 
 export type TestError = { message: string, trace: Position };
 export type TestLog = { args: string[], trace: Position };
@@ -43,10 +43,13 @@ export async function loadSourceMap(mapSrc: sourceMap.RawSourceMap) {
     let consumer = await (new sourceMap.SourceMapConsumer(mapSrc));
 
     return ({ column, line }: Position) : Position => {
-        let lineWithOffset = (line || 0) - browserRuntimeOffset - testScriptOnLine;
-        let position = consumer.originalPositionFor({ column: column || 0, line: lineWithOffset });
-        position.source = position.source && position.source.slice(sourceNamePrefix.length);
-        return position;
+        let lineWithOffset = line - browserRuntimeOffset - testScriptOnLine;
+        let pos = consumer.originalPositionFor({ column: column, line: lineWithOffset });
+        return {
+            source: (pos.source || '').slice(sourceNamePrefix.length),
+            column: pos.column || 0,
+            line: pos.line || 0,
+        };
     };
 }
 
@@ -87,7 +90,8 @@ export default async function launchInstance(headless: boolean) {
     	}
 
     	let modules = JSON.parse(testResult);
-		
+
+		// Apply sourcemaps
         modules.forEach((module: TestModule) => {
             module.tests.forEach(test => {
                 if (test.error) {
