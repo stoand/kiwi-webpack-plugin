@@ -1,6 +1,4 @@
 // Tests for functions that control interaction with the Kakoune editor
-
-
 // Since it's difficult to programatically check the state of the Kakoune
 // editor THESE TESTS REQUIRE MANUAL INTERACTION
 
@@ -12,9 +10,6 @@ import path from 'path';
 
 // Test the editor interactions while editing this file
 let currentFile = path.resolve(process.cwd(), 'src/kakoune_interface_tests.ts');
-
-
-
 
 let empty: any = {};
 for (let i = 0; i < 200; i++) {
@@ -28,6 +23,7 @@ function test_line_statuses() {
             ...empty,
             10: 'uncovered',
             11: 'fail',
+            
             12: 'success',
         }
     });

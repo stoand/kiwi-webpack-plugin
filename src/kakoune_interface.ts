@@ -8,6 +8,15 @@ const uncoveredColors = 'StatusLine';
 const failedColors = 'red';
 const successColors = 'green';
 
+// When to update the highlighters
+const refreshHighlighting = [
+    'WinDisplay',
+    // 'ModeChange',
+    // 'InsertKey',
+    // 'NormalKey',
+    'RawKey',
+];
+
 export type LineStatus = 'uncovered' | 'fail' | 'success';
 export type LineStatuses = {[ line: number]: LineStatus} ;
 export type FileStatuses = {[ file: string]: LineStatuses} ;
@@ -46,6 +55,10 @@ export function line_statuses(file_statuses: FileStatuses) {
     let set_highlighters = Object.keys(file_statuses).map(file => 'eval %sh{ [ "$kak_buffile" = "' + file + '" ] && ' +
         'echo "set-option buffer kiwi_line_statuses %val{timestamp} ' + format_lines(file_statuses[file]) + '" }').join('\n');
 
+
+    let refresh_hooks = refreshHighlighting.map((name: string) =>
+        `hook -group kiwi-line-statuses-group global ${name} .* kiwi_line_statuses`).join('\n');
+
     let commands = `
     	define-command -hidden -override kiwi_line_statuses %{
     		eval %sh{ [ -z "$kak_opt_kiwi_status_chars" ] && echo "declare-option str kiwi_status_chars; set-option window kiwi_status_chars \\"${statusChars}\\"" }
@@ -59,8 +72,10 @@ export function line_statuses(file_statuses: FileStatuses) {
     		${set_highlighters}
     	}
     	
+    	remove-hooks global kiwi-line-statuses-group
 
-    	hook global WinDisplay .* kiwi_line_statuses
+		${refresh_hooks}
+		
     	kiwi_line_statuses
     `;
 
@@ -83,8 +98,8 @@ let previously_notfied: string[] = [];
 // #SPC-kakoune_interface.line_notifications
 export function line_notifications(file_notifications: FileLabels) {
 
-	// Editing the only line with a notification on it will cause it to "bounce" because
-	// editing a line removes its notification instantly.
+    // Editing the only line with a notification on it will cause it to "bounce" because
+    // editing a line removes its notification instantly.
     let anti_bounce = [0, 1].map(n => `\\"${n}| ${fix_size('', maxNotificationLength)}\\"`).join(' ');
 
     let format_lines = (lines: LineLabels) => Object.keys(lines).map(line => {
@@ -101,6 +116,9 @@ export function line_notifications(file_notifications: FileLabels) {
     let remove_highlighters = previously_notfied.filter(file => !file_notifications[file]).map(file => 'eval %sh{ [ "$kak_buffile" = "' + file + '" ] && ' +
         'echo "set-option buffer kiwi_line_notifications %val{timestamp} " }').join('\n');
 
+    let refresh_hooks = refreshHighlighting.map((name: string) =>
+        `hook -group kiwi-line-notifications-group global ${name} .* kiwi_line_notifications`).join('\n');
+
     let commands = `
 		eval %sh{ [ -z "$kak_opt_kiwi_color_normal_notification" ] && echo "declare-option str kiwi_color_normal_notification; set-option window kiwi_color_normal_notification \\"${inlineNormalTextColor}\\"" }
 		eval %sh{ [ -z "$kak_opt_kiwi_color_error_notification" ] && echo "declare-option str kiwi_color_error_notification; set-option window kiwi_color_error_notification \\"${inlineErrorTextColor}\\"" }
@@ -112,8 +130,11 @@ export function line_notifications(file_notifications: FileLabels) {
 
     		${remove_highlighters}
     	}
+
+    	remove-hooks global kiwi-line-notifications-group
+
+		${refresh_hooks}
     	
-    	hook global WinDisplay .* kiwi_line_notifications
     	kiwi_line_notifications
     `;
 
