@@ -81,7 +81,7 @@ export function line_notifications(file_notifications: FileLabels) {
         let { color, text } = lines[Number(line)];
         let truncated_text = fix_size(text, maxNotificationLength);
         let color_opt = `kiwi_color_${color}_notification`;
-        let num = Number(line)+ 1 ;
+        let num = Number(line);
         return `\\"${num}|{Default} {%opt{${color_opt}}}${truncated_text}\\"`;
     }).join(' ');
 

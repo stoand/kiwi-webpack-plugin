@@ -5,7 +5,7 @@
 You need a recent [Google Chrome](https://www.google.com/chrome/) browser installed.
 
 ```
-npm i kiwi-webpack-plugin chai
+npm i kiwi-webpack-plugin source-map chai
 
 # Typescript types
 npm i @types/mocha @types/chai

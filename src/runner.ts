@@ -2,6 +2,7 @@ let chromeLauncher = require('chrome-launcher');
 let chromeRemoteInterface = require('chrome-remote-interface');
 let toIstanbul = require('v8-to-istanbul');
 import sourceMap from 'source-map';
+import path from 'path';
 
 export type Position = sourceMap.MappedPosition;
 
@@ -46,7 +47,7 @@ export async function loadSourceMap(mapSrc: sourceMap.RawSourceMap) {
         let lineWithOffset = line - browserRuntimeOffset - testScriptOnLine;
         let pos = consumer.originalPositionFor({ column: column, line: lineWithOffset });
         return {
-            source: (pos.source || '').slice(sourceNamePrefix.length),
+            source: path.join(process.cwd(), (pos.source || '').slice(sourceNamePrefix.length)),
             column: pos.column || 0,
             line: pos.line || 0,
         };

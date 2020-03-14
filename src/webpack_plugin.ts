@@ -1,7 +1,7 @@
 // #SPC-webpack_plugin
 const SingleEntryPlugin = require('webpack/lib/SingleEntryPlugin');
 import launchInstance from './runner';
-import './kakoune_interface';
+import handleTestRun from './actions';
 
 const entryName = 'kiwi-tests';
 const sourceMapOptions = {
@@ -52,7 +52,7 @@ export default class KiwiPlugin {
                     let { source, map } = testsAsset.sourceAndMap(sourceMapOptions);
                     this.initRunner.then(async runner => {
                     	let results = await runner(source, map, !watching);
-                    	console.log(results);
+                    	handleTestRun(results);
                 	});
                 }
 			});
