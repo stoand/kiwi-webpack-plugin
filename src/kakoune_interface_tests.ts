@@ -35,12 +35,15 @@ test_line_statuses();
 function test_line_notifications() {
     line_notifications({
         [currentFile]: {
-            10: { text: '1, 2, 3', color: 'error' },
-            11: { text: 'this text goes here', color: 'normal' },
-            12: { text: 'this text is too long because it should be truncated', color: 'normal' },
+            38: { text: '1, 2, 3', color: 'error' },
+            39: { text: 'this text goes here', color: 'normal' },
+            40: { text: 'this text is too long because it should be truncated', color: 'normal' },
+            // #SPC-kakoune_interface.tst-line_notifications_escaping
+            42: { text: `handl/.""'%%{{ correctly`, color: 'normal' },
         }
     });
 }
+
 
 // The notifications should be displayed to the left of statuses
 setTimeout(() => {

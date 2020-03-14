@@ -41,6 +41,10 @@ Ensure line notifications of both `normal` and `error` type can be correctly dis
 
 Also ensure that lines are correctly truncated.
 
+[[.tst-line_notifications_escaping]]
+
+Ensure special characters such as " or { do not break the protocol.
+
 ## [[.show_location_list_command]]
 
 Defines a command with the given name in kakoune that

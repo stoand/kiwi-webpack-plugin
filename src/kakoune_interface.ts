@@ -8,6 +8,10 @@ const uncoveredColors = 'StatusLine';
 const failedColors = 'red';
 const successColors = 'green';
 
+const rightCurlyBraceLookalike = '｝';
+const leftCurlyBraceLookalike = '｛';
+const verticalLineLookalike = '';
+
 // When to update the highlighters
 const refreshHighlighting = [
     'WinDisplay',
@@ -96,19 +100,35 @@ function fix_size(text: string, length: number) {
 
 let previously_notfied: string[] = [];
 
+function escape_flag_lines(text: string) {
+    return text
+    	// Escape by doubling
+    	.replace(/"/g, '""')
+    	.replace(/'/g, "''")
+    	.replace(/\%/g, "%%")
+    	// Since kakoune (apparently) provides no way of escaping these characters,
+    	// we replace them with lookalikes
+    	.replace(/\{/g, '❴')
+    	.replace(/\}/g, '❵')
+    	.replace(/\|/g, '｜');
+}
+
 // #SPC-kakoune_interface.line_notifications
 export function line_notifications(file_notifications: FileLabels) {
 
     let format_lines = (lines: LineLabels) => Object.keys(lines).map(line => {
         let { color, text } = lines[Number(line)];
         let truncated_text = fix_size(text, maxNotificationLength);
+        let escaped_text = escape_flag_lines(truncated_text);
         let color_opt = `kiwi_color_${color}_notification`;
         let num = Number(line);
-        return `\\"${num}|{Default} {%opt{${color_opt}}}${truncated_text}\\"`;
+        return `"${num}|{Default} {%opt{${color_opt}}}${escaped_text}"`;
     }).join(' ');
 
-    let set_highlighters = Object.keys(file_notifications).map(file => 'eval %sh{ [ "$kak_buffile" = "' + file + '" ] && ' +
-        'echo "set-option buffer kiwi_line_notifications %val{timestamp} ' + format_lines(file_notifications[file]) + '" }').join('\n');
+    let set_highlighters = Object.keys(file_notifications).map((file, index) =>
+    	`declare-option str-list kiwi_line_notifications_${index} ${format_lines(file_notifications[file])} \n` +
+    	`eval %sh{ [ "$kak_buffile" = "${file}" ] && ` +
+        `echo "set-option buffer kiwi_line_notifications %val{timestamp} %opt{kiwi_line_notifications_${index}}" }`).join('\n');
 
     let remove_highlighters = previously_notfied.filter(file => !file_notifications[file]).map(file => 'eval %sh{ [ "$kak_buffile" = "' + file + '" ] && ' +
         'echo "set-option buffer kiwi_line_notifications %val{timestamp} " }').join('\n');
