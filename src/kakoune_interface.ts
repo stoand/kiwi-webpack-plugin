@@ -61,13 +61,14 @@ export function line_statuses(file_statuses: FileStatuses) {
 
     let commands = `
     	define-command -hidden -override kiwi_line_statuses %{
-    		eval %sh{ [ -z "$kak_opt_kiwi_status_chars" ] && echo "declare-option str kiwi_status_chars; set-option window kiwi_status_chars \\"${statusChars}\\"" }
+    		declare-option str kiwi_status_chars "${statusChars}"
    		
-    		eval %sh{ [ -z "$kak_opt_kiwi_color_uncovered" ] && echo "declare-option str kiwi_color_uncovered; set-option window kiwi_color_uncovered \\"${uncoveredColors}\\"" }
-    		eval %sh{ [ -z "$kak_opt_kiwi_color_fail" ] && echo "declare-option str kiwi_color_fail; set-option window kiwi_color_fail \\"${failedColors}\\"" }
-    		eval %sh{ [ -z "$kak_opt_kiwi_color_success" ] && echo "declare-option str kiwi_color_success; set-option window kiwi_color_success \\"${successColors}\\"" }
+    		declare-option str kiwi_color_uncovered "${uncoveredColors}"
+    		declare-option str kiwi_color_fail "${failedColors}"
+    		declare-option str kiwi_color_success "${successColors}"
     		
-    		eval %sh{ [ -z "$kak_opt_kiwi_line_statuses" ] && echo "declare-option line-specs kiwi_line_statuses; addhl global/ flag-lines Default kiwi_line_statuses" }
+    		eval %sh{ [ -z "$kak_opt_kiwi_line_statuses" ] &&
+    			echo "declare-option line-specs kiwi_line_statuses; addhl global/ flag-lines Default kiwi_line_statuses" }
         	
     		${set_highlighters}
     	}
@@ -98,10 +99,6 @@ let previously_notfied: string[] = [];
 // #SPC-kakoune_interface.line_notifications
 export function line_notifications(file_notifications: FileLabels) {
 
-    // Editing the only line with a notification on it will cause it to "bounce" because
-    // editing a line removes its notification instantly.
-    let anti_bounce = [0, 1].map(n => `\\"${n}| ${fix_size('', maxNotificationLength)}\\"`).join(' ');
-
     let format_lines = (lines: LineLabels) => Object.keys(lines).map(line => {
         let { color, text } = lines[Number(line)];
         let truncated_text = fix_size(text, maxNotificationLength);
@@ -111,7 +108,7 @@ export function line_notifications(file_notifications: FileLabels) {
     }).join(' ');
 
     let set_highlighters = Object.keys(file_notifications).map(file => 'eval %sh{ [ "$kak_buffile" = "' + file + '" ] && ' +
-        'echo "set-option buffer kiwi_line_notifications %val{timestamp} ' + anti_bounce + ' ' + format_lines(file_notifications[file]) + '" }').join('\n');
+        'echo "set-option buffer kiwi_line_notifications %val{timestamp} ' + format_lines(file_notifications[file]) + '" }').join('\n');
 
     let remove_highlighters = previously_notfied.filter(file => !file_notifications[file]).map(file => 'eval %sh{ [ "$kak_buffile" = "' + file + '" ] && ' +
         'echo "set-option buffer kiwi_line_notifications %val{timestamp} " }').join('\n');
@@ -120,11 +117,12 @@ export function line_notifications(file_notifications: FileLabels) {
         `hook -group kiwi-line-notifications-group global ${name} .* kiwi_line_notifications`).join('\n');
 
     let commands = `
-		eval %sh{ [ -z "$kak_opt_kiwi_color_normal_notification" ] && echo "declare-option str kiwi_color_normal_notification; set-option window kiwi_color_normal_notification \\"${inlineNormalTextColor}\\"" }
-		eval %sh{ [ -z "$kak_opt_kiwi_color_error_notification" ] && echo "declare-option str kiwi_color_error_notification; set-option window kiwi_color_error_notification \\"${inlineErrorTextColor}\\"" }
+		declare-option str kiwi_color_normal_notification "${inlineNormalTextColor}"
+		declare-option str kiwi_color_error_notification "${inlineErrorTextColor}"
     		
     	define-command -hidden -override kiwi_line_notifications %{
-    		eval %sh{ [ -z "$kak_opt_kiwi_line_notifications" ] && echo "declare-option line-specs kiwi_line_notifications; addhl global/ flag-lines Default kiwi_line_notifications" }
+    		eval %sh{ [ -z "$kak_opt_kiwi_line_notifications" ] &&
+    			echo "declare-option line-specs kiwi_line_notifications; addhl global/ flag-lines Default kiwi_line_notifications" }
 
     		${set_highlighters}
 
