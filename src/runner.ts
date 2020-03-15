@@ -1,14 +1,15 @@
+// #SPC-runner
 let chromeLauncher = require('chrome-launcher');
 let chromeRemoteInterface = require('chrome-remote-interface');
-let toIstanbul = require('v8-to-istanbul');
 import sourceMap from 'source-map';
 import path from 'path';
 
 export type Position = sourceMap.MappedPosition;
 
+export type CoveredFiles = {[path: string]: boolean[] };
 export type TestError = { message: string, trace: Position };
 export type TestLog = { args: string[], trace: Position };
-export type TestResult = { name: string, error?: TestError, consoleLogs: TestLog[] };
+export type TestResult = { name: string, error?: TestError, consoleLogs: TestLog[], coveredFiles: CoveredFiles };
 export type TestModule = { name: string, tests: TestResult[] };
 
 
@@ -32,6 +33,11 @@ function htmlIndex() {
         </body>
         </html>
     `;
+}
+
+// #SPC-runner.coverage
+export function calculateCoverage(profilerResult: any) {
+    
 }
 
 // #SPC-runner.sourcemap
@@ -70,7 +76,7 @@ export default async function launchInstance(headless: boolean) {
         let mapPosition = await loadSourceMap(mapSrc);
 
         let testResult = 'false';
-        let testCoverages = [];
+        let testCoverages: any[] = [];
 
         await Runtime.evaluate({ expression: testSrc });
 
@@ -92,6 +98,9 @@ export default async function launchInstance(headless: boolean) {
 		// Apply sourcemaps
         modules.forEach((module: TestModule) => {
             module.tests.forEach(test => {
+                // takes the first item from testCoverages and computes what lines of what
+                // files where ran during the test
+                test.coveredFiles = calculateCoverage(testCoverages.shift());
                 if (test.error) {
                     test.error.trace = mapPosition(test.error.trace);
                 }
