@@ -18,16 +18,19 @@ const sourceMapOptions = {
 }
 
 export default class KiwiPlugin {
+
+    stopBuildOnFail: boolean;
     testEntry: string;
     initRunner: Promise<any>;
     
-    constructor({ testEntry, headless } : { testEntry: string, headless: boolean }) {
+    constructor({ testEntry, headless, stopBuildOnFail } : { testEntry: string, headless: boolean, stopBuildOnFail: boolean }) {
         if (typeof testEntry !== 'string') {
             throw 'The Kiwi plugin requires a single test entry path string to be supplied to the constructor.';
         }
 
         this.testEntry = testEntry;
         this.initRunner = launchInstance(headless);
+        this.stopBuildOnFail = stopBuildOnFail;
     }
 
     apply(compiler: any) {
@@ -45,14 +48,36 @@ export default class KiwiPlugin {
        
         compiler.hooks.compilation.tap("KiwiPlugin", (compilation: any) => {
             // get the compilation object
-			compilation.hooks.afterOptimizeChunkAssets.tap("KiwiPlugin", () => {
+			compilation.hooks.afterOptimizeChunkAssets.tap("KiwiPlugin", (context: any) => {
     			// wait for afterOptimizeChunkAssets because sourcemaps are already generated at this step
                 let testsAsset = compilation.assets[entryName + '.js'];
                 if (testsAsset) {
                     let { source, map } = testsAsset.sourceAndMap(sourceMapOptions);
                     this.initRunner.then(async runner => {
                     	let results = await runner(source, map, !watching);
-                    	handleTestRun(results);
+
+                    	if (watching) {
+                        	handleTestRun(results);
+                    	} else {
+                        	let failingTests = 0;
+                        	for (let module of results) {
+                            	console.log("Test Module -", module.name, '\n');
+                            	for (let test of module.tests) {
+                                	if (test.error) {
+                                    	failingTests++;
+                                	}
+                                	console.log('   ', test.name, '-', test.error ? 'FAIL' : 'SUCCESS');
+                            	}
+                            	console.log();
+                        	}
+
+                        	if (failingTests > 0 && this.stopBuildOnFail) {
+                            	// the purpose of stopBuildOnFail is to cause a build error
+                            	// when tests fail
+                            	console.error(`\n${failingTests} kiwi tests failed\n`);
+                            	process.exit(1);
+                        	}
+                    	}
                 	});
                 }
 			});

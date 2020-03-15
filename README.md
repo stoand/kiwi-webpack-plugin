@@ -16,7 +16,14 @@ add to webpack config:
 ```javascript
 {
     plugins: [
-        new KiwiPlugin({ testEntry: './src/tests.js', headless: true }),
+        new KiwiPlugin({
+        	testEntry: './src/tests.js',
+        	// Run the chrome browser instance in headless mode (in background without window)
+        	headless: true,
+        	// when building once (not watching) do process.exit(1)
+        	// if any tests failed
+        	stopBuildOnFail: true,
+    	}),
     ],
 }
 
