@@ -13,10 +13,11 @@ describe('First Module', () => {
 describe('Second Module', () => {
 
     it('another working test', async () => {
-        expect(2).to.equal(3);
-        // await new Promise(resolve => setTimeout(resolve, 1000));
-        for (let i = 0; i <= 6; i++) {
-            console.log(3);
-        }
+        await new Promise(resolve => setTimeout(resolve, 200));
+        console.log(3)
+        expect(1).to.equal(2);
+        // for (let i = 0; i <= 6; i++) {
+        //     console.log(2);
+        // }
     });
 });
