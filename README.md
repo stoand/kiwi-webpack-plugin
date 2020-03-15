@@ -59,30 +59,6 @@ Add `excludeChunks: ['kiwi-tests']` like so:
 
 ```
 
-## Customization Options
-
-Add to your `~/.config/kak/kakrc`:
-
-```
-declare-option str kiwi_color_normal_notification
-set-option global kiwi_color_normal_notification "Default"
-
-declare-option str kiwi_color_error_notification
-set-option global kiwi_color_error_notification "Error"
-
-declare-option str kiwi_color_uncovered
-set-option global kiwi_color_uncovered "gray"
-
-declare-option str kiwi_color_fail
-set-option global kiwi_color_fail "yellow"
-
-declare-option str kiwi_color_success
-set-option global kiwi_color_success "green"
-
-declare-option str kiwi_status_chars
-set-option global kiwi_status_chars "••"
-```
-
 ## Developing the library
 
 Run `npm start`.
