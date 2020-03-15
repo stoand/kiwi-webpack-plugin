@@ -28,13 +28,13 @@ function __kiwi_extractTrace(stack, row) {
     return { column, line };
 }
 
-function __kiwi_runNextTest() {
+async function __kiwi_runNextTest() {
     let module = __kiwi_testModules[__kiwi_currentModule];
     if (!module) {
         let modules = __kiwi_testModules.concat();
         __kiwi_currentModule = 0;
         __kiwi_testModules = [];
-        return modules;
+        return JSON.stringify(modules);
         
     } else {
         let test = module.tests[__kiwi_currentTest];
@@ -48,7 +48,7 @@ function __kiwi_runNextTest() {
         } else {
             // #SPC-runner.errors
             try {
-                test.run();
+                await test.run();
             } catch(e) {
                 test.error = { message: e.message, trace: __kiwi_extractTrace(e.stack, 1) };
             }
@@ -57,7 +57,7 @@ function __kiwi_runNextTest() {
         }
     }
 
-    return false;
+    return JSON.stringify(false);
 }
 
 function describe(name, run) {

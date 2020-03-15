@@ -6,16 +6,17 @@ describe('First Module', () => {
     });
 
     it('this should fail', () => {
-        expect(2).to.equal(2);
+        expect(2).to.equal(3);
     });
 });
 
 describe('Second Module', () => {
 
-    it('another working test', () => {
-        expect(3).to.equal(3);
+    it('another working test', async () => {
+        expect(2).to.equal(3);
+        // await new Promise(resolve => setTimeout(resolve, 1000));
         for (let i = 0; i <= 6; i++) {
-            console.log('a');
+            console.log(3);
         }
     });
 });

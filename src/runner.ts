@@ -76,7 +76,7 @@ export default async function launchInstance(headless: boolean) {
 
 		while (testResult === 'false') {
             await Profiler.startPreciseCoverage({ callCount: false, detailed: true });
-    		testResult = (await Runtime.evaluate({ expression: 'JSON.stringify(__kiwi_runNextTest())'})).result.value;
+    		testResult = (await Runtime.evaluate({ expression: '__kiwi_runNextTest()', awaitPromise: true})).result.value;
         
             testCoverages.push(await Profiler.takePreciseCoverage());
 		}
