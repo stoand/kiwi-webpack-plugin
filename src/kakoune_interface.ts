@@ -5,7 +5,7 @@ const inlineNormalTextColor = 'Default';
 const inlineErrorTextColor = 'Error';
 const statusChars = '██';
 const uncoveredColors = 'StatusLine';
-const failedColors = 'red';
+const failedColors = 'Error';
 const successColors = 'string';
 
 const rightCurlyBraceLookalike = '｝';
@@ -52,7 +52,7 @@ export function line_statuses(file_statuses: FileStatuses) {
     let format_lines = (lines: LineStatuses) => Object.keys(lines).map(line => {
         let value = lines[Number(line)];
         let spaces = statusChars.split('').map(_ => ' ').join('');
-        let text = value == 'uncovered' ? spaces : '%opt{kiwi_status_chars}';
+        let text = value != 'success' ? spaces : '%opt{kiwi_status_chars}';
         return `\\"${Number(line)+  1}|{%opt{kiwi_color_${value}}}${text}\\"`;
     }).join(' ');
 
