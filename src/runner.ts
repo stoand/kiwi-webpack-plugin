@@ -13,6 +13,7 @@ export type TestLog = { args: string[], trace: Position };
 export type TestResult = { name: string, error?: TestError, consoleLogs: TestLog[], coveredFiles: CoveredFiles };
 export type TestModule = { name: string, tests: TestResult[] };
 
+export type RunResult = Promise<{ modules: TestModule[], initialCoverage: CoveredFiles }>;
 
 let browserRuntime = require('./browser_runtime.raw.js').default;
 
@@ -38,9 +39,7 @@ function htmlIndex() {
 
 // #SPC-runner.coverage
 export function calculateCoverage(profilerResult: any, testSrc: string, mapPosition: (p: Position) => Position): CoveredFiles {
-    let functions = profilerResult.result[1].functions
-    	.filter((f: any) => f.functionName == 'assert.isNotOk');
-    // console.log(profilerResult.result[1].functions.find(n => n.functionName == 'assertProperty'));
+    let functions = profilerResult.result.find((r: any) => r.url == '').functions;
 
     let lineLengths = testSrc.split('\n').map(line => line.length);
 
@@ -74,22 +73,21 @@ export function calculateCoverage(profilerResult: any, testSrc: string, mapPosit
     	};
 	});
 
-	console.log(functions[0].ranges);
-
 	let coveredFiles: CoveredFiles = {};
 
 	for (let fn of functions) {
     	for (let range of fn.ranges) {
-        	for (let pos = range.startPosition.line; pos <= range.endPosition.line; pos++) {
-            	if (!coveredFiles[range.source]) {
-                	coveredFiles[range.source] = {};
+        	for (let pos = range.startPosition.line + 1; pos < range.endPosition.line; pos++) {
+            	let source= range.startPosition.source;
+            	if (!coveredFiles[source]) {
+                	coveredFiles[source] = {};
             	}
-            	coveredFiles[range.source][pos] = range.count != 0;
+            	coveredFiles[source][pos] = range.count != 0;
         	}
     	}
 	}
 
-    return {};
+    return coveredFiles;
 }
 
 // #SPC-runner.sourcemap
@@ -123,7 +121,7 @@ export default async function launchInstance(headless: boolean) {
     await Page.loadEventFired();
 
 	// Run on every change
-	return async (testSrc: string, mapSrc: any, lastRun: boolean) : Promise<TestModule[]> => {
+	return async (testSrc: string, mapSrc: any, lastRun: boolean): RunResult => {
 
         let mapPosition = await loadSourceMap(mapSrc);
 
@@ -149,7 +147,14 @@ export default async function launchInstance(headless: boolean) {
         	chrome.kill();
     	}
 
-    	let modules = JSON.parse(testResult);
+    	let modules: TestModule[] = JSON.parse(testResult);
+
+		let initialCoverage: any;
+		try {
+    	 initialCoverage = calculateCoverage(testCoverages.shift(), testSrc, mapPosition);
+		} catch (e) {
+    		console.log('ERROR', e);
+		}
 
 		// Apply sourcemaps
         modules.forEach((module: TestModule) => {
@@ -166,6 +171,6 @@ export default async function launchInstance(headless: boolean) {
             });
         });
 
-        return modules;
+        return { modules, initialCoverage };
 	}
 }

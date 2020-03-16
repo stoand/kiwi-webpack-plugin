@@ -1,6 +1,6 @@
 // #SPC-webpack_plugin
 const SingleEntryPlugin = require('webpack/lib/SingleEntryPlugin');
-import launchInstance from './runner';
+import launchInstance, { RunResult } from './runner';
 import handleTestRun from './actions';
 
 const entryName = 'kiwi-tests';
@@ -21,7 +21,7 @@ export default class KiwiPlugin {
 
     stopBuildOnFail: boolean;
     testEntry: string;
-    initRunner: Promise<any>;
+    initRunner: Promise<(testSrc: string, mapSrc: any, lastRun: boolean) => RunResult>;
     
     constructor({ testEntry, headless, stopBuildOnFail } : { testEntry: string, headless: boolean, stopBuildOnFail: boolean }) {
         if (typeof testEntry !== 'string') {
@@ -48,19 +48,19 @@ export default class KiwiPlugin {
        
         compiler.hooks.compilation.tap("KiwiPlugin", (compilation: any) => {
             // get the compilation object
-			compilation.hooks.afterOptimizeChunkAssets.tap("KiwiPlugin", (context: any) => {
+			compilation.hooks.afterOptimizeChunkAssets.tap("KiwiPlugin", () => {
     			// wait for afterOptimizeChunkAssets because sourcemaps are already generated at this step
                 let testsAsset = compilation.assets[entryName + '.js'];
                 if (testsAsset) {
                     let { source, map } = testsAsset.sourceAndMap(sourceMapOptions);
                     this.initRunner.then(async runner => {
-                    	let results = await runner(source, map, !watching);
+                    	let { modules, initialCoverage } = await runner(source, map, !watching);
 
                     	if (watching) {
-                        	handleTestRun(results);
+                        	handleTestRun(modules, initialCoverage);
                     	} else {
                         	let failingTests = 0;
-                        	for (let module of results) {
+                        	for (let module of modules) {
                             	console.log("Test Module -", module.name, '\n');
                             	for (let test of module.tests) {
                                 	if (test.error) {

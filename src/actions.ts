@@ -1,13 +1,13 @@
-import { TestModule } from './runner';
-import { line_notifications, running_instances, FileLabels } from './kakoune_interface';
+import { TestModule, CoveredFiles } from './runner';
+import { line_notifications, line_statuses, running_instances, FileLabels, FileStatuses } from './kakoune_interface';
 
 const scanInterval = 150;
 
 let prevScanner: NodeJS.Timeout;
 
-export default function handleTestRun(modules: TestModule[]) {
+export default function handleTestRun(modules: TestModule[], initialCoverage: CoveredFiles) {
     
-    setNotifications(modules);
+    runActions(modules, initialCoverage);
 
 	// disable the scanner from the previous call to this function
 	// the entire editor state is updated by every call
@@ -23,12 +23,41 @@ export default function handleTestRun(modules: TestModule[]) {
     	
     	if (instanceCount > knownInstances) {
         	// New instance detected
-            setNotifications(modules);
+            runActions(modules, initialCoverage);
     	}
     	
         knownInstances = instanceCount;
         
 	}, scanInterval);
+}
+
+export function runActions(modules: TestModule[], initialCoverage: CoveredFiles) {
+
+	setLineStatuses(initialCoverage);
+
+	// Ensure statuses are displayed to the right
+    setTimeout(() => {
+        setNotifications(modules);
+    }, 10);
+}
+
+// #SPC-actions.set_line_statuses
+function setLineStatuses(coveredFiles: CoveredFiles) {
+
+	let fileStatuses: FileStatuses = {};
+    
+    for (let filePath in coveredFiles) {
+        fileStatuses[filePath] = {};
+        let file = coveredFiles[filePath];
+        for (let line in file) {
+            if (filePath.indexOf('node_modules') == -1) {
+                let covered = file[line];
+                fileStatuses[filePath][line] = covered ? 'success' : 'uncovered'; 
+            }
+        }
+    }
+    
+    line_statuses(fileStatuses);
 }
 
 // #SPC-actions.set_notifications

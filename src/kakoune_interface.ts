@@ -6,19 +6,19 @@ const inlineErrorTextColor = 'Error';
 const statusChars = '██';
 const uncoveredColors = 'StatusLine';
 const failedColors = 'red';
-const successColors = 'green';
+const successColors = 'string';
 
 const rightCurlyBraceLookalike = '｝';
 const leftCurlyBraceLookalike = '｛';
-const verticalLineLookalike = '';
+const verticalLineLookalike = '｜';
 
 // When to update the highlighters
 const refreshHighlighting = [
     'WinDisplay',
-    // 'ModeChange',
+    'ModeChange',
     // 'InsertKey',
     // 'NormalKey',
-    'RawKey',
+    // 'RawKey',
 ];
 
 export type LineStatus = 'uncovered' | 'fail' | 'success';
@@ -108,9 +108,9 @@ function escape_flag_lines(text: string) {
     	.replace(/\%/g, "%%")
     	// Since kakoune (apparently) provides no way of escaping these characters,
     	// we replace them with lookalikes
-    	.replace(/\{/g, '❴')
-    	.replace(/\}/g, '❵')
-    	.replace(/\|/g, '｜');
+    	.replace(/\{/g, leftCurlyBraceLookalike)
+    	.replace(/\}/g, rightCurlyBraceLookalike)
+    	.replace(/\|/g, verticalLineLookalike);
 }
 
 // #SPC-kakoune_interface.line_notifications

@@ -10,12 +10,13 @@ describe('First Module', () => {
     });
 });
 
+
 describe('Second Module', () => {
 
     it('another working test', async () => {
         
         await new Promise(resolve => setTimeout(resolve, 200));
-        expect(1).to.equal(2);
+        expect(5).to.equal(5);
 
 		let a = false;
 
