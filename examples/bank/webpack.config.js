@@ -22,7 +22,7 @@ module.exports = {
         new KiwiPlugin({
             testEntry: './src/tests.ts',
             headless: true,
-            stopBuildOnFail: true
+            stopBuildOnFail: false
         }),
     ],
     resolve: {
