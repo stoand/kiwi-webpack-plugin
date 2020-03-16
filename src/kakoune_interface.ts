@@ -15,10 +15,10 @@ const verticalLineLookalike = '｜';
 // When to update the highlighters
 const refreshHighlighting = [
     'WinDisplay',
-    'ModeChange',
+    // 'ModeChange',
     // 'InsertKey',
     // 'NormalKey',
-    // 'RawKey',
+    'RawKey',
 ];
 
 export type LineStatus = 'uncovered' | 'fail' | 'success';
