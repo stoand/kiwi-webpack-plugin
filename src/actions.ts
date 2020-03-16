@@ -33,7 +33,7 @@ export default function handleTestRun(modules: TestModule[], initialCoverage: Co
 
 export function runActions(modules: TestModule[], initialCoverage: CoveredFiles) {
 
-    setLineStatuses(initialCoverage);
+    setLineStatuses(modules, initialCoverage);
 
     // Ensure statuses are displayed to the right
     setTimeout(() => {
@@ -42,18 +42,43 @@ export function runActions(modules: TestModule[], initialCoverage: CoveredFiles)
 }
 
 // #SPC-actions.set_line_statuses
-function setLineStatuses(coveredFiles: CoveredFiles) {
+function setLineStatuses(modules: TestModule[], initialCoverage: CoveredFiles) {
 
     let fileStatuses: FileStatuses = {};
 
-    for (let filePath in coveredFiles) {
-        fileStatuses[filePath] = {};
-        let file = coveredFiles[filePath];
-        for (let line in file) {
-            let covered = file[line];
-            fileStatuses[filePath][Number(line) - 1] = covered ? 'success' : 'uncovered';
+    let handleCoverage = (coverage: CoveredFiles, success: boolean) => {
+        for (let filePath in coverage) {
+            if (!fileStatuses[filePath]) fileStatuses[filePath] = {};
+            let file = coverage[filePath];
+            for (let line in file) {
+                let covered = file[line];
+                let state = fileStatuses[filePath][Number(line) - 1];
+
+				if (covered) {
+                    if (!success) {
+                        state = 'fail';
+                    } else if (state == 'uncovered' || !state) {
+                        state = 'success';
+                    }
+				} else {
+    				if (!state) {
+        				state = 'uncovered';
+    				}
+				}
+                
+                fileStatuses[filePath][Number(line) - 1] = state;
+            }
         }
     }
+
+    handleCoverage(initialCoverage, true);
+
+    for (let module of modules) {
+        for (let test of module.tests) {
+            handleCoverage(test.coveredFiles, test.error == undefined);
+        }
+    }
+
 
     line_statuses(fileStatuses);
 }

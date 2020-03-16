@@ -1,4 +1,5 @@
 import { expect } from 'chai';
+import { asdf } from './index';
 
 describe('First Module', () => {
     it('this should work', () => {
@@ -6,18 +7,20 @@ describe('First Module', () => {
     });
 
     it('this should fail', () => {
-        expect(2).to.equal(3);
-
+        let a = 1;
+        
+        expect(asdf()).to.equal(3);
     });
 });
 
 
 describe('Second Module', () => {
+   
 
     it('another working test', async () => {
 
         await new Promise(resolve => setTimeout(resolve, 200));
-        expect(5).to.equal(5);
+        expect(5).to.equal(2);
 
         let a = false;
 
