@@ -10,7 +10,7 @@ export type FileCoverage = {[line: number]: boolean };
 export type CoveredFiles = {[path: string]: FileCoverage };
 export type TestError = { message: string, trace: Position };
 export type TestLog = { args: string[], trace: Position };
-export type TestResult = { name: string, error?: TestError, consoleLogs: TestLog[], coveredFiles: CoveredFiles };
+export type TestResult = { name: string, trace: Position, error?: TestError, consoleLogs: TestLog[], coveredFiles: CoveredFiles };
 export type TestModule = { name: string, tests: TestResult[] };
 
 export type RunResult = Promise<{ modules: TestModule[], initialCoverage: CoveredFiles }>;
@@ -94,6 +94,7 @@ export function calculateCoverage(profilerResult: any, testSrc: string, mapPosit
             	coveredFiles[source][pos] = range.count != 0;
             	changes[pos] = range.count;
         	}
+        	console.log(fn.functionName);
         	console.log(range)
         	console.log(changes);
     	}
@@ -176,14 +177,16 @@ export default async function launchInstance(headless: boolean) {
                 // takes the first item from testCoverages and computes what lines of what
                 // files where ran during the test
                 
-                // test.coveredFiles = calculateCoverage(testCoverages.shift(), testSrc, mapPosition);
-                test.coveredFiles = {};
+                test.coveredFiles = calculateCoverage(testCoverages.shift(), testSrc, mapPosition);
+                console.log('TEST', test.name);
+                
                 if (test.error) {
                     test.error.trace = mapPosition(test.error.trace);
                 }
                 test.consoleLogs.forEach(log => {
                     log.trace = mapPosition(log.trace);
                 });
+                test.trace = mapPosition(test.trace);
             });
         });
 

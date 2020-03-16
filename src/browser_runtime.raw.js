@@ -17,7 +17,7 @@ console.log = (...args) => {
             __kiwi_runningTest.consoleLogs.push({ args, trace: __kiwi_extractTrace(e.stack, 2) });
         }
     }
-    
+
     __kiwi_oldConsoleLog(...args);
 }
 
@@ -30,31 +30,36 @@ function __kiwi_extractTrace(stack, row) {
 
 async function __kiwi_runNextTest() {
     let module = __kiwi_testModules[__kiwi_currentModule];
-    if (!module) {
+
+	// No modules defined
+    if (!module) return false;
+    
+    let test = module.tests[__kiwi_currentTest];
+
+	// No tests defined
+    if (!test) return false;
+
+    __kiwi_runningTest = test;
+
+    // #SPC-runner.errors
+    try {
+        await test.run();
+    } catch( e) {
+        test.error = { message: e.message, trace: __kiwi_extractTrace(e.stack, 1) };
+    }
+
+    __kiwi_currentTest++;
+
+    if(!module.tests[__kiwi_currentTest]) {
+        __kiwi_currentTest = 0;
+        __kiwi_currentModule++;
+    }
+
+    if(!__kiwi_testModules[__kiwi_currentModule]) {
         let modules = __kiwi_testModules.concat();
         __kiwi_currentModule = 0;
         __kiwi_testModules = [];
         return JSON.stringify(modules);
-        
-    } else {
-        let test = module.tests[__kiwi_currentTest];
-
-        __kiwi_runningTest = test;
-        
-        if (!test) {
-            __kiwi_currentTest = 0;
-            __kiwi_currentModule++;
-            
-        } else {
-            // #SPC-runner.errors
-            try {
-                await test.run();
-            } catch(e) {
-                test.error = { message: e.message, trace: __kiwi_extractTrace(e.stack, 1) };
-            }
-            
-            __kiwi_currentTest++;
-        }
     }
 
     return JSON.stringify(false);
@@ -70,9 +75,15 @@ function describe(name, run) {
 
 function it(name, run) {
     let module = __kiwi_definingModule;
-    
-    if (module) {
-        module.tests.push({ name, run, error: undefined, consoleLogs: [] });
+
+    try {
+        throw new Error();
+    } catch (e) {
+        let trace = __kiwi_extractTrace(e.stack, 2);
+
+        if (module) {
+            module.tests.push({ name, trace, run, error: undefined, consoleLogs: [] });
+        }
     }
 }
 
