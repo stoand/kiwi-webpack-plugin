@@ -50,10 +50,8 @@ function setLineStatuses(coveredFiles: CoveredFiles) {
         fileStatuses[filePath] = {};
         let file = coveredFiles[filePath];
         for (let line in file) {
-            if (filePath.indexOf('node_modules') == -1) {
-                let covered = file[line];
-                fileStatuses[filePath][line] = covered ? 'success' : 'uncovered'; 
-            }
+            let covered = file[line];
+            fileStatuses[filePath][Number(line) - 1] = covered ? 'success' : 'uncovered'; 
         }
     }
     

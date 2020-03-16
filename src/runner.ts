@@ -63,29 +63,43 @@ export function calculateCoverage(profilerResult: any, testSrc: string, mapPosit
 	// convert offsets to sourcemapped positions
 	functions = functions.map((fn: any) => {
     	let ranges = fn.ranges.map((range: any) => ({
+        	startOffset: range.startOffset,
+        	endOffset: range.endOffset,
+
+        	startFromOffset: positionFromOffset(range.startOffset),
+        	endFromOffset: positionFromOffset(range.endOffset),
+        	
         	startPosition: mapPosition(positionFromOffset(range.startOffset)),
         	endPosition: mapPosition(positionFromOffset(range.endOffset)),
         	count: range.count,
-    	}));
+    	})).filter((range: any) =>
+    		range.startPosition.source && range.startPosition.source.indexOf('node_modules') == -1);
+    	
     	return {
         	functionName: fn.functionName,
         	ranges,
     	};
-	});
-
+	}).filter((fn: any) => fn.ranges.length > 0);
+	
 	let coveredFiles: CoveredFiles = {};
 
 	for (let fn of functions) {
     	for (let range of fn.ranges) {
+        	let changes: any = {};
         	for (let pos = range.startPosition.line + 1; pos < range.endPosition.line; pos++) {
-            	let source= range.startPosition.source;
+            	let source = range.startPosition.source;
             	if (!coveredFiles[source]) {
                 	coveredFiles[source] = {};
             	}
             	coveredFiles[source][pos] = range.count != 0;
+            	changes[pos] = range.count;
         	}
+        	console.log(range)
+        	console.log(changes);
     	}
 	}
+
+	console.log('final', coveredFiles);
 
     return coveredFiles;
 }
@@ -98,7 +112,7 @@ export async function loadSourceMap(mapSrc: sourceMap.RawSourceMap) {
     return ({ column, line }: Position) : Position => {
         let pos = consumer.originalPositionFor({ column, line });
         return {
-            source: path.join(process.cwd(), (pos.source || '').slice(sourceNamePrefix.length)),
+            source: pos.source ? path.join(process.cwd(), pos.source.slice(sourceNamePrefix.length)) : '',
             column: pos.column || 0,
             line: pos.line || 0,
         };
@@ -161,7 +175,9 @@ export default async function launchInstance(headless: boolean) {
             module.tests.forEach(test => {
                 // takes the first item from testCoverages and computes what lines of what
                 // files where ran during the test
-                test.coveredFiles = calculateCoverage(testCoverages.shift(), testSrc, mapPosition);
+                
+                // test.coveredFiles = calculateCoverage(testCoverages.shift(), testSrc, mapPosition);
+                test.coveredFiles = {};
                 if (test.error) {
                     test.error.trace = mapPosition(test.error.trace);
                 }
