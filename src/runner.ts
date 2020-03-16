@@ -6,8 +6,8 @@ import path from 'path';
 
 export type Position = sourceMap.MappedPosition;
 
-export type FileCoverage = {[line: number]: boolean };
-export type CoveredFiles = {[path: string]: FileCoverage };
+export type FileCoverage = {[ line: number]: boolean };
+export type CoveredFiles = {[ path: string]: FileCoverage };
 export type TestError = { message: string, trace: Position };
 export type TestLog = { args: string[], trace: Position };
 export type TestResult = { name: string, trace: Position, error?: TestError, consoleLogs: TestLog[], coveredFiles: CoveredFiles };
@@ -43,7 +43,7 @@ export function calculateCoverage(profilerResult: any, testSrc: string, mapPosit
 
     let lineLengths = testSrc.split('\n').map(line => line.length);
 
-    let positionFromOffset = (offset: number): Position =>  {
+    let positionFromOffset = (offset: number): Position => {
         let currentOffset = 0;
         let previousOffset = 0;
         for (let i = 0; i < lineLengths.length; i++) {
@@ -60,57 +60,52 @@ export function calculateCoverage(profilerResult: any, testSrc: string, mapPosit
         return { line: 1, column: 1, source: '' };
     };
 
-	// convert offsets to sourcemapped positions
-	functions = functions.map((fn: any) => {
-    	let ranges = fn.ranges.map((range: any) => ({
-        	startOffset: range.startOffset,
-        	endOffset: range.endOffset,
+    // convert offsets to sourcemapped positions
+    functions = functions.map((fn: any) => {
+        let ranges = fn.ranges.map((range: any) => ({
+            startOffset: range.startOffset,
+            endOffset: range.endOffset,
 
-        	startFromOffset: positionFromOffset(range.startOffset),
-        	endFromOffset: positionFromOffset(range.endOffset),
-        	
-        	startPosition: mapPosition(positionFromOffset(range.startOffset)),
-        	endPosition: mapPosition(positionFromOffset(range.endOffset)),
-        	count: range.count,
-    	})).filter((range: any) =>
-    		range.startPosition.source && range.startPosition.source.indexOf('node_modules') == -1);
-    	
-    	return {
-        	functionName: fn.functionName,
-        	ranges,
-    	};
-	}).filter((fn: any) => fn.ranges.length > 0);
-	
-	let coveredFiles: CoveredFiles = {};
+            startFromOffset: positionFromOffset(range.startOffset),
+            endFromOffset: positionFromOffset(range.endOffset),
 
-	for (let fn of functions) {
-    	for (let range of fn.ranges) {
-        	let changes: any = {};
-        	for (let pos = range.startPosition.line + 1; pos < range.endPosition.line; pos++) {
-            	let source = range.startPosition.source;
-            	if (!coveredFiles[source]) {
-                	coveredFiles[source] = {};
-            	}
-            	coveredFiles[source][pos] = range.count != 0;
-            	changes[pos] = range.count;
-        	}
-        	console.log(fn.functionName);
-        	console.log(range)
-        	console.log(changes);
-    	}
-	}
+            startPosition: mapPosition(positionFromOffset(range.startOffset)),
+            endPosition: mapPosition(positionFromOffset(range.endOffset)),
+            count: range.count,
+        })).filter((range: any) =>
+            range.startPosition.source && range.startPosition.source.indexOf('node_modules') == -1);
 
-	console.log('final', coveredFiles);
+        return {
+            functionName: fn.functionName,
+            ranges,
+        };
+    }).filter((fn: any) => fn.ranges.length > 0);
+
+    let coveredFiles: CoveredFiles = {};
+
+    for (let fn of functions) {
+        for (let range of fn.ranges) {
+            let changes: any = {};
+            for (let pos = range.startPosition.line + 1; pos < range.endPosition.line; pos++) {
+                let source = range.startPosition.source;
+                if (!coveredFiles[source]) {
+                    coveredFiles[source] = {};
+                }
+                coveredFiles[source][pos] = range.count != 0;
+                changes[pos] = range.count;
+            }
+        }
+    }
 
     return coveredFiles;
 }
 
 // #SPC-runner.sourcemap
 export async function loadSourceMap(mapSrc: sourceMap.RawSourceMap) {
-    
+
     let consumer = await (new sourceMap.SourceMapConsumer(mapSrc));
 
-    return ({ column, line }: Position) : Position => {
+    return ({ column, line }: Position): Position => {
         let pos = consumer.originalPositionFor({ column, line });
         return {
             source: pos.source ? path.join(process.cwd(), pos.source.slice(sourceNamePrefix.length)) : '',
@@ -122,64 +117,60 @@ export async function loadSourceMap(mapSrc: sourceMap.RawSourceMap) {
 
 // #SPC-runner.launcher
 export default async function launchInstance(headless: boolean) {
-    
-    let chrome = await chromeLauncher.launch({ chromeFlags: ['--disable-gpu' ].concat(headless ? ['--headless'] : []) });
-        	
+
+    let chrome = await chromeLauncher.launch({ chromeFlags: ['--disable-gpu'].concat(headless ? ['--headless'] : []) });
+
     let { Profiler, Page, Runtime } = await chromeRemoteInterface({ port: chrome.port });
 
     await Promise.all([Profiler.enable(), Page.enable(), Runtime.enable()]);
-   	
-	// instead of starting a server and loading the page from it
-	// directly load the index file with the embedded sources as a data object
+
+    // instead of starting a server and loading the page from it
+    // directly load the index file with the embedded sources as a data object
     let encoded = new Buffer(htmlIndex()).toString('base64');
     Page.navigate({ url: 'data:text/html;base64,' + encoded });
     await Page.loadEventFired();
 
-	// Run on every change
-	return async (testSrc: string, mapSrc: any, lastRun: boolean): RunResult => {
+    // Run on every change
+    return async (testSrc: string, mapSrc: any, lastRun: boolean): RunResult => {
 
         let mapPosition = await loadSourceMap(mapSrc);
 
         let testResult = 'false';
         let testCoverages: any[] = [];
-        
+
         await Profiler.startPreciseCoverage({ callCount: false, detailed: true });
 
         await Runtime.evaluate({ expression: testSrc });
-        
+
         testCoverages.push(await Profiler.takePreciseCoverage());
 
-		while (testResult === 'false') {
+        while (testResult === 'false') {
             await Profiler.startPreciseCoverage({ callCount: false, detailed: true });
             // #SPC-runner.async
-    		testResult = (await Runtime.evaluate({ expression: '__kiwi_runNextTest()', awaitPromise: true})).result.value;
-        
+            testResult = (await Runtime.evaluate({ expression: '__kiwi_runNextTest()', awaitPromise: true} )).result.value;
+
             testCoverages.push(await Profiler.takePreciseCoverage());
-		}
+        }
 
-		// cleanup browser instances
-    	if (lastRun) {
-        	chrome.kill();
-    	}
+        // cleanup browser instances
+        if (lastRun) {
+            chrome.kill();
+        }
 
-    	let modules: TestModule[] = JSON.parse(testResult);
+        let modules: TestModule[] = JSON.parse(testResult);
 
-		let initialCoverage: any;
-		try {
-    	 initialCoverage = calculateCoverage(testCoverages.shift(), testSrc, mapPosition);
-		} catch (e) {
-    		console.log('ERROR', e);
-		}
+        let initialCoverage: any;
 
-		// Apply sourcemaps
+        initialCoverage = calculateCoverage(testCoverages.shift(), testSrc, mapPosition);
+
+        // Apply sourcemaps
         modules.forEach((module: TestModule) => {
             module.tests.forEach(test => {
                 // takes the first item from testCoverages and computes what lines of what
                 // files where ran during the test
-                
+
                 test.coveredFiles = calculateCoverage(testCoverages.shift(), testSrc, mapPosition);
-                console.log('TEST', test.name);
-                
+
                 if (test.error) {
                     test.error.trace = mapPosition(test.error.trace);
                 }
@@ -191,5 +182,5 @@ export default async function launchInstance(headless: boolean) {
         });
 
         return { modules, initialCoverage };
-	}
+    }
 }

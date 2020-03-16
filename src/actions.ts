@@ -6,36 +6,36 @@ const scanInterval = 150;
 let prevScanner: NodeJS.Timeout;
 
 export default function handleTestRun(modules: TestModule[], initialCoverage: CoveredFiles) {
-    
+
     runActions(modules, initialCoverage);
 
-	// disable the scanner from the previous call to this function
-	// the entire editor state is updated by every call
+    // disable the scanner from the previous call to this function
+    // the entire editor state is updated by every call
     if (prevScanner) {
         clearInterval(prevScanner);
     }
 
-	// If new kakoune editors are opened perform actions on them
+    // If new kakoune editors are opened perform actions on them
     let knownInstances = 0;
 
-	prevScanner = setInterval(() => {
-    	let instanceCount = running_instances().length;
-    	
-    	if (instanceCount > knownInstances) {
-        	// New instance detected
+    prevScanner = setInterval(() => {
+        let instanceCount = running_instances().length;
+
+        if (instanceCount > knownInstances) {
+            // New instance detected
             runActions(modules, initialCoverage);
-    	}
-    	
+        }
+
         knownInstances = instanceCount;
-        
-	}, scanInterval);
+
+    }, scanInterval);
 }
 
 export function runActions(modules: TestModule[], initialCoverage: CoveredFiles) {
 
-	setLineStatuses(initialCoverage);
+    setLineStatuses(initialCoverage);
 
-	// Ensure statuses are displayed to the right
+    // Ensure statuses are displayed to the right
     setTimeout(() => {
         setNotifications(modules);
     }, 10);
@@ -44,25 +44,25 @@ export function runActions(modules: TestModule[], initialCoverage: CoveredFiles)
 // #SPC-actions.set_line_statuses
 function setLineStatuses(coveredFiles: CoveredFiles) {
 
-	let fileStatuses: FileStatuses = {};
-    
+    let fileStatuses: FileStatuses = {};
+
     for (let filePath in coveredFiles) {
         fileStatuses[filePath] = {};
         let file = coveredFiles[filePath];
         for (let line in file) {
             let covered = file[line];
-            fileStatuses[filePath][Number(line) - 1] = covered ? 'success' : 'uncovered'; 
+            fileStatuses[filePath][Number(line) - 1] = covered ? 'success' : 'uncovered';
         }
     }
-    
+
     line_statuses(fileStatuses);
 }
 
 // #SPC-actions.set_notifications
 function setNotifications(modules: TestModule[]) {
-    
+
     let files: FileLabels = {};
-    
+
     modules.forEach(module => {
         module.tests.forEach(test => {
             test.consoleLogs.forEach(log => {

@@ -17,15 +17,15 @@ let testCoverages: any = [];
 
 // #SPC-runner.tst-coverage
 export async function test_coverage() {
-	try {
-	
-    let mapPosition = await loadSourceMap(JSON.parse(mapSrc));
-    
-    calculateCoverage(testCoverages[0], testSrc, mapPosition);
-    
-	} catch(e) {
-    	console.error('err', e);
-	}
+    try {
+
+        let mapPosition = await loadSourceMap(JSON.parse(mapSrc));
+
+        calculateCoverage(testCoverages[0], testSrc, mapPosition);
+
+    } catch( e) {
+        console.error('err', e);
+    }
 }
 
 test_coverage();
