@@ -1,7 +1,7 @@
 import { TestModule, CoveredFiles } from './runner';
 import { line_notifications, line_statuses, running_instances, FileLabels, FileStatuses } from './kakoune_interface';
 
-const scanInterval = 150;
+const scanInterval = 350;
 
 let prevScanner: NodeJS.Timeout;
 

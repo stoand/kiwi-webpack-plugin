@@ -154,6 +154,7 @@ export default async function launchInstance(headless: boolean) {
             testResult = (await Runtime.evaluate({ expression: `__kiwi_runNextTest${runCount}()`, awaitPromise: true} )).result.value;
 
             testCoverages.push(await Profiler.takePreciseCoverage());
+            await Profiler.stopPreciseCoverage();
         }
 
         runCount++;

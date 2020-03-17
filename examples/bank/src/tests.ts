@@ -7,25 +7,16 @@ describe('First Module', () => {
     });
 
     it('this should fail', () => {
+
+        // asdf();
         let a = 1;
+
+        // asdf();
+        // asdf();
         
-        expect(asdf()).to.equal(3);
+        expect(asdf()).to.equal(4);
     });
 });
-
-function asdf2() {
-    console.log(1)
-}
-
-asdf2();
-
-let a: any = window;
-
-console.log(1);
-console.log(a.__kiwi_testModules);
-
-// a['__kiwi_runNextTest']();
-
 
 describe('Second Module', () => {
    
@@ -33,7 +24,7 @@ describe('Second Module', () => {
     it('another working test', async () => {
 
         await new Promise(resolve => setTimeout(resolve, 100));
-        expect(5).to.equal(3);
+        expect(5).to.equal(5);
 
         let a = false;
 
