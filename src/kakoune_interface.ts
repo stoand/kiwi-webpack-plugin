@@ -46,6 +46,8 @@ function command_all(command: string) {
     running_instances().forEach(instance => send_command(instance, command));
 }
 
+let line_statuses_previous_files: string[] = [];
+
 // #SPC-kakoune_interface.line_statuses
 export function line_statuses(file_statuses: FileStatuses) {
 
@@ -55,6 +57,13 @@ export function line_statuses(file_statuses: FileStatuses) {
         let text = value != 'success' ? spaces : '%opt{kiwi_status_chars}';
         return `\\"${Number(line)+  1}|{%opt{kiwi_color_${value}}}${text}\\"`;
     }).join(' ');
+
+	// Clear statuses from previous files that are no longer mentioned
+    for (let previous_file of line_statuses_previous_files) {
+        if(!file_statuses[previous_file]) {
+            file_statuses[previous_file] = {};
+        }
+    }
 
     let set_highlighters = Object.keys(file_statuses).map(file => 'eval %sh{ [ "$kak_buffile" = "' + file + '" ] && ' +
         'echo "set-option buffer kiwi_line_statuses %val{timestamp} ' + format_lines(file_statuses[file]) + '" }').join('\n');
@@ -84,6 +93,8 @@ export function line_statuses(file_statuses: FileStatuses) {
     	kiwi_line_statuses
     `;
 
+    line_statuses_previous_files = Object.keys(file_statuses);
+
     command_all(commands);
 }
 
@@ -98,7 +109,7 @@ function fix_size(text: string, length: number) {
     }
 }
 
-let previously_notfied: string[] = [];
+let line_notificaitons_previous_files: string[] = [];
 
 function escape_flag_lines(text: string) {
     return text
@@ -130,7 +141,7 @@ export function line_notifications(file_notifications: FileLabels) {
         `eval %sh{ [ "$kak_buffile" = "${file}" ] && ` +
         `echo "set-option buffer kiwi_line_notifications %val{timestamp} %opt{kiwi_line_notifications_${index}}" }`).join('\n');
 
-    let remove_highlighters = previously_notfied.filter(file => !file_notifications[file]).map(file => 'eval %sh{ [ "$kak_buffile" = "' + file + '" ] && ' +
+    let remove_highlighters = line_notificaitons_previous_files.filter(file => !file_notifications[file]).map(file => 'eval %sh{ [ "$kak_buffile" = "' + file + '" ] && ' +
         'echo "set-option buffer kiwi_line_notifications %val{timestamp} " }').join('\n');
 
     let refresh_hooks = refreshHighlighting.map((name: string) =>
@@ -156,7 +167,7 @@ export function line_notifications(file_notifications: FileLabels) {
     	kiwi_line_notifications
     `;
 
-    previously_notfied = Object.keys(file_notifications);
+    line_notificaitons_previous_files = Object.keys(file_notifications);
 
     command_all(commands);
 }
