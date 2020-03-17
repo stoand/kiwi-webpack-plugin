@@ -1,8 +1,14 @@
 import { expect } from 'chai';
 import { asdf } from './index';
 
+function a2() {
+    throw 2;
+}
+
 describe('First Module', () => {
     it('this should work', () => {
+
+        a2();
         expect(1).to.equal(1);
     });
 

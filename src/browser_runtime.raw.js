@@ -44,8 +44,13 @@ async function __kiwi_runNextTest() {
     // #SPC-runner.errors
     try {
         await test.run();
-    } catch( e) {
-        test.error = { message: e.message, trace: __kiwi_extractTrace(e.stack, 1) };
+    } catch(e) {
+        if (e instanceof Error) {
+            test.error = { message: e.message, trace: __kiwi_extractTrace(e.stack, 1) };
+        } else {
+            // The thrown value is not a real error and does not have a stack trace
+            test.error = { message: e.toString(), trace: undefined, notErrorInstance: true };
+        }
     }
 
     __kiwi_currentTest++;

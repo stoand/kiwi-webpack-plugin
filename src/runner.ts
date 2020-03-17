@@ -8,7 +8,7 @@ export type Position = sourceMap.MappedPosition;
 
 export type FileCoverage = {[ line: number]: boolean };
 export type CoveredFiles = {[ path: string]: FileCoverage };
-export type TestError = { message: string, trace: Position };
+export type TestError = { message: string, trace: Position, notErrorInstance?: boolean };
 export type TestLog = { args: string[], trace: Position };
 export type TestResult = { name: string, trace: Position, error?: TestError, consoleLogs: TestLog[], coveredFiles: CoveredFiles };
 export type TestModule = { name: string, tests: TestResult[] };
@@ -168,8 +168,6 @@ export default async function launchInstance(headless: boolean) {
         while (testResult === 'false') {
             await Profiler.startPreciseCoverage({ callCount: false, detailed: true });
             // #SPC-runner.async
-            // the runCount is a form of cache-busting
-            // without runCount the profiler would think the function __kiwi_runNextTest was already run and ignore it
             testResult = (await Runtime.evaluate({ expression: '__kiwi_runNextTest()', awaitPromise: true} )).result.value;
 
             testCoverages.push(await Profiler.takePreciseCoverage());
@@ -198,6 +196,12 @@ export default async function launchInstance(headless: boolean) {
 
                 if (test.error) {
                     test.error.trace = mapPosition(test.error.trace);
+                    
+                    // if "throw 1" instead of "throw new Error(1)" is used
+                    if (test.error.notErrorInstance) {
+                        test.error.trace = test.trace;
+                        test.error.trace.line += 1;
+                    }
                 }
                 test.consoleLogs.forEach(log => {
                     log.trace = mapPosition(log.trace);
