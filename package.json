@@ -1,6 +1,6 @@
 {
   "name": "kiwi-webpack-plugin",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Test Runner for Webpack and the Kakoune editor",
   "main": "dist/main.js",
   "directories": {
@@ -11,7 +11,18 @@
     "build": "webpack --mode production",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "keywords": "kiwi test-runner tests javascript typescript kakoune kakoune-plugin webpack webpack-plugin plugin",
+  "keywords": [
+    "kiwi",
+    "test-runner",
+    "tests",
+    "javascript",
+    "typescript",
+    "kakoune",
+    "kakoune-plugin",
+    "webpack",
+    "webpack-plugin",
+    "plugin"
+  ],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/stoand/kiwi-webpack-plugin.git"
