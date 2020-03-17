@@ -1,5 +1,5 @@
 import { TestModule, CoveredFiles } from './runner';
-import { line_notifications, line_statuses, running_instances, FileLabels, FileStatuses } from './kakoune_interface';
+import { init_highlighters, line_notifications, line_statuses, running_instances, FileLabels, FileStatuses } from './kakoune_interface';
 
 const scanInterval = 350;
 
@@ -32,13 +32,11 @@ export default function handleTestRun(modules: TestModule[], initialCoverage: Co
 }
 
 export function runActions(modules: TestModule[], initialCoverage: CoveredFiles) {
+	init_highlighters();
 
     setLineStatuses(modules, initialCoverage);
-
-    // Ensure statuses are displayed to the right
-    setTimeout(() => {
-        setNotifications(modules);
-    }, 10);
+    
+    setNotifications(modules);
 }
 
 // #SPC-actions.set_line_statuses

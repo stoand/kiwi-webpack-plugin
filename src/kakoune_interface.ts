@@ -36,6 +36,20 @@ export function running_instances() {
     return lines.splice(0, lines.length - 1);
 }
 
+// #SPC-kakoune_interface.init_highlighters
+export function init_highlighters() {
+    let commands = `
+		eval %sh{ [ -z "$kak_opt_kiwi_line_statuses" ] &&
+			echo "declare-option line-specs kiwi_line_statuses; addhl global/ flag-lines Default kiwi_line_statuses" }
+			
+		eval %sh{ [ -z "$kak_opt_kiwi_line_notifications" ] &&
+			echo "declare-option line-specs kiwi_line_notifications; addhl global/ flag-lines Default kiwi_line_notifications" }
+    `;
+
+    command_all(commands);
+}
+
+
 // #SPC-kakoune_interface.send_command
 export function send_command(instance: string, command: string) {
     let input = "eval -client client0 '" + command + "'";
@@ -79,9 +93,6 @@ export function line_statuses(file_statuses: FileStatuses) {
     		declare-option str kiwi_color_uncovered "${uncoveredColors}"
     		declare-option str kiwi_color_fail "${failedColors}"
     		declare-option str kiwi_color_success "${successColors}"
-    		
-    		eval %sh{ [ -z "$kak_opt_kiwi_line_statuses" ] &&
-    			echo "declare-option line-specs kiwi_line_statuses; addhl global/ flag-lines Default kiwi_line_statuses" }
         	
     		${set_highlighters}
     	}
@@ -152,9 +163,6 @@ export function line_notifications(file_notifications: FileLabels) {
 		declare-option str kiwi_color_error_notification "${inlineErrorTextColor}"
     		
     	define-command -hidden -override kiwi_line_notifications %{
-    		eval %sh{ [ -z "$kak_opt_kiwi_line_notifications" ] &&
-    			echo "declare-option line-specs kiwi_line_notifications; addhl global/ flag-lines Default kiwi_line_notifications" }
-
     		${set_highlighters}
 
     		${remove_highlighters}

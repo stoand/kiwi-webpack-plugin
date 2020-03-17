@@ -2,6 +2,11 @@
 partof: REQ-purpose
 ###
 
+## [[.init_highlighters]]
+
+In order to ensure that highlighters are displayed in the correct visual order,
+initialize all highlighter buffers in a single command on startup.
+
 ## [[.running_instances]]
 
 Returns a list of running kakoune instances
