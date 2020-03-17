@@ -1,5 +1,10 @@
 # Kiwi - Test Runner for Kakoune
 
+# WARNING - this tool is in the experimental phase
+
+__Do not rely on it for anything other than experiments.__
+
+
 ## Using the Library
 
 You need a recent [Google Chrome](https://www.google.com/chrome/) browser installed.
