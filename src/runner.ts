@@ -118,25 +118,33 @@ export async function loadSourceMap(mapSrc: sourceMap.RawSourceMap) {
 // #SPC-runner.launcher
 export default async function launchInstance(headless: boolean) {
 
-    let chrome: any, Profiler:any, Page: any, Runtime: any;
-    let lastRestart: Promise<void>;
-    
+    let chrome: any, Profiler: any, Page: any, Runtime: any;
+    let lastRestart: Promise<any>;
+
     async function restartChrome() {
-        chrome = await chromeLauncher.launch({ chromeFlags: ['--disable-gpu'].concat(headless ? ['--headless'] : []) });
+        return new Promise(resolve =>
+        	// the block below contains blocking functions
+            setTimeout(() => {
+                let run = async () => {
+                    chrome = await chromeLauncher.launch({ chromeFlags: ['--disable-gpu'].concat(headless ? ['--headless'] : []) });
 
-        let remote = await chromeRemoteInterface({ port: chrome.port });
+                    let remote = await chromeRemoteInterface({ port: chrome.port });
 
-        Profiler = remote.Profiler;
-        Page = remote.Page;
-        Runtime = remote.Runtime;
+                    Profiler = remote.Profiler;
+                    Page = remote.Page;
+                    Runtime = remote.Runtime;
 
-        await Promise.all([Profiler.enable(), Page.enable(), Runtime.enable()]);
+                    await Promise.all([Profiler.enable(), Page.enable(), Runtime.enable()]);
 
-        // instead of starting a server and loading the page from it
-        // directly load the index file with the embedded sources as a data object
-        let encoded = new Buffer(htmlIndex()).toString('base64');
-        Page.navigate({ url: 'data:text/html;base64,' + encoded });
-        await Page.loadEventFired();
+                    // instead of starting a server and loading the page from it
+                    // directly load the index file with the embedded sources as a data object
+                    let encoded = new Buffer(htmlIndex()).toString('base64');
+                    Page.navigate({ url: 'data:text/html;base64,' + encoded });
+                    await Page.loadEventFired();
+                }
+                
+                resolve(run());
+            }));
     }
 
     lastRestart = restartChrome();
@@ -166,11 +174,11 @@ export default async function launchInstance(headless: boolean) {
 
             testCoverages.push(await Profiler.takePreciseCoverage());
         }
-        
+
         chrome.kill();
 
         if (!lastRun) {
-			// wait for this later
+            // wait for this later
             lastRestart = restartChrome();
         }
 

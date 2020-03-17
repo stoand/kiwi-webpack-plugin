@@ -14,7 +14,7 @@ describe('First Module', () => {
         // asdf();
         // asdf();
         
-        expect(asdf()).to.equal(4);
+        expect(asdf()).to.equal(1);
     });
 });
 
@@ -23,7 +23,7 @@ describe('Second Module', () => {
 
     it('another working test', async () => {
 
-        await new Promise(resolve => setTimeout(resolve, 100));
+        await new Promise(resolve => setTimeout(resolve, 0));
         expect(5).to.equal(5);
 
         let a = false;
