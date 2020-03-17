@@ -118,22 +118,20 @@ export async function loadSourceMap(mapSrc: sourceMap.RawSourceMap) {
 // #SPC-runner.launcher
 export default async function launchInstance(headless: boolean) {
 
-    let chrome = await chromeLauncher.launch({ chromeFlags: ['--disable-gpu'].concat(headless ? ['--headless'] : []) });
-
-    let { Profiler, Page, Runtime } = await chromeRemoteInterface({ port: chrome.port });
-
-    await Promise.all([Profiler.enable(), Page.enable(), Runtime.enable()]);
-
-    // instead of starting a server and loading the page from it
-    // directly load the index file with the embedded sources as a data object
-    let encoded = new Buffer(htmlIndex()).toString('base64');
-    Page.navigate({ url: 'data:text/html;base64,' + encoded });
-    await Page.loadEventFired();
-
-    let runCount = 0;
-
     // Run on every change
     return async (testSrc: string, mapSrc: any, lastRun: boolean): RunResult => {
+
+        let chrome = await chromeLauncher.launch({ chromeFlags: ['--disable-gpu'].concat(headless ? ['--headless'] : []) });
+
+        let { Profiler, Page, Runtime } = await chromeRemoteInterface({ port: chrome.port });
+
+        await Promise.all([Profiler.enable(), Page.enable(), Runtime.enable()]);
+
+        // instead of starting a server and loading the page from it
+        // directly load the index file with the embedded sources as a data object
+        let encoded = new Buffer(htmlIndex()).toString('base64');
+        Page.navigate({ url: 'data:text/html;base64,' + encoded });
+        await Page.loadEventFired();
 
         let mapPosition = await loadSourceMap(mapSrc);
 
@@ -151,13 +149,11 @@ export default async function launchInstance(headless: boolean) {
             // #SPC-runner.async
             // the runCount is a form of cache-busting
             // without runCount the profiler would think the function __kiwi_runNextTest was already run and ignore it
-            testResult = (await Runtime.evaluate({ expression: `__kiwi_runNextTest${runCount}()`, awaitPromise: true} )).result.value;
+            testResult = (await Runtime.evaluate({ expression: '__kiwi_runNextTest()', awaitPromise: true} )).result.value;
 
             testCoverages.push(await Profiler.takePreciseCoverage());
             await Profiler.stopPreciseCoverage();
         }
-
-        runCount++;
 
         // cleanup browser instances
         if (lastRun) {
