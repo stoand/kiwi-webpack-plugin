@@ -126,6 +126,10 @@ export default async function launchInstance(headless: boolean) {
         	// the block below contains blocking functions
             setTimeout(() => {
                 let run = async () => {
+                    if (chrome) {
+                        chrome.kill();
+                    }
+                    
                     chrome = await chromeLauncher.launch({ chromeFlags: ['--disable-gpu'].concat(headless ? ['--headless'] : []) });
 
                     let remote = await chromeRemoteInterface({ port: chrome.port });
@@ -174,8 +178,6 @@ export default async function launchInstance(headless: boolean) {
 
             testCoverages.push(await Profiler.takePreciseCoverage());
         }
-
-        chrome.kill();
 
         if (!lastRun) {
             // wait for this later
