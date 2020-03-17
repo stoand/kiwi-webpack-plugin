@@ -32,12 +32,12 @@ async function __kiwi_runNextTest() {
     let module = __kiwi_testModules[__kiwi_currentModule];
 
     // No modules defined
-    if (!module) return false;
+    if (!module) return '[]';
 
     let test = module.tests[__kiwi_currentTest];
 
     // No tests defined
-    if (!test) return false;
+    if (!test) return '[]';
 
     __kiwi_runningTest = test;
 
