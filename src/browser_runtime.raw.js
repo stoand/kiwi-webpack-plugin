@@ -7,6 +7,8 @@ let __kiwi_currentTest = 0;
 let __kiwi_runningTest;
 let __kiwi_oldConsoleLog = console.log;
 
+let __kiwi_runCount = 0;
+
 // #SPC-runner.logs
 console.log = (...args) => {
     if (__kiwi_runningTest) {
@@ -28,7 +30,7 @@ function __kiwi_extractTrace(stack, row) {
     return { column, line };
 }
 
-async function __kiwi_runNextTest() {
+async function __kiwi_runNextTest0() {
     let module = __kiwi_testModules[__kiwi_currentModule];
 
     // No modules defined
@@ -59,6 +61,7 @@ async function __kiwi_runNextTest() {
         let modules = __kiwi_testModules.concat();
         __kiwi_currentModule = 0;
         __kiwi_testModules = [];
+        window['__kiwi_runNextTest' + (++__kiwi_runCount)] = __kiwi_runNextTest0;
         return JSON.stringify(modules);
     }
 

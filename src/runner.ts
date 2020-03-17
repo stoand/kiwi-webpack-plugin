@@ -130,6 +130,8 @@ export default async function launchInstance(headless: boolean) {
     Page.navigate({ url: 'data:text/html;base64,' + encoded });
     await Page.loadEventFired();
 
+    let runCount = 0;
+
     // Run on every change
     return async (testSrc: string, mapSrc: any, lastRun: boolean): RunResult => {
 
@@ -147,10 +149,14 @@ export default async function launchInstance(headless: boolean) {
         while (testResult === 'false') {
             await Profiler.startPreciseCoverage({ callCount: false, detailed: true });
             // #SPC-runner.async
-            testResult = (await Runtime.evaluate({ expression: '__kiwi_runNextTest()', awaitPromise: true} )).result.value;
+            // the runCount is a form of cache-busting
+            // without runCount the profiler would think the function __kiwi_runNextTest was already run and ignore it
+            testResult = (await Runtime.evaluate({ expression: `__kiwi_runNextTest${runCount}()`, awaitPromise: true} )).result.value;
 
             testCoverages.push(await Profiler.takePreciseCoverage());
         }
+
+        runCount++;
 
         // cleanup browser instances
         if (lastRun) {
