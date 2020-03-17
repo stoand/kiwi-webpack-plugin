@@ -35,9 +35,12 @@ export default class KiwiPlugin {
 
     apply(compiler: any) {
         let watching = false;
+        // prevent hooks running multiple times for the same run
+        let alreadyRan = false;
 
         compiler.hooks.watchRun.tap("KiwiPlugin", () => {
             watching = true;
+            alreadyRan = false;
         });
 
         // Get the entry context from a entryOption hook
@@ -47,12 +50,14 @@ export default class KiwiPlugin {
         });
 
         compiler.hooks.compilation.tap("KiwiPlugin", (compilation: any) => {
-            // get the compilation object
+            
             compilation.hooks.afterOptimizeChunkAssets.tap("KiwiPlugin", () => {
                 // wait for afterOptimizeChunkAssets because sourcemaps are already generated at this step
                 let testsAsset = compilation.assets[entryName + '.js'];
-                if (testsAsset) {
+                if (testsAsset && !alreadyRan) {
+                    alreadyRan = true;
                     let { source, map } = testsAsset.sourceAndMap(sourceMapOptions);
+                    
                     this.initRunner.then(async runner => {
                         try {
                             let { modules, initialCoverage } = await runner(source, map, !watching);
@@ -85,6 +90,7 @@ export default class KiwiPlugin {
                     });
                 }
             });
+            
         });
     }
 }
