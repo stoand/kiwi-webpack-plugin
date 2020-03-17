@@ -8,6 +8,7 @@ You need a recent [Google Chrome](https://www.google.com/chrome/) browser instal
 npm i kiwi-webpack-plugin source-map chai
 
 # Typescript types
+# only describe and it are supported
 npm i @types/mocha @types/chai
 ```
 
@@ -71,7 +72,7 @@ add `console.log(1)` in a source file
 
 ### Testing
 
-Replace`kakoune_interface_tests` with the test file of choice if needed.
+Replace `kakoune_interface_tests` with the test file of choice if needed.
 
 ```
 npm i; npm start
