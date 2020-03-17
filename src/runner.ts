@@ -123,7 +123,7 @@ export default async function launchInstance(headless: boolean) {
 
     async function restartChrome() {
         return new Promise(resolve =>
-        	// the block below contains blocking functions
+        	// the code below contains blocking functions
             setTimeout(() => {
                 let run = async () => {
                     chrome = await chromeLauncher.launch({ chromeFlags: ['--disable-gpu'].concat(headless ? ['--headless'] : []) });
@@ -189,24 +189,24 @@ export default async function launchInstance(headless: boolean) {
         // Apply sourcemaps
         modules.forEach((module: TestModule) => {
             module.tests.forEach(test => {
+                test.trace = mapPosition(test.trace);
+                
                 // takes the first item from testCoverages and computes what lines of what
                 // files where ran during the test
-
                 test.coveredFiles = calculateCoverage(testCoverages.shift(), testSrc, mapPosition);
 
                 if (test.error) {
-                    test.error.trace = mapPosition(test.error.trace);
-                    
                     // if "throw 1" instead of "throw new Error(1)" is used
                     if (test.error.notErrorInstance) {
                         test.error.trace = test.trace;
                         test.error.trace.line += 1;
+                    } else {
+                        test.error.trace = mapPosition(test.error.trace);
                     }
                 }
                 test.consoleLogs.forEach(log => {
                     log.trace = mapPosition(log.trace);
                 });
-                test.trace = mapPosition(test.trace);
             });
         });
 

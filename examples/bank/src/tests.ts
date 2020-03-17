@@ -2,7 +2,7 @@ import { expect } from 'chai';
 import { asdf } from './index';
 
 function a2() {
-    throw 2;
+    throw 3;
 }
 
 describe('First Module', () => {
