@@ -118,12 +118,17 @@ export async function loadSourceMap(mapSrc: sourceMap.RawSourceMap) {
 // #SPC-runner.launcher
 export default async function launchInstance(headless: boolean) {
 
-    // Run on every change
-    return async (testSrc: string, mapSrc: any, lastRun: boolean): RunResult => {
+    let chrome: any, Profiler:any, Page: any, Runtime: any;
+    let lastRestart: Promise<void>;
+    
+    async function restartChrome() {
+        chrome = await chromeLauncher.launch({ chromeFlags: ['--disable-gpu'].concat(headless ? ['--headless'] : []) });
 
-        let chrome = await chromeLauncher.launch({ chromeFlags: ['--disable-gpu'].concat(headless ? ['--headless'] : []) });
+        let remote = await chromeRemoteInterface({ port: chrome.port });
 
-        let { Profiler, Page, Runtime } = await chromeRemoteInterface({ port: chrome.port });
+        Profiler = remote.Profiler;
+        Page = remote.Page;
+        Runtime = remote.Runtime;
 
         await Promise.all([Profiler.enable(), Page.enable(), Runtime.enable()]);
 
@@ -132,6 +137,14 @@ export default async function launchInstance(headless: boolean) {
         let encoded = new Buffer(htmlIndex()).toString('base64');
         Page.navigate({ url: 'data:text/html;base64,' + encoded });
         await Page.loadEventFired();
+    }
+
+    lastRestart = restartChrome();
+
+    // Run on every change
+    return async (testSrc: string, mapSrc: any, lastRun: boolean): RunResult => {
+
+        await lastRestart;
 
         let mapPosition = await loadSourceMap(mapSrc);
 
@@ -152,12 +165,13 @@ export default async function launchInstance(headless: boolean) {
             testResult = (await Runtime.evaluate({ expression: '__kiwi_runNextTest()', awaitPromise: true} )).result.value;
 
             testCoverages.push(await Profiler.takePreciseCoverage());
-            await Profiler.stopPreciseCoverage();
         }
+        
+        chrome.kill();
 
-        // cleanup browser instances
-        if (lastRun) {
-            chrome.kill();
+        if (!lastRun) {
+			// wait for this later
+            lastRestart = restartChrome();
         }
 
         let modules: TestModule[] = JSON.parse(testResult);
