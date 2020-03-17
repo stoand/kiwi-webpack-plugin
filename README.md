@@ -1,4 +1,4 @@
-# Kiwi - Test Runner for Kakoune
+# Kiwi - Javascript Test Runner for Kakoune
 
 # WARNING - this tool is in the experimental phase
 
