@@ -35,9 +35,11 @@ export default class KiwiPlugin {
 
     apply(compiler: any) {
         let watching = false;
+        let alreadyRun = false;
 
         compiler.hooks.watchRun.tap("KiwiPlugin", () => {
             watching = true;
+            alreadyRun = false;
         });
 
         // Get the entry context from a entryOption hook
@@ -51,7 +53,8 @@ export default class KiwiPlugin {
             compilation.hooks.afterOptimizeChunkAssets.tap("KiwiPlugin", () => {
                 // wait for afterOptimizeChunkAssets because sourcemaps are already generated at this step
                 let testsAsset = compilation.assets[entryName + '.js'];
-                if (testsAsset) {
+                if (testsAsset && !alreadyRun) {
+                    alreadyRun = true;
                     let { source, map } = testsAsset.sourceAndMap(sourceMapOptions);
                     this.initRunner.then(async runner => {
                         try {
