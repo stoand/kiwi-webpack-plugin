@@ -44,6 +44,9 @@ export function calculateCoverage(profilerResult: any, testSrc: string, mapPosit
     let lineLengths = testSrc.split('\n').map(line => line.length);
 
     let positionFromOffset = (offset: number): Position => {
+        offset -= 48;
+        if (offset < 1) offset = 1;
+        
         let currentOffset = 0;
         let previousOffset = 0;
         for (let i = 0; i < lineLengths.length; i++) {
@@ -138,9 +141,13 @@ export default async function launchInstance(headless: boolean) {
         let testResult = 'false';
         let testCoverages: any[] = [];
 
+        let base64Src = (new Buffer(testSrc)).toString('base64');
+
         await Profiler.startPreciseCoverage({ callCount: false, detailed: true });
 
-        await Runtime.evaluate({ expression: testSrc });
+        // await Runtime.evaluate({ expression: `__kiwi_eval("${testSrc.replace(/"/g, '\\"')}")`, awaitPromise: true });
+        await Runtime.evaluate({ expression: `__kiwi_eval_base64("${base64Src}")` });
+        // await Runtime.evaluate({ expression: testSrc });
 
         testCoverages.push(await Profiler.takePreciseCoverage());
 
@@ -151,6 +158,8 @@ export default async function launchInstance(headless: boolean) {
 
             testCoverages.push(await Profiler.takePreciseCoverage());
         }
+
+        console.log(JSON.stringify(testCoverages));
 
         // cleanup browser instances
         if (lastRun) {

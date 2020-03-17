@@ -7,6 +7,8 @@ let __kiwi_currentTest = 0;
 let __kiwi_runningTest;
 let __kiwi_oldConsoleLog = console.log;
 
+let __kiwi_evalOffset = 0;
+
 // #SPC-runner.logs
 console.log = (...args) => {
     if (__kiwi_runningTest) {
@@ -21,6 +23,18 @@ console.log = (...args) => {
     __kiwi_oldConsoleLog(...args);
 }
 
+function __kiwi_eval_base64(src) {
+    let decoded = atob(src);
+    let script = document.createElement('script');
+    let genNewlines = '';
+    for (let i = 0; i < __kiwi_evalOffset; i++) {
+        genNewlines = genNewlines + '//\n'
+    }
+    script.innerHTML = genNewlines + decoded; 
+    document.head.appendChild(script);
+    // __kiwi_evalOffset += decoded.split('\n').length;
+}
+
 function __kiwi_extractTrace(stack, row) {
     let parts = stack.split('\n')[row].slice(-50).split(':');
     let line = Number(parts[parts.length - 2]);
@@ -32,12 +46,12 @@ async function __kiwi_runNextTest() {
     let module = __kiwi_testModules[__kiwi_currentModule];
 
     // No modules defined
-    if (!module) return false;
+    if (!module) return '[]';
 
     let test = module.tests[__kiwi_currentTest];
 
     // No tests defined
-    if (!test) return false;
+    if (!test) return '[]';
 
     __kiwi_runningTest = test;
 
@@ -62,7 +76,7 @@ async function __kiwi_runNextTest() {
         return JSON.stringify(modules);
     }
 
-    return JSON.stringify(false);
+    return 'false';
 }
 
 function describe(name, run) {
