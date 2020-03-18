@@ -5,6 +5,8 @@
 __Do not rely on it for anything other than experiments.__
 
 
+[![demo](https://asciinema.org/a/QiWSFNU5tKpg1oB2tslFHT4Dn.svg)](https://asciinema.org/a/QiWSFNU5tKpg1oB2tslFHT4Dn?autoplay=1)
+
 ## Using the Library
 
 You need a recent [Google Chrome](https://www.google.com/chrome/) browser installed.

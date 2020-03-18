@@ -2,7 +2,7 @@ import { expect } from 'chai';
 import { asdf } from './index';
 
 function a2() {
-    throw 3;
+    // throw 3;
 }
 
 describe('First Module', () => {
@@ -20,7 +20,7 @@ describe('First Module', () => {
         // asdf();
         // asdf();
         
-        expect(asdf()).to.equal(1);
+        expect(asdf()).to.equal(4);
     });
 });
 
@@ -32,7 +32,7 @@ describe('Second Module', () => {
         await new Promise(resolve => setTimeout(resolve, 0));
         expect(5).to.equal(5);
 
-        let a = false;
+        let a = true;
 
         if (a) {
             console.log(1);
