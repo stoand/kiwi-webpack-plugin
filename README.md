@@ -85,7 +85,7 @@ finally, run
 npm start
 ```
 
-and open `src/tests.js` in Kakoune
+and _in another shell_ tab open `src/tests.js` in Kakoune
 
 ```
 kak src/tests.js
