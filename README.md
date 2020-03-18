@@ -7,22 +7,37 @@ __Do not rely on it for anything other than experiments.__
 
 [![demo](https://asciinema.org/a/QiWSFNU5tKpg1oB2tslFHT4Dn.svg)](https://asciinema.org/a/QiWSFNU5tKpg1oB2tslFHT4Dn?autoplay=1)
 
-## Using the Library
+## Getting Started Guide
 
-You need a recent [Google Chrome](https://www.google.com/chrome/) browser installed.
+A recent [Google Chrome](https://www.google.com/chrome/) browser should be installed
+
+Version 12 or greater of [NodeJS](https://nodejs.org/en/download/) should be installed
+
+The [Kakoune Editor](https://github.com/mawww/kakoune#2-getting-started) should be installed (Linux or Mac only; Doesn't work on Windows)
 
 ```
-npm i kiwi-webpack-plugin source-map chai
+# A new webpack app
+mkdir app1
+cd app1
+mkdir src
+npm init
 
-# Typescript types
-# only describe and it are supported
+# Install the plugin and related dependencies
+npm i kiwi-webpack-plugin webpack webpack-dev-server source-map chai
+
+# Typescript types (if using Typescript)
+# Only the "describe" and "it" mocha globals are supported
 npm i @types/mocha @types/chai
 ```
 
-add to webpack config:
+create `webpack.config.js`
 
 ```javascript
-{
+const KiwiPlugin = require('kiwi-webpack-plugin');
+
+module.exports = {
+    entry: './src/index.js',
+    devtool: 'source-map',
     plugins: [
         new KiwiPlugin({
         	testEntry: './src/tests.js',
@@ -34,20 +49,46 @@ add to webpack config:
     	}),
     ],
 }
-
 ```
 
-Create `src/tests.js`
+create `src/index.js`
+
+```javascript
+export function someFunction() {
+	return 1234;
+};
+```
+
+create `src/tests.js`
 
 ```javascript
 import { expect } from 'chai';
+import { someFunction } from './index';
 
 describe('Test Module', () => {
    it('test addition', () => {
-       expect(1+1).to.equal(2);
+       expect(1233 + 1).to.equal(someFunction());
    });
 });
+```
 
+add to `package.json`
+
+```
+"scripts": {
+    "start": "webpack-dev-server -w"
+},
+```
+finally, run
+
+```
+npm start
+```
+
+and open `src/tests.js` in Kakoune
+
+```
+kak src/tests.js
 ```
 
 ## Usage with HtmlWebpackPlugin
@@ -84,5 +125,6 @@ Replace `kakoune_interface_tests` with the test file of choice if needed.
 ```
 npm i; npm start
 # In another shell session
+npm i -g nodemon
 nodemon dist/kakoune_interface_tests.js
 ```

@@ -4,7 +4,6 @@
   "description": "A bank account example app to demostrate kiwi",
   "main": "src/main.ts",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
     "start": "webpack-dev-server -w",
     "build": "webpack --mode development"
   },
