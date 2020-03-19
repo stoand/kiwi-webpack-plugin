@@ -18,5 +18,6 @@ tasks:
     npm test
 - publish: |
     source .set_npm_token
+    echo '//registry.npmjs.org/:_authToken=${NPM_TOKEN}' > .npmrc
     cd kiwi-webpack-plugin
     npm publish || echo 'Publish failed (likely due to duplication versions). This is ok since we only want to publish when the version changes.'
