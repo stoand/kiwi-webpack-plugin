@@ -1,0 +1,22 @@
+image: alpine/edge
+packages:
+- "nodejs"
+- "npm"
+secrets:
+- c82e5519-a1bf-4b3f-b0f4-6e49205e8da8
+sources:
+  - https://git.sr.ht/~stoand/kiwi-webpack-plugin
+tasks:
+- setup: |
+    source .set_npm_token
+    cd kiwi-webpack-plugin
+    npm i --quiet --no-progress 
+- build: |
+    cd kiwi-webpack-plugin
+    npm run build
+- test: |
+    cd kiwi-webpack-plugin
+    npm test
+- publish: |
+    cd kiwi-webpack-plugin
+    npm publish || echo 'Publish failed (likely due to duplication versions). This is ok since we only want to publish when the version changes.'

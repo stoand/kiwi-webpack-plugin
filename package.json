@@ -9,7 +9,7 @@
   "scripts": {
     "start": "webpack --mode development -w",
     "build": "webpack --mode production",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Todo test\""
   },
   "keywords": [
     "kiwi",
@@ -25,14 +25,11 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/stoand/kiwi-webpack-plugin.git"
+    "url": "https://git.sr.ht/~stoand/kiwi-webpack-plugin"
   },
   "author": "",
   "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/stoand/kiwi/issues"
-  },
-  "homepage": "https://github.com/stoand/kiwi#readme",
+  "homepage": "https://git.sr.ht/~stoand/kiwi-webpack-plugin",
   "dependencies": {
     "@types/node": "^13.9.0",
     "@types/source-map": "^0.5.7",
