@@ -8,7 +8,6 @@ sources:
   - https://git.sr.ht/~stoand/kiwi-webpack-plugin
 tasks:
 - setup: |
-    source .set_npm_token
     cd kiwi-webpack-plugin
     npm i --quiet --no-progress 
 - build: |
@@ -18,5 +17,6 @@ tasks:
     cd kiwi-webpack-plugin
     npm test
 - publish: |
+    source .set_npm_token
     cd kiwi-webpack-plugin
     npm publish || echo 'Publish failed (likely due to duplication versions). This is ok since we only want to publish when the version changes.'
