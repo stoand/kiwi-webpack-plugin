@@ -7,6 +7,24 @@ __Do not rely on it for anything other than experiments.__
 
 [![demo](https://asciinema.org/a/QiWSFNU5tKpg1oB2tslFHT4Dn.svg)](https://asciinema.org/a/QiWSFNU5tKpg1oB2tslFHT4Dn?autoplay=1)
 
+## Usage with Typescript 
+
+Install types - only the "describe" and "it" mocha globals are supported
+
+```
+npm i @types/mocha @types/chai
+```
+
+add to `tsconfig.json`
+
+```json
+{
+  "compilerOptions": {
+  	"sourceMap": true
+  	
+  	...
+```
+
 ## Getting Started Guide
 
 A recent [Google Chrome](https://www.google.com/chrome/) browser should be installed
@@ -24,10 +42,6 @@ npm init
 
 # Install the plugin and related dependencies
 npm i kiwi-webpack-plugin webpack webpack-dev-server source-map chai
-
-# Typescript types (if using Typescript)
-# Only the "describe" and "it" mocha globals are supported
-npm i @types/mocha @types/chai
 ```
 
 create `webpack.config.js`
@@ -37,7 +51,10 @@ const KiwiPlugin = require('kiwi-webpack-plugin');
 
 module.exports = {
     entry: './src/index.js',
+    
+    // Enable source maps
     devtool: 'source-map',
+    
     plugins: [
         new KiwiPlugin({
         	testEntry: './src/tests.js',
