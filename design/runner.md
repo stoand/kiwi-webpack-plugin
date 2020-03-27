@@ -61,6 +61,10 @@ A list of `console.log`s and their
 
 [[.tst-logs]]
 
+[[.log_format]]
+
+Log messages need to be formatted to avoid '[Object]' type values being displayed.
+
 ## [[.coverage]]
 
 A list of files that ran while the test executed with a run count for every line.
@@ -69,3 +73,8 @@ A list of files that ran while the test executed with a run count for every line
 
 Ensures that correct coverage information is
 collected from multiple tests that were run.
+
+
+## [[.bug_stops_responding]]
+
+After a while it can happen that the runner doesn't process changes anymore.
