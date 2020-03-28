@@ -56,8 +56,9 @@ export default class KiwiPlugin {
 				// #SPC-runner.errors_build
                 if (failed && watching && !alreadyRun) {
                     alreadyRun = true;
+                    // remove notifications and statuses if compilation failed
                     handleTestRun([], {});
-                } else {
+                } else if (!failed) {
                     // wait for afterOptimizeChunkAssets because sourcemaps are already generated at this step
                     let testsAsset = compilation.assets[entryName + '.js'];
                     if (testsAsset && !alreadyRun) {
