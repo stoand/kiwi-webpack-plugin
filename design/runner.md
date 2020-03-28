@@ -51,6 +51,10 @@ A list of thrown errors and their
 
 Note: this does not include `console.error`
 
+[[.errors_build]]
+
+Handle failing webpack build.
+
 [[.tst-errors]]
 
 ## [[.logs]]
