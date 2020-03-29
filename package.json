@@ -1,6 +1,6 @@
 {
   "name": "kiwi-webpack-plugin",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "description": "Test Runner for Webpack and the Kakoune editor",
   "main": "dist/main.js",
   "directories": {
