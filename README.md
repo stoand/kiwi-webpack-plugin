@@ -7,23 +7,6 @@ __Do not rely on it for anything other than experiments.__
 
 [![demo](https://asciinema.org/a/QiWSFNU5tKpg1oB2tslFHT4Dn.svg)](https://asciinema.org/a/QiWSFNU5tKpg1oB2tslFHT4Dn?autoplay=1)
 
-## Usage with Typescript 
-
-Install types - only the "describe" and "it" mocha globals are supported
-
-```
-npm i @types/mocha @types/chai
-```
-
-add to `tsconfig.json`
-
-```json
-{
-  "compilerOptions": {
-  	"sourceMap": true
-  	
-  	...
-```
 
 ## Getting Started Guide
 
@@ -32,6 +15,9 @@ A recent [Google Chrome](https://www.google.com/chrome/) browser should be insta
 Version 12 or greater of [NodeJS](https://nodejs.org/en/download/) should be installed
 
 The [Kakoune Editor](https://github.com/mawww/kakoune#2-getting-started) should be installed (Linux or Mac only; Doesn't work on Windows)
+
+Python and [Virtualenv](https://packaging.python.org/guides/installing-using-pip-and-virtual-environments/#installing-virtualenv)
+should be installed (only needed for review app)
 
 ```
 # A new webpack app
@@ -106,6 +92,24 @@ and _in another shell tab_ open `src/tests.js` in Kakoune
 
 ```
 kak src/tests.js
+```
+
+## Usage with Typescript 
+
+Install types - only the "describe" and "it" mocha globals are supported
+
+```
+npm i @types/mocha @types/chai
+```
+
+add to `tsconfig.json`
+
+```json
+{
+  "compilerOptions": {
+  	"sourceMap": true
+  	
+  	...
 ```
 
 ## Usage with HtmlWebpackPlugin
