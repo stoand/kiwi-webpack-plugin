@@ -23,7 +23,7 @@ export const emptyRunResult = { modules: [], initialCoverage: {}, fileLengths: {
 let browserRuntime = require('./browser_runtime.raw.js').default;
 
 let sourceNamePrefix = 'webpack:///';
-let externSourcePrefix = 'node_modules';
+let ignoreSourcePrefixes = ['node_modules', '(webpack)', 'webpack'];
 
 function htmlIndex() {
     return `
@@ -163,7 +163,6 @@ export default async function launchInstance(headless: boolean) {
         await lastRestart;
 
         let srcMapConsumer = await (new sourceMap.SourceMapConsumer(mapSrc));
-        // console.log(srcMapConsumer.sources);
         
         let mapPosition = await loadSourceMap(srcMapConsumer);
 
@@ -192,7 +191,22 @@ export default async function launchInstance(headless: boolean) {
         }
 
         // calculate file lengths
-		let fileLengths = {};		
+		let fileLengths: FileLengths = {};
+        for (let sourceIndex = 0; sourceIndex < srcMapConsumer.sources.length; sourceIndex++) {
+            let source = srcMapConsumer.sources[sourceIndex];
+            let ignore = false;
+
+            for (let ignorePrefix of ignoreSourcePrefixes) {
+                if (source.indexOf(sourceNamePrefix + ignorePrefix) == 0) {
+                    ignore = true;
+                }
+            }
+            
+            if (!ignore) {
+                fileLengths[absoluteSourcePath(source)] =
+                	srcMapConsumer.sourcesContent[sourceIndex].split('\n').length - 1;
+            }
+        }
 
         let modules: TestModule[] = JSON.parse(testResult);
 
