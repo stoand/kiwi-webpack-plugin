@@ -8,6 +8,10 @@ to perform certain editor actions.
 
 All lists are ordered alphabetically.
 
+## [[.write_review_app_data]]
+
+Writes `review_app/kiwi_test_results.json` so that [[SPC-review_app]] can read and display the data.
+
 ## [[.set_line_statuses]]
 
 __If a coverted file is a test:__

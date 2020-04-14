@@ -1,10 +1,12 @@
 # SPC-review_app
+partof: REQ-purpose
+###
 
 ## [[.interface]]
 
-On every test run, [[SPC-webpack_plugin]] will write test results to: `kiwi_test_results.json`.
+On every test run, [[SPC-webpack_plugin]] will write test results to: `review_app/kiwi_test_results.json`.
 
-Additionally, it will setup the virtualenv and run the python server on port `8096` through `review_app/start.sh`.
+Additionally, on startup it will setup the virtualenv and run the python server on port `8096` through `review_app/start.sh`.
 
 ## [[.status_bar]]
 
@@ -23,21 +25,22 @@ Each test file has a list of test modules and tests that are kept in the order t
 
 Succeeding tests are displayed in green, failing tests in red.
 
-Files and modules that contain failing tests are displayed in red colored text.
+Files and modules that contain failing tests are displayed in red.
 Otherwise they are displayed in green.
 
-In the format:
+The format:
 
 ```
 <red>src/folder_a/some_test_file.js
-	<red> Some Test Module
-	  <green> Succeeding Test 
-	  <red> Failing Test
-    <green> Another Test Module
+  <red> Some Test Module
+      <green> Succeeding Test 
+      <red> Failing Test
+	  
+  <green> Another Test Module
       <green> Another succeeding test 
 
 <green>src/folder_b/another_test_file.js
-    <green> Yet Another Test Module
+  <green> Yet Another Test Module
       <green> Yet Another succeeding test 
       
 src/folder_c/folder_d/yet_test_another_file.js
