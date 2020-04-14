@@ -1,6 +1,6 @@
 // #SPC-webpack_plugin
 const SingleEntryPlugin = require('webpack/lib/SingleEntryPlugin');
-import { startReviewApp, updateReviewAppState } from './review_app';
+import { startReviewApp, updateReviewAppState } from './review_app_interface';
 import launchInstance, { RunResult } from './runner';
 import handleTestRun from './actions';
 
