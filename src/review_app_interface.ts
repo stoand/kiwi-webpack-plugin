@@ -2,8 +2,7 @@
 const { spawn } = require('child_process');
 const path = require('path');
 const fs = require('fs');
-import { TestModule, CoveredFiles } from './runner';
-
+import { RunResult } from './runner';
 
 const reviewAppDir = path.resolve(process.cwd(), 'node_modules/kiwi-webpack-plugin/review_app');
 const startScriptName = 'start.sh';
@@ -17,12 +16,10 @@ export function startReviewApp() {
     reviewApp.stdout.on('data', (data: any) => console.log(data.toString()));
 }
 
-export function updateReviewAppState(modules: TestModule[], initialCoverage: CoveredFiles) {
+export function updateReviewAppState(runResult: RunResult) {
     let resultFilePath = path.resolve(reviewAppDir, resultFileName);
 
-    let data = { modules, initialCoverage };
-
-    fs.writeFile(resultFilePath, JSON.stringify(data), (err: any) => {
+    fs.writeFile(resultFilePath, JSON.stringify(runResult), (err: any) => {
         if (err) {
             console.error(err);
         }

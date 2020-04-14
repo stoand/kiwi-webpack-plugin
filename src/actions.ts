@@ -1,15 +1,13 @@
-import { TestModule, CoveredFiles } from './runner';
+import { RunResult, TestModule, CoveredFiles } from './runner';
 import { init_highlighters, line_notifications, line_statuses, running_instances, FileLabels, FileStatuses } from './kakoune_interface';
-
-export function restartReviewApp(modules: TestModule[], initialCoverage: CoveredFiles) {
-    
-}
 
 const scanInterval = 350;
 
 let prevScanner: NodeJS.Timeout;
 
-export default function handleTestRun(modules: TestModule[], initialCoverage: CoveredFiles) {
+export default function handleTestRun(runResult: RunResult) {
+    
+    let { modules, initialCoverage } = runResult;
 
     runActions(modules, initialCoverage);
 

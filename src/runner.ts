@@ -6,18 +6,24 @@ import path from 'path';
 
 export type Position = sourceMap.MappedPosition;
 
-export type FileCoverage = {[ line: number]: boolean };
-export type CoveredFiles = {[ path: string]: FileCoverage };
+
+export type FileLengths = { [file: string]: number };
+export type FileCoverage = { [line: number]: boolean };
+export type CoveredFiles = { [path: string]: FileCoverage };
 export type TestError = { message: string, trace: Position, notErrorInstance?: boolean };
 export type TestLog = { args: string[], trace: Position };
 export type TestResult = { name: string, trace: Position, error?: TestError, consoleLogs: TestLog[], coveredFiles: CoveredFiles };
 export type TestModule = { name: string, tests: TestResult[] };
+export type InitRunner = Promise<(testSrc: string, mapSrc: any, lastRun: boolean) => Promise<RunResult>>;
 
-export type RunResult = Promise<{ modules: TestModule[], initialCoverage: CoveredFiles }>;
+export type RunResult = { modules: TestModule[], initialCoverage: CoveredFiles, fileLengths: FileLengths };
+
+export const emptyRunResult = { modules: [], initialCoverage: {}, fileLengths: {} };
 
 let browserRuntime = require('./browser_runtime.raw.js').default;
 
 let sourceNamePrefix = 'webpack:///';
+let externSourcePrefix = 'node_modules';
 
 function htmlIndex() {
     return `
@@ -100,15 +106,17 @@ export function calculateCoverage(profilerResult: any, testSrc: string, mapPosit
     return coveredFiles;
 }
 
-// #SPC-runner.sourcemap
-export async function loadSourceMap(mapSrc: sourceMap.RawSourceMap) {
+function absoluteSourcePath(source : string) {
+    return path.join(process.cwd(), source.slice(sourceNamePrefix.length));
+}
 
-    let consumer = await (new sourceMap.SourceMapConsumer(mapSrc));
+// #SPC-runner.sourcemap
+export async function loadSourceMap(consumer: sourceMap.SourceMapConsumer) {
 
     return ({ column, line }: Position): Position => {
         let pos = consumer.originalPositionFor({ column, line });
         return {
-            source: pos.source ? path.join(process.cwd(), pos.source.slice(sourceNamePrefix.length)) : '',
+            source: pos.source ? absoluteSourcePath(pos.source) : '',
             column: pos.column || 0,
             line: pos.line || 0,
         };
@@ -123,7 +131,7 @@ export default async function launchInstance(headless: boolean) {
 
     async function restartChrome() {
         return new Promise(resolve =>
-        	// the code below contains blocking functions
+            // the code below contains blocking functions
             setTimeout(() => {
                 let run = async () => {
                     chrome = await chromeLauncher.launch({ chromeFlags: ['--disable-gpu'].concat(headless ? ['--headless'] : []) });
@@ -142,7 +150,7 @@ export default async function launchInstance(headless: boolean) {
                     Page.navigate({ url: 'data:text/html;base64,' + encoded });
                     await Page.loadEventFired();
                 }
-                
+
                 resolve(run());
             }));
     }
@@ -150,11 +158,14 @@ export default async function launchInstance(headless: boolean) {
     lastRestart = restartChrome();
 
     // Run on every change
-    return async (testSrc: string, mapSrc: any, lastRun: boolean): RunResult => {
+    return async (testSrc: string, mapSrc: any, lastRun: boolean): Promise<RunResult> => {
 
         await lastRestart;
 
-        let mapPosition = await loadSourceMap(mapSrc);
+        let srcMapConsumer = await (new sourceMap.SourceMapConsumer(mapSrc));
+        // console.log(srcMapConsumer.sources);
+        
+        let mapPosition = await loadSourceMap(srcMapConsumer);
 
         let testResult = 'false';
         let testCoverages: any[] = [];
@@ -168,17 +179,20 @@ export default async function launchInstance(headless: boolean) {
         while (testResult === 'false') {
             await Profiler.startPreciseCoverage({ callCount: false, detailed: true });
             // #SPC-runner.async
-            testResult = (await Runtime.evaluate({ expression: '__kiwi_runNextTest()', awaitPromise: true} )).result.value;
+            testResult = (await Runtime.evaluate({ expression: '__kiwi_runNextTest()', awaitPromise: true })).result.value;
 
             testCoverages.push(await Profiler.takePreciseCoverage());
         }
-        
+
         chrome.kill();
 
         if (!lastRun) {
             // wait for this later
             lastRestart = restartChrome();
         }
+
+        // calculate file lengths
+		let fileLengths = {};		
 
         let modules: TestModule[] = JSON.parse(testResult);
 
@@ -190,7 +204,7 @@ export default async function launchInstance(headless: boolean) {
         modules.forEach((module: TestModule) => {
             module.tests.forEach(test => {
                 test.trace = mapPosition(test.trace);
-                
+
                 // takes the first item from testCoverages and computes what lines of what
                 // files where ran during the test
                 test.coveredFiles = calculateCoverage(testCoverages.shift(), testSrc, mapPosition);
@@ -210,6 +224,6 @@ export default async function launchInstance(headless: boolean) {
             });
         });
 
-        return { modules, initialCoverage };
+        return { modules, initialCoverage, fileLengths };
     }
 }

@@ -1,7 +1,7 @@
 // #SPC-webpack_plugin
 const SingleEntryPlugin = require('webpack/lib/SingleEntryPlugin');
 import { startReviewApp, updateReviewAppState } from './review_app_interface';
-import launchInstance, { RunResult } from './runner';
+import launchInstance, { InitRunner, emptyRunResult } from './runner';
 import handleTestRun from './actions';
 
 const entryName = 'kiwi-tests';
@@ -22,7 +22,7 @@ export default class KiwiPlugin {
 
     stopBuildOnFail: boolean;
     testEntry: string;
-    initRunner: Promise<(testSrc: string, mapSrc: any, lastRun: boolean) => RunResult>;
+    initRunner: InitRunner;
 
     constructor({ testEntry, headless, stopBuildOnFail }: { testEntry: string, headless: boolean, stopBuildOnFail: boolean }) {
         if (typeof testEntry !== 'string') {
@@ -63,7 +63,7 @@ export default class KiwiPlugin {
                 if (failed && watching && !alreadyRun) {
                     alreadyRun = true;
                     // remove notifications and statuses if compilation failed
-                    handleTestRun([], {});
+                    handleTestRun(emptyRunResult);
                 } else if (!failed) {
                     // wait for afterOptimizeChunkAssets because sourcemaps are already generated at this step
                     let testsAsset = compilation.assets[entryName + '.js'];
@@ -72,15 +72,15 @@ export default class KiwiPlugin {
                         let { source, map } = testsAsset.sourceAndMap(sourceMapOptions);
                         this.initRunner.then(async runner => {
                             try {
-                                let { modules, initialCoverage } = await runner(source, map, !watching);
+                                let runResult = await runner(source, map, !watching);
 
                                 if (watching) {
-                                    handleTestRun(modules, initialCoverage);
+                                    handleTestRun(runResult);
                                     
-                                    updateReviewAppState(modules, initialCoverage);
+                                    updateReviewAppState(runResult);
                                 } else {
                                     let failingTests = 0;
-                                    for (let module of modules) {
+                                    for (let module of runResult.modules) {
                                         console.log("Test Module -", module.name, '\n');
                                         for (let test of module.tests) {
                                             if (test.error) {
