@@ -25,7 +25,7 @@ Page is named "Test Files".
 
 Displays a list of files that contain tests.
 
-Each test file has a list of test modules and tests are kept in the order they ran.
+Each test file has a list of test modules and tests that are kept in the order they ran.
 
 Succeeding tests are displayed in green, failing tests in red.
 
@@ -33,9 +33,9 @@ Files and modules that contain failing tests are displayed in red.
 Otherwise they are displayed in green.
 
 User-selectable orderings:
-* most failing test count to least
+* most failing test count to least (default)
 * least failing test count to most
-* alphabetically (default)
+* alphabetically
 
 The format:
 
@@ -60,9 +60,9 @@ Page is named "Covered Files".
 This page displays the coverage of non-test files.
 
 User-selectable orderings:
-* least coverage to most
+* least coverage to most (default)
 * most coverage to least
-* alphabetically (default)
+* alphabetically
 
 The format:
 
