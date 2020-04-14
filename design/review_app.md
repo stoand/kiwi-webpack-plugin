@@ -67,9 +67,9 @@ User-selectable orderings:
 The format:
 
 ```
-src/folder_a/some_regular_file.js		    	<red>    0% 
+src/folder_a/some_regular_file.js               <red>    0% 
 src/folder_b/some_other_regular_file.js	        <green> 92% 
-src/folder_b/some_other_regular_file2.js	    <red>    0% 
+src/folder_b/some_other_regular_file2.js        <red>    0% 
 ```
 
 Percentage background color:
