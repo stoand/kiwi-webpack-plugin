@@ -42,6 +42,4 @@ The format:
 <green>src/folder_b/another_test_file.js
   <green> Yet Another Test Module
       <green> Yet Another succeeding test 
-      
-src/folder_c/folder_d/yet_test_another_file.js
 	...
