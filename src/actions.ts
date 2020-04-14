@@ -1,6 +1,10 @@
 import { TestModule, CoveredFiles } from './runner';
 import { init_highlighters, line_notifications, line_statuses, running_instances, FileLabels, FileStatuses } from './kakoune_interface';
 
+export function restartReviewApp(modules: TestModule[], initialCoverage: CoveredFiles) {
+    
+}
+
 const scanInterval = 350;
 
 let prevScanner: NodeJS.Timeout;

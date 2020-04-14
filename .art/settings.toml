@@ -7,7 +7,7 @@ artifact_paths = ["design"]
 exclude_artifact_paths = []
 
 # Paths containing code that has artifact links
-code_paths = ["src"]
+code_paths = ["src", "review_app/src"]
 
 # Paths to exclude when searching through code
-exclude_code_paths = []
+exclude_code_paths = ["review_app/src/__pycache__/"]
