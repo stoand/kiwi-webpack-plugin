@@ -1,7 +1,7 @@
 {
-  "name": "fake-bank-example",
+  "name": "kiwi-example-minimal",
   "version": "1.0.0",
-  "description": "A bank account example app to demostrate kiwi",
+  "description": "A minimal kiwi example",
   "main": "src/main.ts",
   "scripts": {
     "start": "webpack-dev-server -w",

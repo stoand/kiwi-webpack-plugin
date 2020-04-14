@@ -1,4 +1,4 @@
-document.body.innerHTML = 'bank sample ap';
+document.body.innerHTML = 'kiwi minimal sample app';
 
 export const asdf = () => {
     let a = 4 
