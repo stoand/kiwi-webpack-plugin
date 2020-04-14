@@ -22,6 +22,8 @@ we need source mapping to find out what scripts were originally run.
 
 Ensure source maps work.
 
+## [[.file_lengths]]
+
 ## [[.async]]
 
 Support tests that run asynchronously.
