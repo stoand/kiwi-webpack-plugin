@@ -4,7 +4,7 @@ partof: REQ-purpose
 
 ## [[.interface]]
 
-On startup [[SPC-webpack_plugin]], will setup the virtualenv and
+On startup [[SPC-webpack_plugin]] will setup the virtualenv and
 run the python server on port `8096` through `review_app/start.sh`.
 
 On every test run, it will write test results to: `review_app/kiwi_test_results.json`.
