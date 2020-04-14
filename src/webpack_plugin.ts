@@ -40,14 +40,17 @@ export default class KiwiPlugin {
         let alreadyRun = false;
 
         compiler.hooks.watchRun.tap("KiwiPlugin", () => {
+            if (!watching) {
+                // Try to run the review app
+                let startScript = path.resolve(process.cwd(), './node_modules/kiwi-webpack-plugin/review_app/start.sh');
+                let reviewApp = spawn('bash', ['-e', startScript]);
+                reviewApp.stderr.on('data', (data: any) => console.error(data.toString()));
+                reviewApp.stdout.on('data', (data: any) => console.log(data.toString()));
+            }
+
             watching = true;
             alreadyRun = false;
 
-			// Try to run the review app
-			let startScript = path.resolve(process.cwd(), './node_modules/kiwi-webpack-plugin/review_app/start.sh');
-			let reviewApp = spawn('bash', ['-e', startScript]);
-			reviewApp.stderr.on('data', (data: any) => console.error(data.toString()));
-			reviewApp.stdout.on('data', (data: any) => console.log(data.toString()));
         });
 
         // Get the entry context from a entryOption hook
@@ -61,7 +64,7 @@ export default class KiwiPlugin {
             compilation.hooks.afterOptimizeChunkAssets.tap("KiwiPlugin", () => {
                 let failed = compilation.entries.some((entry: any) => entry.errors.length > 0);
 
-				// #SPC-runner.errors_build
+                // #SPC-runner.errors_build
                 if (failed && watching && !alreadyRun) {
                     alreadyRun = true;
                     // remove notifications and statuses if compilation failed
