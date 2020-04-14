@@ -1,5 +1,7 @@
 // #SPC-webpack_plugin
 const SingleEntryPlugin = require('webpack/lib/SingleEntryPlugin');
+const { spawn } = require('child_process');
+const path = require('path');
 import launchInstance, { RunResult } from './runner';
 import handleTestRun from './actions';
 
@@ -40,6 +42,12 @@ export default class KiwiPlugin {
         compiler.hooks.watchRun.tap("KiwiPlugin", () => {
             watching = true;
             alreadyRun = false;
+
+			// Try to run the review app
+			let startScript = path.resolve(process.cwd(), './node_modules/kiwi-webpack-plugin/review_app/start.sh');
+			let reviewApp = spawn('bash', ['-e', startScript]);
+			reviewApp.stderr.on('data', (data: any) => console.error(data.toString()));
+			reviewApp.stdout.on('data', (data: any) => console.log(data.toString()));
         });
 
         // Get the entry context from a entryOption hook
