@@ -13,7 +13,7 @@ This name will be displayed in a title bar that is at the top of the page.
 Before the customer can select what they want to order,
 the customer's zip code number is needed to get their approximate location.
 
-Once the customer has entered their zip code they will be able to enter their street name.
+Once the customer has entered their zip code they will be able to select their street name.
 
 The list of street names is not real and is hardcoded to this:
 
@@ -55,9 +55,6 @@ Sprinkles (Optional)
 
 Cost per donut: 3 Eur
 
-The customers will be able to create donuts and add them to the
-order list.
-
 [[.tst-menu_add_item]]
 
 The user should be able to select a topping and sprinkles and see the donut
@@ -69,7 +66,7 @@ The user should be able to remove indivitual items from the order list through a
 
 [[.tst-menu_total_cost]]
 
-The user should see the total cost increase after adding a donut.
+The user should see the total cost change according to their order list.
 
 [[.tst-menu_no_empty_order]]
 
@@ -82,7 +79,9 @@ The user should be able to continue to [[.finalize]] after adding an item and se
 ## [[.finalize]]
 
 Once the user has selected their order contents, they 
-need to enter their first and last name,  full address, and phone number.
+need to enter their first and last name, full address, and phone number.
+
+The previously selected zip code and street name will be displayed but not editable.
 
 [[.tst-finalize_no_empty]]
 

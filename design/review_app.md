@@ -23,9 +23,9 @@ Displays the following statistics:
 
 Page is named "Test Files".
 
-Displays an alphabetically ordered list of files that contain tests.
+Displays a list of files that contain tests.
 
-Each test file has a list of test modules and tests that are kept in the order they ran.
+Each test file has a list of test modules and tests are kept in the order they ran.
 
 Succeeding tests are displayed in green, failing tests in red.
 
