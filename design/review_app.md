@@ -37,21 +37,29 @@ User-selectable orderings:
 * least failing test count to most
 * alphabetically
 
+[[.search_stackoverflow_link]]
+
+Each failing test test will have an icon that searches stack overflow for the error messagge.
+
 The format:
 
 ```
 <red>src/folder_a/some_test_file.js
   <red> Some Test Module
-      <green> Succeeding Test 
-      <red> Failing Test
+      <green> (<line number>) Succeeding Test <Stackoverflow Icon>
+      <red> (<line number>) Failing Test <Stackoverflow Icon> 
 	  
   <green> Another Test Module
-      <green> Another succeeding test 
+      <green> (<line number>) Another succeeding test 
 
 <green>src/folder_b/another_test_file.js
   <green> Yet Another Test Module
-      <green> Yet Another succeeding test 
+      <green> (<line number>) Yet Another succeeding test 
 ```
+
+[[.test_file_stack_trace_sidebar]]
+
+When a failing test is clicked on, the sidebar will display the stackstrace of the test error.
 
 ## [[.file_coverage]]
 
