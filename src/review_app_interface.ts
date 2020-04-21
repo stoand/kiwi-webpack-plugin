@@ -9,6 +9,9 @@ const startScriptName = 'start.sh';
 const resultFileName = 'kiwi_test_results.json';
 
 export function startReviewApp() {
+    // disabled
+    return;
+    
     // Try to run the review app
     let reviewApp = spawn('bash', ['-e', path.resolve(reviewAppDir, startScriptName)]);
 
@@ -17,6 +20,9 @@ export function startReviewApp() {
 }
 
 export function updateReviewAppState(runResult: RunResult) {
+    // disabled
+    return;
+    
     let resultFilePath = path.resolve(reviewAppDir, resultFileName);
 
     fs.writeFile(resultFilePath, JSON.stringify(runResult), (err: any) => {
