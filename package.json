@@ -10,7 +10,7 @@
     "start": "webpack --mode development -w",
     "build": "webpack --mode production",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "prepublish": "rm dist/*_tests.js review_app/venv examples -rf"
+    "cleanup": "rm dist/*_tests.js review_app/venv examples -rf"
   },
   "keywords": [
     "kiwi",
