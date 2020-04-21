@@ -1,0 +1,31 @@
+{
+  "name": "kiwi-example-minimal",
+  "version": "1.0.0",
+  "description": "A minimal kiwi example",
+  "main": "src/main.ts",
+  "scripts": {
+    "start": "webpack-dev-server -w",
+    "build": "webpack --mode development",
+    "simple": "(cd ../.. && npm i && npm run build) && npm i && npm start"
+  },
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "@types/chai": "^4.2.10",
+    "@types/mocha": "^7.0.2",
+    "@types/react": "^16.9.23",
+    "@types/redux": "^3.6.0",
+    "chai": "^4.2.0",
+    "html-webpack-plugin": "^3.2.0",
+    "kiwi-webpack-plugin": "file:../../",
+    "react": "^16.13.0",
+    "react-dom": "^16.13.0",
+    "redux": "^4.0.5",
+    "source-map": "^0.7.3",
+    "ts-loader": "^6.2.1",
+    "typescript": "^3.8.3",
+    "webpack": "^4.42.0",
+    "webpack-cli": "^3.3.11",
+    "webpack-dev-server": "^3.10.3"
+  }
+}
