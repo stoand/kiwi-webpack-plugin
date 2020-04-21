@@ -1,0 +1,4 @@
+cd ~/kiwi-webpack-plugin
+git config --global user.name "Andreas"
+git config --global user.email "stoand@protonmail.com"
+tmux new-session \; send-keys 'kak examples/order_donuts/src/tests.ts' C-m \; split-window -v \; send-keys 'cd ~/kiwi-webpack-plugin/examples/order_donuts && npm run simple' C-m \; last-pane \;
