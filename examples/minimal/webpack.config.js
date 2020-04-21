@@ -28,6 +28,9 @@ module.exports = {
     resolve: {
         extensions: ['.tsx', '.ts', '.js'],
     },
+    devServer: {
+        host: '0.0.0.0'
+    },
     output: {
         path: path.resolve(__dirname, 'dist'),
     },
