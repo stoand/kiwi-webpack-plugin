@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import { asdf } from './index';
+import { asdf,runApp } from './index';
 
 function a2() {
     // throw 3;
@@ -10,6 +10,8 @@ describe('First Module', () => {
 
         a2();
         expect(1).to.equal(1);
+
+        runApp();
     });
 
     it('this should fail', () => {

@@ -1,28 +1,32 @@
 require('./style.css');
 
-document.body.innerHTML = 'todo make awesome app';
+export function runApp() {
 
-let value = 0;
+    document.body.innerHTML = 'todo make awesome app';
 
-let counter = document.createElement('div');
-counter.className = 'blue';
-counter.innerText = value.toString();
-document.body.appendChild(counter);
+    let value = 0;
 
-let button = document.createElement('input');
-button.className = 'red';
-button.type = 'button';
-button.value = 'Asdf';
-
-button.addEventListener('click', () => {
-    value++;
+    let counter = document.createElement('div');
+    counter.className = 'blue';
     counter.innerText = value.toString();
-});
+    document.body.appendChild(counter);
 
-document.body.appendChild(button);
+    let button = document.createElement('input');
+    button.className = 'red';
+    button.type = 'button';
+    button.value = 'Asdf';
+
+    button.addEventListener('click', () => {
+        value++;
+        counter.innerText = value.toString();
+    });
+
+    document.body.appendChild(button);
+
+}
 
 export const asdf = () => {
-    let a = 4 
-    
+    let a = 4
+
     return a;
 }
