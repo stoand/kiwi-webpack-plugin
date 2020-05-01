@@ -3,7 +3,7 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 const KiwiPlugin = require('kiwi-webpack-plugin');
 
 module.exports = {
-    entry: './src/index.ts',
+    entry: './src/browser.ts',
     devtool: 'source-map',
     module: {
         rules: [
