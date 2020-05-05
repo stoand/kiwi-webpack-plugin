@@ -1,5 +1,8 @@
 import { execFileSync } from 'child_process';
 
+
+const deadKakInstancePostfix = '(dead)';
+
 const maxNotificationLength = 30;
 const inlineNormalTextColor = 'Default';
 const inlineErrorTextColor = 'Error';
@@ -33,7 +36,7 @@ export type FileLabels = {[ file: string]: LineLabels} ;
 export function running_instances() {
     let lines = execFileSync('kak', ['-l'], { encoding: 'utf8' }).split('\n');
     // remove the last empty line
-    return lines.splice(0, lines.length - 1);
+    return lines.splice(0, lines.length - 1).filter(line => line.indexOf(deadKakInstancePostfix) == -1);
 }
 
 // #SPC-kakoune_interface.init_highlighters
