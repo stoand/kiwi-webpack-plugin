@@ -1,6 +1,6 @@
 // #SPC-webpack_plugin
 const SingleEntryPlugin = require('webpack/lib/SingleEntryPlugin');
-import { startReviewApp, updateReviewAppState } from './review_app_interface';
+import { startReviewApp, updateReviewAppDataSource } from './review_app_interface';
 import launchInstance, { InitRunner, emptyRunResult } from './runner';
 import handleTestRun from './actions';
 
@@ -77,7 +77,7 @@ export default class KiwiPlugin {
                                 if (watching) {
                                     handleTestRun(runResult);
                                     
-                                    updateReviewAppState(runResult);
+                                    updateReviewAppDataSource(runResult);
                                 } else {
                                     let failingTests = 0;
                                     for (let module of runResult.modules) {

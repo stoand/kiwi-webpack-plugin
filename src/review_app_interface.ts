@@ -9,20 +9,18 @@ const startScriptName = 'start.sh';
 const resultFileName = 'kiwi_test_results.json';
 
 export function startReviewApp() {
-    // disabled
-    return;
-    
     // Try to run the review app
-    let reviewApp = spawn('bash', ['-e', path.resolve(reviewAppDir, startScriptName)]);
+    try {
+        let reviewApp = spawn('bash', ['-e', path.resolve(reviewAppDir, startScriptName)]);
 
-    reviewApp.stderr.on('data', (data: any) => console.error(data.toString()));
-    reviewApp.stdout.on('data', (data: any) => console.log(data.toString()));
+        reviewApp.stderr.on('data', (data: any) => console.error(data.toString()));
+        reviewApp.stdout.on('data', (data: any) => console.log(data.toString()));
+    } catch (e) {
+        console.error(e);
+    }
 }
 
-export function updateReviewAppState(runResult: RunResult) {
-    // disabled
-    return;
-    
+export function updateReviewAppDataSource(runResult: RunResult) {
     let resultFilePath = path.resolve(reviewAppDir, resultFileName);
 
     fs.writeFile(resultFilePath, JSON.stringify(runResult), (err: any) => {
