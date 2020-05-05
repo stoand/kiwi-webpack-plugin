@@ -50,17 +50,14 @@ Also ensure that lines are correctly truncated.
 
 Ensure special characters such as " or { do not break the protocol.
 
-## [[.show_location_list_command]]
+## [[.show_location_list]]
 
-Defines a command with the given name in kakoune that
-
-displays a hyperlinked list of
-
+Displays a hyperlinked list of items consisting of:
 * file name
-* line number (use line zero for the whole file)
-* (optional) colored text
+* line number
+* text
 
-[[.tst-show_location_list_command]]
+[[.tst-show_location_list]]
 
 Ensure the command opens a list of links and these links can be followed.
 

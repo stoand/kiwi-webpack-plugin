@@ -5,7 +5,7 @@
 // Another purpose of these tests is to have a place to run this functionality
 // in isolation while in development.
 
-import { init_highlighters, line_statuses, line_notifications } from './kakoune_interface';
+import { init_highlighters, line_statuses, line_notifications, show_location_list } from './kakoune_interface';
 import path from 'path';
 
 // Test the editor interactions while editing this file
@@ -23,7 +23,7 @@ function test_line_statuses() {
             ...empty,
             10: 'uncovered',
             11: 'fail',
-            
+
             12: 'success',
         }
     });
@@ -42,9 +42,16 @@ function test_line_notifications() {
     });
 }
 
+/// #SPC-kakoune_interface.tst-show_location_list
+function test_show_location_list() {
+    show_location_list([{ file: 'src/kakoune_interface_tests.ts', line: 50, message: 'asdf' }]);
+}
+
 init_highlighters();
 
 // The notifications should be displayed to the left of statuses
 test_line_notifications();
 
 test_line_statuses();
+
+test_show_location_list();

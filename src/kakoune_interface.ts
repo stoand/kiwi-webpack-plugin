@@ -1,4 +1,5 @@
 import { execFileSync } from 'child_process';
+import { writeFileSync } from 'fs';
 
 
 const deadKakInstancePostfix = '(dead)';
@@ -15,6 +16,8 @@ const rightCurlyBraceLookalike = '｝';
 const leftCurlyBraceLookalike = '｛';
 const verticalLineLookalike = '｜';
 
+const tempLocationListingFile = '/tmp/__kiwi_tmp435398';
+
 // When to update the highlighters
 const refreshHighlighting = [
     'WinDisplay',
@@ -25,12 +28,14 @@ const refreshHighlighting = [
 ];
 
 export type LineStatus = 'uncovered' | 'fail' | 'success';
-export type LineStatuses = {[ line: number]: LineStatus} ;
-export type FileStatuses = {[ file: string]: LineStatuses} ;
+export type LineStatuses = { [line: number]: LineStatus };
+export type FileStatuses = { [file: string]: LineStatuses };
 
 export type LineLabel = { color: 'normal' | 'error', text: string };
-export type LineLabels = {[ line: number]: LineLabel} ;
-export type FileLabels = {[ file: string]: LineLabels} ;
+export type LineLabels = { [line: number]: LineLabel };
+export type FileLabels = { [file: string]: LineLabels };
+
+export type Location = { file: string, line: number, message: string }
 
 // #SPC-kakoune_interface.running_instances
 export function running_instances() {
@@ -72,12 +77,12 @@ export function line_statuses(file_statuses: FileStatuses) {
         let value = lines[Number(line)];
         let spaces = statusChars.split('').map(_ => ' ').join('');
         let text = value != 'success' ? spaces : '%opt{kiwi_status_chars}';
-        return `\\"${Number(line)+  1}|{%opt{kiwi_color_${value}}}${text}\\"`;
+        return `\\"${Number(line) + 1}|{%opt{kiwi_color_${value}}}${text}\\"`;
     }).join(' ');
 
-	// Clear statuses from previous files that are no longer mentioned
+    // Clear statuses from previous files that are no longer mentioned
     for (let previous_file of line_statuses_previous_files) {
-        if(!file_statuses[previous_file]) {
+        if (!file_statuses[previous_file]) {
             file_statuses[previous_file] = {};
         }
     }
@@ -179,6 +184,21 @@ export function line_notifications(file_notifications: FileLabels) {
     `;
 
     line_notificaitons_previous_files = Object.keys(file_notifications);
+
+    command_all(commands);
+}
+
+/// #SPC-kakoune_interface.show_location_list
+export function show_location_list(locations: Location[]) {
+    let contents = locations.map(({file, line, message}) =>
+    	`${file}:${line}:${message}`).join('\n');
+    
+    writeFileSync(tempLocationListingFile, contents);
+
+    let commands = `
+       edit! -readonly -existing "${tempLocationListingFile}"
+       set-option buffer filetype grep
+    `;
 
     command_all(commands);
 }
