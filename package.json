@@ -1,6 +1,6 @@
 {
   "name": "kiwi-webpack-plugin",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "description": "Test Runner for Webpack and the Kakoune editor",
   "main": "dist/main.js",
   "directories": {
@@ -35,9 +35,12 @@
   },
   "homepage": "https://github.com/stoand/kiwi#readme",
   "dependencies": {
+    "@types/chai": "^4.2.11",
+    "@types/mocha": "^7.0.2",
     "@types/node": "^13.9.0",
     "@types/source-map": "^0.5.7",
     "@types/webpack": "^4.41.7",
+    "chai": "^4.2.0",
     "chrome-launcher": "^0.13.0",
     "chrome-remote-interface": "^0.28.1",
     "raw-loader": "^4.0.0",
