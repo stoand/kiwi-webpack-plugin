@@ -61,10 +61,10 @@ Displays a hyperlinked list of items consisting of:
 
 Ensure the command opens a list of links and these links can be followed.
 
-## [[.jump_to_line_command]]
+## [[.jump_to_line]]
 
-Defines a command with the given name in kakoune that jumps to a given file and line.
+Jumps to a given file and line.
 
-[[.tst-jump_to_line_command]]
+[[.tst-jump_to_line]]
 
 Ensure the command works but only on lines assigned to have jump navigation.

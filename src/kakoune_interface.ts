@@ -202,3 +202,8 @@ export function show_location_list(locations: Location[]) {
 
     command_all(commands);
 }
+
+/// #SPC-kakoune_interface.jump_to_line
+export function jump_to_line(file: string, line: number) {
+    command_all(`edit! -existing "${file}" ${line}`);
+}

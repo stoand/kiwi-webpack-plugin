@@ -5,7 +5,8 @@
 // Another purpose of these tests is to have a place to run this functionality
 // in isolation while in development.
 
-import { init_highlighters, line_statuses, line_notifications, show_location_list } from './kakoune_interface';
+import { init_highlighters, line_statuses,
+	line_notifications, show_location_list, jump_to_line } from './kakoune_interface';
 import path from 'path';
 
 // Test the editor interactions while editing this file
@@ -46,6 +47,10 @@ function test_line_notifications() {
 function test_show_location_list() {
     show_location_list([{ file: 'src/kakoune_interface_tests.ts', line: 50, message: 'asdf' }]);
 }
+/// #SPC-kakoune_interface.tst-jump_to_line
+function test_jump_to_line() {
+	jump_to_line('src/kakoune_interface_tests.ts', 60);    
+}
 
 init_highlighters();
 
@@ -54,4 +59,6 @@ test_line_notifications();
 
 test_line_statuses();
 
-test_show_location_list();
+// can only run one of these at once
+// test_show_location_list();
+// test_jump_to_line();
