@@ -1,3 +1,4 @@
+// #SPC-kakoune_interface
 import { execFileSync } from 'child_process';
 import { writeFileSync } from 'fs';
 
