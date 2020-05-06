@@ -1,3 +1,4 @@
+// #SPC-examples-minimal
 document.body.innerHTML = 'kiwi minimal sample app';
 
 export const asdf = () => {
