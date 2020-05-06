@@ -20,7 +20,7 @@ describe('First Module', () => {
         // asdf();
         // asdf();
         
-        expect(asdf()).to.equal(4);
+        expect(asdf()).to.equal(3);
     });
 });
 

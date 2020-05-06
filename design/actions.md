@@ -38,9 +38,13 @@ Ensure tests are listed
 
 Displays a list of all files that define tests along with whether they have failing tests.
 
+[[.tst-list_all_test_files]]
+
 ## [[.list_all_covered_non_test_files]]
 
 Displays a list of all covered non test files along with their involvement in failing tests.
+
+[[.tst-list_all_covered_non_test_files]]
 
 ## [[.list_affected_tests]]
 

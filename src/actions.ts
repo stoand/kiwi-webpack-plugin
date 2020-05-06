@@ -1,4 +1,4 @@
-import { RunResult, TestModule, CoveredFiles, TestError } from './runner';
+import { RunResult, TestModule, CoveredFiles, TestError, FileLengths, FileCoverage } from './runner';
 import { init_highlighters, recreateTmpDir, add_location_list_command, line_notifications,
         	line_statuses, running_instances, FileLabels, FileStatuses, Location } from './kakoune_interface';
 
@@ -6,6 +6,7 @@ export type LocationLists = {
     failed_tests: Location[],
     all_tests: Location[],
     all_test_files: Location[],
+    all_covered_non_test_files: Location[],
 }
 
 const scanInterval = 350;
@@ -14,9 +15,7 @@ let prevScanner: NodeJS.Timeout;
 
 export default function handleTestRun(runResult: RunResult) {
 
-    let { modules, initialCoverage } = runResult;
-
-    runActions(modules, initialCoverage);
+    runActions(runResult);
 
     // disable the scanner from the previous call to this function
     // the entire editor state is updated by every call
@@ -32,7 +31,7 @@ export default function handleTestRun(runResult: RunResult) {
 
         if (instanceCount > knownInstances) {
             // New instance detected
-            runActions(modules, initialCoverage);
+            runActions(runResult);
         }
 
         knownInstances = instanceCount;
@@ -40,7 +39,9 @@ export default function handleTestRun(runResult: RunResult) {
     }, scanInterval);
 }
 
-export function runActions(modules: TestModule[], initialCoverage: CoveredFiles) {
+export function runActions(runResult: RunResult) {
+    let { modules, initialCoverage, fileLengths } = runResult;
+    
     recreateTmpDir();
 
 	init_highlighters();
@@ -49,7 +50,7 @@ export function runActions(modules: TestModule[], initialCoverage: CoveredFiles)
         
     setNotifications(modules);
 
-    addListCommands(modules);
+    addListCommands(modules, fileLengths);
 }
 
 // #SPC-actions.set_line_statuses
@@ -119,11 +120,13 @@ function setNotifications(modules: TestModule[]) {
     line_notifications(files);
 }
 
-export function computeLocationLists(modules: TestModule[]): LocationLists {
+export function computeLocationLists(modules: TestModule[], fileLengths: FileLengths): LocationLists {
     
     let failedTests = [];
     let allTests = [];
     let testFiles: { [file: string]: { pass: number, fail: number, firstError?: TestError } } = { };
+    let nonTestFiles: { [file: string]: { pass: number, fail: number,
+    	firstError?: TestError, fileCoverage: FileCoverage } } = { };
 
 	let resolveTilde = (src: string) => {
     	let homeDir = process.env.HOME;
@@ -141,7 +144,8 @@ export function computeLocationLists(modules: TestModule[]): LocationLists {
 
             allTests.push({ file: testFile, line: testLine, message: test.name });
             testFiles[testFile] = testFiles[testFile] || { pass: 0, fail: 0 };
-            
+
+            // Handle Tests
             if (test.error) {
                 testFiles[testFile].fail++;
                 
@@ -158,10 +162,34 @@ export function computeLocationLists(modules: TestModule[]): LocationLists {
                 let message = `${test.name} - ${test.error.message}`;
                 failedTests.push({ file: errorFile, line: errorLine, message });
             }
+
+			// Handle files covered by tests
+            for (let coveredFile in test.coveredFiles) {
+                nonTestFiles[coveredFile] = nonTestFiles[coveredFile] || { pass: 0, fail: 0, fileCoverage: {} };
+                let nonTestFile = nonTestFiles[coveredFile];
+
+                for (let line in test.coveredFiles[coveredFile]) {
+                    if(test.coveredFiles[coveredFile][line]) {
+                        nonTestFile.fileCoverage[line] = true;
+                    }
+                }
+
+                if (test.error) {
+                    nonTestFile.fail++;
+                    if (!nonTestFile.firstError) {
+                        nonTestFile.firstError = test.error;
+                    }
+                } else {
+                    nonTestFile.pass++;
+                }
+            }
         }
     }
+
+    type LocWithCounts = Location & { pass: number, fail: number };
+    type LocWithCountsAndCoverage = Location & { pass: number, fail: number, coveragePercent: number }
     
-    let testFileLocations: (Location & { pass: number, fail: number })[] = [];
+    let testFileLocations: LocWithCounts[] = [];
     for (let testFile in testFiles) {
         let { pass, fail, firstError } = testFiles[testFile];
         let message = `${pass}/${fail}`;
@@ -176,8 +204,35 @@ export function computeLocationLists(modules: TestModule[]): LocationLists {
     }
 
     // sort by number of failing tests, file name
-    testFileLocations.sort((l1, l2) => l1.file > l2.file ? 1 : -1);
-    testFileLocations.sort((l1, l2) => l1.fail > l2.fail ? 1 : -1);
+    testFileLocations.sort((l1, l2) => l1.file < l2.file ? 1 : -1);
+    testFileLocations.sort((l1, l2) => l1.fail < l2.fail ? 1 : -1);
+
+    let nonTestFileLocations: LocWithCountsAndCoverage[] = [];
+    // Remove files with tests in them from the non-test files
+    for (let testFile in testFiles) {
+        if (nonTestFiles[testFile]) {
+            delete nonTestFiles[testFile];
+        }
+    }
+
+    for (let nonTestFile in nonTestFiles) {
+        let { pass, fail, firstError, fileCoverage } = nonTestFiles[nonTestFile];
+        let coveragePercent = Math.floor(Object.keys(fileCoverage).length / fileLengths[nonTestFile] * 100);
+        let message = `[${coveragePercent}%] ${pass}/${fail}`;
+        let line = 1;
+
+        if (firstError) {
+            message = message + ' - ' + firstError.message;
+            line = firstError.trace.line;
+        }
+
+        nonTestFileLocations.push({ file: resolveTilde(nonTestFile), line, message, pass, fail, coveragePercent });
+    }
+
+    // sort by number of failing tests, file name
+    nonTestFileLocations.sort((l1, l2) => l1.file < l2.file ? 1 : -1);
+    nonTestFileLocations.sort((l1, l2) => l1.coveragePercent > l2.coveragePercent ? 1 : -1);
+    nonTestFileLocations.sort((l1, l2) => l1.fail < l2.fail ? 1 : -1);
 
 	return {
         // #SPC-actions.list_failed_tests
@@ -186,11 +241,13 @@ export function computeLocationLists(modules: TestModule[]): LocationLists {
     	all_tests: allTests,
         // #SPC-actions.list_all_test_files
     	all_test_files: testFileLocations,
+        // #SPC-actions.list_all_covered_non_test_files
+    	all_covered_non_test_files: nonTestFileLocations,
 	};
 }
 
-function addListCommands(modules: TestModule[]) {
-    let locationLists = computeLocationLists(modules);
+function addListCommands(modules: TestModule[], fileLengths: FileLengths) {
+    let locationLists = computeLocationLists(modules, fileLengths);
     for (let locationListName in locationLists) {
         add_location_list_command(locationListName, (locationLists as any)[locationListName]);
     }
