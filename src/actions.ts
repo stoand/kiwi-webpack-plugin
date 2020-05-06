@@ -120,6 +120,15 @@ function setNotifications(modules: TestModule[]) {
     line_notifications(files);
 }
 
+export function resolveTilde(src: string) {
+	let homeDir = process.env.HOME;
+	if (homeDir && src.indexOf(homeDir) == 0) {
+    	return src.replace(homeDir, '~');
+	} else {
+    	return src;
+	}
+}
+
 export function computeLocationLists(modules: TestModule[], fileLengths: FileLengths): LocationLists {
     
     let failedTests = [];
@@ -127,15 +136,6 @@ export function computeLocationLists(modules: TestModule[], fileLengths: FileLen
     let testFiles: { [file: string]: { pass: number, fail: number, firstError?: TestError } } = { };
     let nonTestFiles: { [file: string]: { pass: number, fail: number,
     	firstError?: TestError, firstFailContribLine?: number, fileCoverage: FileCoverage } } = { };
-
-	let resolveTilde = (src: string) => {
-    	let homeDir = process.env.HOME;
-    	if (homeDir && src.indexOf(homeDir) == 0) {
-        	return src.replace(homeDir, '~');
-    	} else {
-        	return src;
-    	}
-	};
 
     for (let mod of modules) {
         for (let test of mod.tests) {
