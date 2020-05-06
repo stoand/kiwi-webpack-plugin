@@ -13,7 +13,7 @@ let mockTests: TestResult[] = [
         consoleLogs: [], coveredFiles: { [testFile1]: { 1: true }, [nonTestFile1]: { 15: true } } },
     { name: 'fail1', trace: { source: '/tmp/b', line: 20, column: 1 },
 		error: { message: 'wrong', trace: { source: '/tmp/b', line: 25, column: 1} },
-        consoleLogs: [], coveredFiles: { '/tmp/d': { 25: true } } },
+        consoleLogs: [], coveredFiles: { '/tmp/d': { 35: true } } },
 ];
 
 let mockFileLengths = { [nonTestFile1]: 5, '/tmp/d': 10 };
@@ -41,5 +41,5 @@ expect(all_test_files).to.eql([
         
 // #SPC-actions.tst-list_all_covered_non_test_files
 expect(all_covered_non_test_files).to.eql([
-    { file: '/tmp/d', line: 25, message: '[10%] 0/1 - wrong', pass: 0, fail: 1, coveragePercent: 10 },
+    { file: '/tmp/d', line: 35, message: '[10%] 0/1 - wrong', pass: 0, fail: 1, coveragePercent: 10 },
     { file: nonTestFileHomeRelative1, line: 1, message: '[20%] 1/0', pass: 1, fail: 0, coveragePercent: 20 }]);

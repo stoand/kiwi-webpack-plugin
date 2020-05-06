@@ -126,7 +126,7 @@ export function computeLocationLists(modules: TestModule[], fileLengths: FileLen
     let allTests = [];
     let testFiles: { [file: string]: { pass: number, fail: number, firstError?: TestError } } = { };
     let nonTestFiles: { [file: string]: { pass: number, fail: number,
-    	firstError?: TestError, fileCoverage: FileCoverage } } = { };
+    	firstError?: TestError, firstFailContribLine?: number, fileCoverage: FileCoverage } } = { };
 
 	let resolveTilde = (src: string) => {
     	let homeDir = process.env.HOME;
@@ -168,9 +168,17 @@ export function computeLocationLists(modules: TestModule[], fileLengths: FileLen
                 nonTestFiles[coveredFile] = nonTestFiles[coveredFile] || { pass: 0, fail: 0, fileCoverage: {} };
                 let nonTestFile = nonTestFiles[coveredFile];
 
+				let firstContribLine: number | undefined;
                 for (let line in test.coveredFiles[coveredFile]) {
                     if(test.coveredFiles[coveredFile][line]) {
                         nonTestFile.fileCoverage[line] = true;
+
+                        let lineNumber = Number(line);
+                        if (firstContribLine) {
+                            firstContribLine = Math.min(firstContribLine, lineNumber);
+                        } else {
+                            firstContribLine = lineNumber;
+                        }
                     }
                 }
 
@@ -178,6 +186,7 @@ export function computeLocationLists(modules: TestModule[], fileLengths: FileLen
                     nonTestFile.fail++;
                     if (!nonTestFile.firstError) {
                         nonTestFile.firstError = test.error;
+                        nonTestFile.firstFailContribLine = firstContribLine;
                     }
                 } else {
                     nonTestFile.pass++;
@@ -216,20 +225,20 @@ export function computeLocationLists(modules: TestModule[], fileLengths: FileLen
     }
 
     for (let nonTestFile in nonTestFiles) {
-        let { pass, fail, firstError, fileCoverage } = nonTestFiles[nonTestFile];
+        let { pass, fail, firstError, firstFailContribLine, fileCoverage } = nonTestFiles[nonTestFile];
         let coveragePercent = Math.floor(Object.keys(fileCoverage).length / fileLengths[nonTestFile] * 100);
         let message = `[${coveragePercent}%] ${pass}/${fail}`;
         let line = 1;
 
-        if (firstError) {
+        if (firstError && firstFailContribLine) {
             message = message + ' - ' + firstError.message;
-            line = firstError.trace.line;
+            line = firstFailContribLine;
         }
 
         nonTestFileLocations.push({ file: resolveTilde(nonTestFile), line, message, pass, fail, coveragePercent });
     }
 
-    // sort by number of failing tests, file name
+    // sort by number of failing tests, coverage, file name
     nonTestFileLocations.sort((l1, l2) => l1.file < l2.file ? 1 : -1);
     nonTestFileLocations.sort((l1, l2) => l1.coveragePercent > l2.coveragePercent ? 1 : -1);
     nonTestFileLocations.sort((l1, l2) => l1.fail < l2.fail ? 1 : -1);
