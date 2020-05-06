@@ -1,5 +1,6 @@
 import { RunResult, TestModule, CoveredFiles } from './runner';
-import { init_highlighters, line_notifications, line_statuses, running_instances, FileLabels, FileStatuses } from './kakoune_interface';
+import { init_highlighters, recreateTmpDir, add_location_list_command, line_notifications,
+	line_statuses, running_instances, FileLabels, FileStatuses } from './kakoune_interface';
 
 const scanInterval = 350;
 
@@ -34,11 +35,15 @@ export default function handleTestRun(runResult: RunResult) {
 }
 
 export function runActions(modules: TestModule[], initialCoverage: CoveredFiles) {
+    recreateTmpDir();
+    
 	init_highlighters();
 
     setLineStatuses(modules, initialCoverage);
     
     setNotifications(modules);
+
+    addListCommands(modules);
 }
 
 // #SPC-actions.set_line_statuses
@@ -106,4 +111,9 @@ function setNotifications(modules: TestModule[]) {
     });
 
     line_notifications(files);
+}
+
+function addListCommands(modules: TestModule[]) {
+    // #SPC-actions.list_failed_tests
+    add_location_list_command('failed_tests', []);
 }

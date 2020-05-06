@@ -1,6 +1,7 @@
 // #SPC-kakoune_interface
 import { execFileSync } from 'child_process';
-import { writeFileSync } from 'fs';
+import { writeFileSync, mkdirSync, rmdirSync } from 'fs';
+import * as path from 'path';
 
 
 const deadKakInstancePostfix = '(dead)';
@@ -17,7 +18,7 @@ const rightCurlyBraceLookalike = '｝';
 const leftCurlyBraceLookalike = '｛';
 const verticalLineLookalike = '｜';
 
-const tempLocationListingFile = '/tmp/__kiwi_tmp435398';
+export const tempDir = '/tmp/__kiwi_tmp435398/';
 
 // When to update the highlighters
 const refreshHighlighting = [
@@ -37,6 +38,11 @@ export type LineLabels = { [line: number]: LineLabel };
 export type FileLabels = { [file: string]: LineLabels };
 
 export type Location = { file: string, line: number, message: string }
+
+export function recreateTmpDir() {
+    rmdirSync(tempDir, { recursive: true });
+    mkdirSync(tempDir, { recursive: true });
+}
 
 // #SPC-kakoune_interface.running_instances
 export function running_instances() {
@@ -189,16 +195,20 @@ export function line_notifications(file_notifications: FileLabels) {
     command_all(commands);
 }
 
-/// #SPC-kakoune_interface.show_location_list
-export function show_location_list(locations: Location[]) {
+/// #SPC-kakoune_interface.add_location_list_command
+export function add_location_list_command(name: string, locations: Location[]) {
     let contents = locations.map(({file, line, message}) =>
     	`${file}:${line}:${message}`).join('\n');
+
+    let location = path.join(tempDir, name);
     
-    writeFileSync(tempLocationListingFile, contents);
+    writeFileSync(location, contents);
 
     let commands = `
-       edit! -readonly -existing "${tempLocationListingFile}"
-       set-option buffer filetype grep
+        define-command -override kiwi_list_${name} %{
+           edit! -readonly -existing "${location}"
+           set-option buffer filetype grep
+        }
     `;
 
     command_all(commands);

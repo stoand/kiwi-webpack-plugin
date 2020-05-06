@@ -50,14 +50,14 @@ Also ensure that lines are correctly truncated.
 
 Ensure special characters such as " or { do not break the protocol.
 
-## [[.show_location_list]]
+## [[.add_location_list_command]]
 
 Displays a hyperlinked list of items consisting of:
 * file name
 * line number
 * text
 
-[[.tst-show_location_list]]
+[[.tst-add_location_list_command]]
 
 Ensure the command opens a list of links and these links can be followed.
 
