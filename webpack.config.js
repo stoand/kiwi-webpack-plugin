@@ -5,7 +5,7 @@ module.exports = {
         main: './src/webpack_plugin.ts',
         kakoune_interface_tests: './src/kakoune_interface_tests.ts',
         runner_tests: './src/runner_tests.ts',
-        unit_tests: ['./src/actions_tests.ts'],
+        unit_tests: ['./src/actions_tests.ts', './src/review_app_interface_tests.ts'],
     },
     target: 'node',
     module: {

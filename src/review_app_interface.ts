@@ -20,10 +20,22 @@ export function startReviewApp() {
     }
 }
 
+export function computeReviewAppTestResults(runResult: RunResult): TestResults {
+    return {
+        aggregations: {
+            total_coverage_percent: 0,
+            total_passed: 0,
+            total_failed: 0,
+        },
+        test_files: [],
+        covered_files: [],
+    };
+}
+
 export function updateReviewAppDataSource(runResult: RunResult) {
     let resultFilePath = path.resolve(reviewAppDir, resultFileName);
 
-    fs.writeFile(resultFilePath, JSON.stringify(runResult), (err: any) => {
+    fs.writeFile(resultFilePath, JSON.stringify(computeReviewAppTestResults(runResult)), (err: any) => {
         if (err) {
             console.error(err);
         }
