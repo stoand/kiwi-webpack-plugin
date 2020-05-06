@@ -190,6 +190,7 @@ export default async function launchInstance(headless: boolean) {
             lastRestart = restartChrome();
         }
 
+        // #SPC-runner.file_lengths
         // calculate file lengths
 		let fileLengths: FileLengths = {};
         for (let sourceIndex = 0; sourceIndex < srcMapConsumer.sources.length; sourceIndex++) {
