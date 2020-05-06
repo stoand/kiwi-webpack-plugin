@@ -3,6 +3,7 @@ const { spawn } = require('child_process');
 const path = require('path');
 const fs = require('fs');
 import { RunResult } from './runner';
+import '../review_app/src/interface';
 
 const reviewAppDir = path.resolve(process.cwd(), 'node_modules/kiwi-webpack-plugin/review_app');
 const startScriptName = 'start.sh';

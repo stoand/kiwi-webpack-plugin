@@ -1,5 +1,7 @@
 from dataclasses import dataclass
-from py_ts_interfaces import Interface, List
+from dataclasses_json import dataclass_json
+from py_ts_interfaces import Interface
+from typing import List
 
 
 @dataclass
@@ -42,6 +44,7 @@ class CoveredFile(Interface):
     coverage_percent: int
 
 
+@dataclass_json
 @dataclass
 class TestResults(Interface):
     aggregations: Aggregations
