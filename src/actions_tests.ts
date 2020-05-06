@@ -20,8 +20,6 @@ let mockFileLengths = { [nonTestFile1]: 5, '/tmp/d': 10 };
 
 let mockModules: TestModule[] = [{ name: 'mod1', tests: mockTests }];
 
-expect({ a: 1 }).to.eql({ a: 1 });
-
 let { failed_tests, all_tests, all_test_files, all_covered_non_test_files } = computeLocationLists(mockModules, mockFileLengths);
 
 // #SPC-actions.tst-list_failed_tests

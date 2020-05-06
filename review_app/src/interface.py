@@ -3,6 +3,12 @@ from dataclasses_json import dataclass_json
 from py_ts_interfaces import Interface
 from typing import List
 
+# Do not edit this class definition unless
+# the format of the `review_app/kiwi_test_results.json` file has also changed
+
+# The `review_app/src/interface.ts` file will
+# have to be regenerated when this file changes (see spec)
+
 
 @dataclass
 class Aggregations(Interface):
