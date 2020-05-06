@@ -22,9 +22,17 @@ Set line status indicators depending on coverage and involvement with failed tes
 
 Displays an list of failed tests and what line each test was defined on.
 
+[[.tst-list_failed_tests]]
+
+Ensure only failing tests are displayed and the message is correct.
+
 ## [[.list_all_tests]]
 
 Displays a failed tests, what line each test was defined on and test success/failure.
+
+[[.tst-list_all_tests]]
+
+Ensure tests are listed
 
 ## [[.list_all_test_files]]
 

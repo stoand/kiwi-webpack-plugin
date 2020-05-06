@@ -148,4 +148,6 @@ npm i; npm start
 # In another shell session
 npm i -g nodemon
 nodemon dist/kakoune_interface_tests.js
+# or
+nodemon dist/unit_tests.js
 ```
