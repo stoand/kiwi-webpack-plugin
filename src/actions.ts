@@ -2,6 +2,12 @@ import { RunResult, TestModule, CoveredFiles, TestError } from './runner';
 import { init_highlighters, recreateTmpDir, add_location_list_command, line_notifications,
         	line_statuses, running_instances, FileLabels, FileStatuses, Location } from './kakoune_interface';
 
+export type LocationLists = {
+    failed_tests: Location[],
+    all_tests: Location[],
+    all_test_files: Location[],
+}
+
 const scanInterval = 350;
 
 let prevScanner: NodeJS.Timeout;
@@ -113,7 +119,7 @@ function setNotifications(modules: TestModule[]) {
     line_notifications(files);
 }
 
-function addListCommands(modules: TestModule[]) {
+export function computeLocationLists(modules: TestModule[]): LocationLists {
     
     let failedTests = [];
     let allTests = [];
@@ -156,7 +162,7 @@ function addListCommands(modules: TestModule[]) {
     }
     
     let testFileLocations: (Location & { pass: number, fail: number })[] = [];
-    for (let testFile of Object.keys(testFiles)) {
+    for (let testFile in testFiles) {
         let { pass, fail, firstError } = testFiles[testFile];
         let message = `${pass}/${fail}`;
         let line = 1;
@@ -173,10 +179,19 @@ function addListCommands(modules: TestModule[]) {
     testFileLocations.sort((l1, l2) => l1.file > l2.file ? 1 : -1);
     testFileLocations.sort((l1, l2) => l1.fail > l2.fail ? 1 : -1);
 
-    // #SPC-actions.list_failed_tests
-    add_location_list_command('failed_tests', failedTests);
-    // #SPC-actions.list_all_tests
-    add_location_list_command('all_tests', allTests);
-    // #SPC-actions.list_all_test_files
-    add_location_list_command('all_test_files', testFileLocations);
+	return {
+        // #SPC-actions.list_failed_tests
+    	failed_tests: failedTests,
+        // #SPC-actions.list_all_tests
+    	all_tests: allTests,
+        // #SPC-actions.list_all_test_files
+    	all_test_files: testFileLocations,
+	};
+}
+
+function addListCommands(modules: TestModule[]) {
+    let locationLists = computeLocationLists(modules);
+    for (let locationListName in locationLists) {
+        add_location_list_command(locationListName, (locationLists as any)[locationListName]);
+    }
 }
