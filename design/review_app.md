@@ -46,7 +46,7 @@ The format:
 ```
 <red>src/folder_a/some_test_file.js
   <red> Some Test Module
-      <green> (<line number>) Succeeding Test <Stackoverflow Icon>
+      <green> (<line number>) Succeeding Test
       <red> (<line number>) Failing Test <Stackoverflow Icon> 
 	  
   <green> Another Test Module
