@@ -117,11 +117,19 @@ function addListCommands(modules: TestModule[]) {
     
     let failedTests = [];
 
+	let resolveTilde = (src: string) => {
+    	let homeDir = process.env.HOME;
+    	if (homeDir && src.indexOf(homeDir) == 0) {
+        	return src.replace(homeDir, '~');
+    	} else {
+        	return src;
+    	}
+	};
 
     for (let mod of modules) {
         for (let test of mod.tests) {
             if (test.error) {
-                let errorFile = test.error.trace.source;
+                let errorFile = resolveTilde(test.error.trace.source);
                 let errorLine = test.error.trace.line;
                 failedTests.push({ file: errorFile, line: errorLine, message: test.error.message });
             }
