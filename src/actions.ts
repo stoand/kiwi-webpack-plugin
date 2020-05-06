@@ -139,10 +139,10 @@ export function computeLocationLists(modules: TestModule[], fileLengths: FileLen
 
     for (let mod of modules) {
         for (let test of mod.tests) {
-            let testFile = resolveTilde(test.trace.source);
+            let testFile = test.trace.source;
             let testLine = test.trace.line;
 
-            allTests.push({ file: testFile, line: testLine, message: test.name });
+            allTests.push({ file: resolveTilde(testFile), line: testLine, message: test.name });
             testFiles[testFile] = testFiles[testFile] || { pass: 0, fail: 0 };
 
             // Handle Tests
@@ -200,7 +200,7 @@ export function computeLocationLists(modules: TestModule[], fileLengths: FileLen
     		line = firstError.trace.line;
 		}
         
-        testFileLocations.push({ file: testFile, line, message, pass, fail });
+        testFileLocations.push({ file: resolveTilde(testFile), line, message, pass, fail });
     }
 
     // sort by number of failing tests, file name
