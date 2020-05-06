@@ -1,6 +1,6 @@
 {
   "name": "kiwi-webpack-plugin",
-  "version": "0.0.6",
+  "version": "0.0.8",
   "description": "Test Runner for Webpack and the Kakoune editor",
   "main": "dist/main.js",
   "directories": {
@@ -9,9 +9,14 @@
   "scripts": {
     "start": "webpack --mode development -w",
     "build": "webpack --mode production",
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "cleanup": "rm dist/*_tests.js review_app/venv examples -rf"
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
+  "files": [
+  	"dist/main.js",
+  	"review_app/requirements.txt",
+  	"review_app/src/*.py",
+  	"review_app/*.sh"
+  ],
   "keywords": [
     "kiwi",
     "test-runner",
