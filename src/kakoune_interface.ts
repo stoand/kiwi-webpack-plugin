@@ -198,7 +198,7 @@ export function line_notifications(file_notifications: FileLabels) {
 /// #SPC-kakoune_interface.add_location_list_command
 export function add_location_list_command(name: string, locations: Location[]) {
     let contents = locations.map(({file, line, message}) =>
-    	`${file}:${line}:${message}`).join('\n');
+    	`${file}:${line}: ${message}`).join('\n');
 
     let location = path.join(tempDir, name);
     

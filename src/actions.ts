@@ -116,6 +116,7 @@ function setNotifications(modules: TestModule[]) {
 function addListCommands(modules: TestModule[]) {
     
     let failedTests = [];
+    let allTests = [];
 
 	let resolveTilde = (src: string) => {
     	let homeDir = process.env.HOME;
@@ -128,10 +129,16 @@ function addListCommands(modules: TestModule[]) {
 
     for (let mod of modules) {
         for (let test of mod.tests) {
+            let testFile = resolveTilde(test.trace.source);
+            let testLine = test.trace.line;
+
+            allTests.push({ file: testFile, line: testLine, message: test.name });
+            
             if (test.error) {
                 let errorFile = resolveTilde(test.error.trace.source);
                 let errorLine = test.error.trace.line;
-                failedTests.push({ file: errorFile, line: errorLine, message: test.error.message });
+                let message = `${test.name} - ${test.error.message}`;
+                failedTests.push({ file: errorFile, line: errorLine, message });
             }
         }
     }
@@ -139,4 +146,6 @@ function addListCommands(modules: TestModule[]) {
 
     // #SPC-actions.list_failed_tests
     add_location_list_command('failed_tests', failedTests);
+    // #SPC-actions.list_all_tests
+    add_location_list_command('all_tests', allTests);
 }
