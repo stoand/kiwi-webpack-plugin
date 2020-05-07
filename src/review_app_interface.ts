@@ -59,7 +59,7 @@ export function computeReviewAppTestResults(runResult: RunResult): TestResults {
         	}
 
         	testFileModule.tests.push({ name: test.name, line: test.trace.line, success: !test.error,
-        		error_message: test.error?.message || '', stacktrace: test.stack });
+        		error_message: test.error?.message || '', stacktrace: test.error?.stack || [] });
 
         	for (let covered in test.coveredFiles) {
             	let coveredFile = coveredFiles.find(cf => cf.source == covered);
