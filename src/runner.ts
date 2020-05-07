@@ -10,9 +10,9 @@ export type Position = sourceMap.MappedPosition;
 export type FileLengths = { [file: string]: number };
 export type FileCoverage = { [line: number]: boolean };
 export type CoveredFiles = { [path: string]: FileCoverage };
-export type TestError = { message: string, trace: Position, rawStack: string, notErrorInstance?: boolean };
-export type TestLog = { args: string[], trace: Position, rawStack: string };
-export type TestResult = { name: string, trace: Position, rawStack: string, error?: TestError,
+export type TestError = { message: string, trace: Position, stack: Position[], rawStack: string, notErrorInstance?: boolean };
+export type TestLog = { args: string[], trace: Position, stack: Position[], rawStack: string };
+export type TestResult = { name: string, trace: Position, stack: Position[], rawStack: string, error?: TestError,
 	consoleLogs: TestLog[], coveredFiles: CoveredFiles };
 export type TestModule = { name: string, tests: TestResult[] };
 export type InitRunner = Promise<(testSrc: string, mapSrc: any, lastRun: boolean) => Promise<RunResult>>;
@@ -116,19 +116,21 @@ export async function loadSourceMap(consumer: sourceMap.SourceMapConsumer) {
 
     return ({ column, line }: Position): Position => {
         let pos = consumer.originalPositionFor({ column, line });
+
+        let ignore = false;
+
+        for (let ignorePrefix of ignoreSourcePrefixes) {
+            if (pos?.source?.indexOf(sourceNamePrefix + ignorePrefix) == 0) {
+                ignore = true;
+            }
+        }
+
         return {
-            source: pos.source ? absoluteSourcePath(pos.source) : '',
+            source: pos.source && !ignore ? absoluteSourcePath(pos.source) : '',
             column: pos.column || 0,
             line: pos.line || 0,
         };
     };
-}
-
-function extractTrace(stack: string, row: number): Position {
-    let parts = stack.split('\n')[row].slice(-50).split(':');
-    let line = Number(parts[parts.length - 2]);
-    let column = Number(parts[parts.length - 1].replace(')', ''));
-    return { column, line, source: '' };
 }
 
 // #SPC-runner.launcher
@@ -223,11 +225,31 @@ export default async function launchInstance(headless: boolean) {
 
         initialCoverage = calculateCoverage(testCoverages.shift(), testSrc, mapPosition);
 
+
+        function extractTrace(stack: string, startRow: number): Position[] {
+            let positions = [];
+            
+            let lines = stack.split('\n');
+            for (let i = startRow; i < lines.length; i++) {
+                let item = lines[i];
+                let parts = item.slice(-50).split(':');
+                let line = Number(parts[parts.length - 2]);
+                let column = Number(parts[parts.length - 1].replace(')', ''));
+
+                let pos = mapPosition({ column, line, source: '' });
+                if (pos.source) {
+                    positions.push(pos);
+                }
+            }
+
+            return positions;
+        }
+
         // Apply sourcemaps
         modules.forEach((module: TestModule) => {
-            
             module.tests.forEach(test => {
-                test.trace = mapPosition(extractTrace(test.rawStack, 2));
+                test.stack = extractTrace(test.rawStack, 2);
+                test.trace = test.stack[0];
 
                 // takes the first item from testCoverages and computes what lines of what
                 // files where ran during the test
@@ -236,14 +258,18 @@ export default async function launchInstance(headless: boolean) {
                 if (test.error) {
                     // if "throw 1" instead of "throw new Error(1)" is used
                     if (test.error.notErrorInstance) {
-                        test.error.trace = test.trace;
+                        test.error.stack = extractTrace(test.rawStack, 2);
+                        
+                        test.error.trace = test.error.stack[0];
                         test.error.trace.line += 1;
                     } else {
-                        test.error.trace = mapPosition(extractTrace(test.error.rawStack, 1));
+                        test.error.stack = extractTrace(test.error.rawStack, 1);
+                        test.error.trace = test.error.stack[0];
                     }
                 }
                 test.consoleLogs.forEach(log => {
-                    log.trace = mapPosition(extractTrace(log.rawStack, 2));
+                    log.stack = extractTrace(log.rawStack, 2);
+                    log.trace = log.stack[0];
                 });
             });
         });
