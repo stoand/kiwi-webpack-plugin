@@ -2,9 +2,10 @@
 document.body.innerHTML = 'kiwi minimal sample app';
 
 export const asdf = () => {
-    let a = 4
+    let a: any = 4
 
-    throw new Error('asdf');
+	a.b = 4
+    // throw new Error('asdf');
     
     return a;
 }
