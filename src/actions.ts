@@ -111,8 +111,11 @@ function setNotifications(modules: TestModule[]) {
             });
 
             if (test.error) {
-                files[test.error.trace.source] = files[test.error.trace.source] || {};
-                files[test.error.trace.source][test.error.trace.line] = { text: test.error.message, color: 'error' };
+                // Display errors higher up in the stack as well - not just in the immediate file
+                for (let loc of test.error.stack) {
+                    files[loc.source] = files[loc.source] || {};
+                    files[loc.source][loc.line] = { text: test.error.message, color: 'error' };
+                }
             }
         });
     });
