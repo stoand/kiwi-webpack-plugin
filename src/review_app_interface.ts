@@ -77,6 +77,13 @@ export function computeReviewAppTestResults(runResult: RunResult): TestResults {
     	}
 	}
 
+	coveredFiles = coveredFiles.filter(cf => {
+    	for (let testFile of testFiles) {
+        	if (cf.source == testFile.source) return false;
+    	}
+    	return true;
+	});
+
 	// Try to replace the home path with a tilde to save path length
 
 	for (let testFile of testFiles) {

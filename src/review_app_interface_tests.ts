@@ -28,17 +28,19 @@ let testResults = computeReviewAppTestResults({ modules: mockModules, initialCov
 let { aggregations, test_files, covered_files } = testResults;
 
 expect(aggregations).to.eql({
-    total_coverage_percent: 8,
+    total_coverage_percent: 13,
     total_passed: 1,
     total_failed: 1,
 });
 
-// console.log(test_files[1])
-// console.log(test_files[1].modules[0])
+expect(test_files).to.eql([
+   { source: testFileHomeRelative1, modules: [{ name: 'mod1',
+   	 tests: [ { name: 'succ1', line: 10, success: true, error_message: '', stacktrace: [] } ] } ] }, 
+   { source: '/tmp/b', modules: [{ name: 'mod2',
+   	 tests: [ { name: 'fail1', line: 20, success: false, error_message: 'wrong', stacktrace: [] } ] } ] } 
+]);
 
-// expect(test_files).to.eql([
-//    { file_path: testFileHomeRelative1, modules: [{ name: 'mod1',
-//    	 tests: [ { name: 'succ1', line: 10, success: true, stacktrace: [] } ] } ] }, 
-//    { file_path: '/tmp/b', modules: [{ name: 'mod2',
-//    	 tests: [ { name: 'fail1', line: 20, success: false, stacktrace: [] } ] } ] } 
-// ]);
+expect(covered_files).to.eql([
+    { source: nonTestFileHomeRelative1, coverage_percent: 20 },
+    { source: '/tmp/d', coverage_percent: 10 },
+]);
