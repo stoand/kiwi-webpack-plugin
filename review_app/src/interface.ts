@@ -8,7 +8,7 @@ interface Aggregations {
 }
 
 interface StackTraceItem {
-    file_path: string;
+    source: string;
     line: number;
     column: number;
 }
@@ -27,12 +27,12 @@ interface TestModule {
 }
 
 interface TestFile {
-    file_path: string;
+    source: string;
     modules: Array<TestModule>;
 }
 
 interface CoveredFile {
-    file_path: string;
+    source: string;
     coverage_percent: number;
 }
 

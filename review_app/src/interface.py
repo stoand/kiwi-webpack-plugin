@@ -19,7 +19,7 @@ class Aggregations(Interface):
 
 @dataclass
 class StackTraceItem(Interface):
-    file_path: str
+    source: str
     line: int
     column: int
 
@@ -41,13 +41,13 @@ class TestModule(Interface):
 
 @dataclass
 class TestFile(Interface):
-    file_path: str
+    source: str
     modules: List[TestModule]
 
 
 @dataclass
 class CoveredFile(Interface):
-    file_path: str
+    source: str
     coverage_percent: int
 
 

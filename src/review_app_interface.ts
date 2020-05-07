@@ -3,7 +3,7 @@ const { spawn } = require('child_process');
 const path = require('path');
 const fs = require('fs');
 import { resolveTilde } from './actions';
-import { RunResult } from './runner';
+import { RunResult, FileCoverage } from './runner';
 import '../review_app/src/interface';
 
 const reviewAppDir = path.resolve(process.cwd(), 'node_modules/kiwi-webpack-plugin/review_app');
@@ -27,17 +27,20 @@ export function computeReviewAppTestResults(runResult: RunResult): TestResults {
     let { modules, fileLengths } = runResult;
 
 	let testFiles: TestFile[] = [];
-	let coveredFiles: CoveredFile[] = [];
+	let coveredFiles: (CoveredFile & { coverage: FileCoverage })[]= [];
+
+	let passed = 0;
+	let failed = 0;
 	
 	for (let mod of modules) {
     	for (let test of mod.tests) {
-        	let file_path = test.trace.source;
+        	let source = test.trace.source;
 
         	// try to find existing test file
         	// if it does not exist create it
-        	let testFile = testFiles.find(tf => tf.file_path == file_path);
+        	let testFile = testFiles.find(tf => tf.source == source);
         	if (!testFile) {
-            	testFile = { file_path, modules: [] };
+            	testFile = { source, modules: [] };
             	testFiles.push(testFile);
         	}
 
@@ -49,26 +52,59 @@ export function computeReviewAppTestResults(runResult: RunResult): TestResults {
             	testFile.modules.push(testFileModule);
         	}
 
+        	if (test.error) {
+            	failed++;
+        	} else {
+            	passed++;
+        	}
+
         	testFileModule.tests.push({ name: test.name, line: test.trace.line, success: !test.error,
-        		error_message: test.error?.message || '', stacktrace: [] });
+        		error_message: test.error?.message || '', stacktrace: test.stack });
+
+        	for (let covered in test.coveredFiles) {
+            	let coveredFile = coveredFiles.find(cf => cf.source == covered);
+            	if (!coveredFile) {
+                	coveredFile = { source: covered, coverage_percent: 0, coverage: {} };
+                	coveredFiles.push(coveredFile);
+            	}
+
+            	for (let line in test.coveredFiles[covered]) {
+                	if (test.coveredFiles[covered][line]) {
+                    	coveredFile.coverage[line] = true;
+                	}
+            	}
+        	}
     	}
 	}
 
 	// Try to replace the home path with a tilde to save path length
 
 	for (let testFile of testFiles) {
-    	testFile.file_path = resolveTilde(testFile.file_path);
+    	testFile.source = resolveTilde(testFile.source);
 	}
 
+	let totalCoveredLines = 0;
+	let totalLines = 0;
+
+	let computePercent = (v: number) => Math.floor(v * 100);
+	
 	for (let coveredFile of coveredFiles) {
-    	coveredFile.file_path = resolveTilde(coveredFile.file_path);
+    	let len = fileLengths[coveredFile.source];
+    	totalLines += len;
+    	coveredFile.source = resolveTilde(coveredFile.source);
+    	let coveredLines = Object.keys(coveredFile.coverage).length;
+    	totalCoveredLines += coveredLines;
+    	coveredFile.coverage_percent = computePercent(coveredLines / len);
+    	delete coveredFile.coverage;
 	}
+
+	let totalCoverage = computePercent(totalCoveredLines / totalLines);
     
     return {
         aggregations: {
-            total_coverage_percent: 0,
-            total_passed: 0,
-            total_failed: 0,
+            total_coverage_percent: totalCoverage,
+            total_passed: passed,
+            total_failed: failed,
         },
         test_files: testFiles,
         covered_files: coveredFiles,

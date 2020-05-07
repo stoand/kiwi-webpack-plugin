@@ -19,7 +19,7 @@ let mockTests2: TestResult[] = [
         consoleLogs: [], coveredFiles: { '/tmp/d': { 35: true } } },
 ];
 
-let mockFileLengths = { [nonTestFile1]: 5, '/tmp/d': 10 };
+let mockFileLengths = { [testFile1]: 20, [nonTestFile1]: 5, '/tmp/d': 10 };
 
 let mockModules: TestModule[] = [{ name: 'mod1', tests: mockTests1 }, { name: 'mod2', tests: mockTests2 }];
 
@@ -27,12 +27,11 @@ let testResults = computeReviewAppTestResults({ modules: mockModules, initialCov
 
 let { aggregations, test_files, covered_files } = testResults;
 
-// TODO
-// expect(aggregations).to.eql({
-//     total_coverage_percent: 80,
-//     total_passed: 80,
-//     total_failed: 80,
-// });
+expect(aggregations).to.eql({
+    total_coverage_percent: 8,
+    total_passed: 1,
+    total_failed: 1,
+});
 
 // console.log(test_files[1])
 // console.log(test_files[1].modules[0])
