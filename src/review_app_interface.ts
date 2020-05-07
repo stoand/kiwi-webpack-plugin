@@ -49,7 +49,8 @@ export function computeReviewAppTestResults(runResult: RunResult): TestResults {
             	testFile.modules.push(testFileModule);
         	}
 
-        	testFileModule.tests.push({ name: test.name, line: test.trace.line, success: !test.error, stacktrace: [] });
+        	testFileModule.tests.push({ name: test.name, line: test.trace.line, success: !test.error,
+        		error_message: test.error?.message || '', stacktrace: [] });
     	}
 	}
 

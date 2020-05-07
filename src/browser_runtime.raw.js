@@ -14,18 +14,12 @@ console.log = (...args) => {
         try {
             throw new Error();
         } catch (e) {
-            __kiwi_runningTest.consoleLogs.push({ args, trace: __kiwi_extractTrace(e.stack, 2) });
+            // trace: __kiwi_extractTrace(e.stack, 2)
+            __kiwi_runningTest.consoleLogs.push({ args, rawStack: e.stack });
         }
     }
 
     __kiwi_oldConsoleLog(...args);
-}
-
-function __kiwi_extractTrace(stack, row) {
-    let parts = stack.split('\n')[row].slice(-50).split(':');
-    let line = Number(parts[parts.length - 2]);
-    let column = Number(parts[parts.length - 1].replace(')', ''));
-    return { column, line };
 }
 
 async function __kiwi_runNextTest() {
@@ -46,10 +40,11 @@ async function __kiwi_runNextTest() {
         await test.run();
     } catch(e) {
         if (e instanceof Error) {
-            test.error = { message: e.message, trace: __kiwi_extractTrace(e.stack, 1) };
+            // trace: __kiwi_extractTrace(e.stack, 1), 
+            test.error = { message: e.message, rawStack: e.stack };
         } else {
             // The thrown value is not a real error and does not have a stack trace
-            test.error = { message: e.toString(), trace: undefined, notErrorInstance: true };
+            test.error = { message: e.toString(), notErrorInstance: true };
         }
     }
 
@@ -84,10 +79,10 @@ function it(name, run) {
     try {
         throw new Error();
     } catch (e) {
-        let trace = __kiwi_extractTrace(e.stack, 2);
 
+        // let trace = __kiwi_extractTrace(e.stack, 2);
         if (module) {
-            module.tests.push({ name, trace, run, error: undefined, consoleLogs: [] });
+            module.tests.push({ name, rawStack: e.stack, run, error: undefined, consoleLogs: [] });
         }
     }
 }

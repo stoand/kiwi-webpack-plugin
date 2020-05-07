@@ -9,13 +9,13 @@
   "scripts": {
     "start": "webpack --mode development -w",
     "build": "webpack --mode production",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "nodemon dist/unit_tests.js"
   },
   "files": [
-  	"dist/main.js",
-  	"review_app/requirements.txt",
-  	"review_app/src/*.py",
-  	"review_app/*.sh"
+    "dist/main.js",
+    "review_app/requirements.txt",
+    "review_app/src/*.py",
+    "review_app/*.sh"
   ],
   "keywords": [
     "kiwi",
@@ -48,6 +48,7 @@
     "chai": "^4.2.0",
     "chrome-launcher": "^0.13.0",
     "chrome-remote-interface": "^0.28.1",
+    "nodemon": "^2.0.3",
     "raw-loader": "^4.0.0",
     "source-map": "^0.7.3",
     "ts-loader": "^6.2.1",

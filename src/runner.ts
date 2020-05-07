@@ -10,9 +10,10 @@ export type Position = sourceMap.MappedPosition;
 export type FileLengths = { [file: string]: number };
 export type FileCoverage = { [line: number]: boolean };
 export type CoveredFiles = { [path: string]: FileCoverage };
-export type TestError = { message: string, trace: Position, notErrorInstance?: boolean };
-export type TestLog = { args: string[], trace: Position };
-export type TestResult = { name: string, trace: Position, error?: TestError, consoleLogs: TestLog[], coveredFiles: CoveredFiles };
+export type TestError = { message: string, trace: Position, rawStack: string, notErrorInstance?: boolean };
+export type TestLog = { args: string[], trace: Position, rawStack: string };
+export type TestResult = { name: string, trace: Position, rawStack: string, error?: TestError,
+	consoleLogs: TestLog[], coveredFiles: CoveredFiles };
 export type TestModule = { name: string, tests: TestResult[] };
 export type InitRunner = Promise<(testSrc: string, mapSrc: any, lastRun: boolean) => Promise<RunResult>>;
 
@@ -123,6 +124,13 @@ export async function loadSourceMap(consumer: sourceMap.SourceMapConsumer) {
     };
 }
 
+function extractTrace(stack: string, row: number): Position {
+    let parts = stack.split('\n')[row].slice(-50).split(':');
+    let line = Number(parts[parts.length - 2]);
+    let column = Number(parts[parts.length - 1].replace(')', ''));
+    return { column, line, source: '' };
+}
+
 // #SPC-runner.launcher
 export default async function launchInstance(headless: boolean) {
 
@@ -217,8 +225,9 @@ export default async function launchInstance(headless: boolean) {
 
         // Apply sourcemaps
         modules.forEach((module: TestModule) => {
+            
             module.tests.forEach(test => {
-                test.trace = mapPosition(test.trace);
+                test.trace = mapPosition(extractTrace(test.rawStack, 2));
 
                 // takes the first item from testCoverages and computes what lines of what
                 // files where ran during the test
@@ -230,11 +239,11 @@ export default async function launchInstance(headless: boolean) {
                         test.error.trace = test.trace;
                         test.error.trace.line += 1;
                     } else {
-                        test.error.trace = mapPosition(test.error.trace);
+                        test.error.trace = mapPosition(extractTrace(test.error.rawStack, 1));
                     }
                 }
                 test.consoleLogs.forEach(log => {
-                    log.trace = mapPosition(log.trace);
+                    log.trace = mapPosition(extractTrace(log.rawStack, 2));
                 });
             });
         });

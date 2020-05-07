@@ -29,6 +29,7 @@ class Test(Interface):
     name: str
     line: int
     success: bool
+    error_message: str
     stacktrace: List[StackTraceItem]
 
 

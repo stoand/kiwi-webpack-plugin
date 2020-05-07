@@ -17,6 +17,7 @@ interface Test {
     name: string;
     line: number;
     success: boolean;
+    error_message: string;
     stacktrace: Array<StackTraceItem>;
 }
 
