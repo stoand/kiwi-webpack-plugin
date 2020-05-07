@@ -248,7 +248,7 @@ export default async function launchInstance(headless: boolean) {
         // Apply sourcemaps
         modules.forEach((module: TestModule) => {
             module.tests.forEach(test => {
-                test.stack = extractTrace(test.rawStack, 3);
+                test.stack = extractTrace(test.rawStack, 2);
                 test.trace = test.stack[0];
 
                 // takes the first item from testCoverages and computes what lines of what
