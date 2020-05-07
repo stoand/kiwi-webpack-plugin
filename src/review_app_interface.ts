@@ -121,7 +121,7 @@ export function computeReviewAppTestResults(runResult: RunResult): TestResults {
 export function updateReviewAppDataSource(runResult: RunResult) {
     let resultFilePath = path.resolve(reviewAppDir, resultFileName);
 
-    fs.writeFile(resultFilePath, JSON.stringify(computeReviewAppTestResults(runResult)), (err: any) => {
+    fs.writeFile(resultFilePath, JSON.stringify(computeReviewAppTestResults(runResult), null, 2), (err: any) => {
         if (err) {
             console.error(err);
         }
