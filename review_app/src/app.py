@@ -14,7 +14,6 @@ test_results = TestResults.from_json(result_file_contents)
 
 app = Flask(__name__)
 
-
 @app.route('/')
 def hello_world():
     # TODO make awesome app using 'test_results' above

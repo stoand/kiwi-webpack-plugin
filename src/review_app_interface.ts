@@ -58,8 +58,10 @@ export function computeReviewAppTestResults(runResult: RunResult): TestResults {
             	passed++;
         	}
 
+        	let stacktrace = test.error?.stack.forEach(item => item.source = resolveTilde(item.source)) || [];
+
         	testFileModule.tests.push({ name: test.name, line: test.trace.line, success: !test.error,
-        		error_message: test.error?.message || '', stacktrace: test.error?.stack || [] });
+        		error_message: test.error?.message || '', stacktrace });
 
         	for (let covered in test.coveredFiles) {
             	let coveredFile = coveredFiles.find(cf => cf.source == covered);
