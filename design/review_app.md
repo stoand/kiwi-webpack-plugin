@@ -4,6 +4,9 @@ partof: REQ-purpose
 
 ## [[.interface]]
 
+Python and [Virtualenv](https://packaging.python.org/guides/installing-using-pip-and-virtual-environments/#installing-virtualenv)
+should be installed
+
 On startup [[SPC-webpack_plugin]] will setup the virtualenv and
 run the python server on port `8096` through `review_app/start.sh`.
 
