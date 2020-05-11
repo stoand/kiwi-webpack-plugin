@@ -30,6 +30,7 @@ body {
   height: 100px;
   margin-bottom: 2%;
   background: purple;
+  class: 50px;
 }
 
 #centerElement {

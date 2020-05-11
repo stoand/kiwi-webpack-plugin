@@ -4,7 +4,7 @@ export function runApp() {
 
 document.title = 'YUM DONUTS';
    document.body.innerHTML = `<div class = "container">
-   				<div class = "item"> Item 1 </div>
+   				<div class = "item" class> YUM DONUTS </div>
    				<div class = "item"> Item 2 </div>
    				<div id="centerElement" class = "item"> Item 3 </div>
    				<div class = "item"> Item 4 </div>
