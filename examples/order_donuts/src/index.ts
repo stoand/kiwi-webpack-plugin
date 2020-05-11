@@ -19,8 +19,7 @@ document.title = 'YUM DONUTS';
       <input type = "text" id="name" name ="name"<br>
       
       <select id="name1234">
-          <option value="Ioanni_Kapodistria">Ioanni Kapodistria </option>
-          <option value="Kentavrou">Kentavrou</option>
+          
       </select>
       
    </div>
@@ -28,9 +27,15 @@ document.title = 'YUM DONUTS';
 </div>
 `;
 	var i;
-	for (i = 0; i < 4; i++){
-    	console.log(i);
-    	
+	
+    	let select = document.querySelector ('#name1234');
+    	let names = ['Ioanni Kapodistria', 'Kentavrou', 'Korytsas','Lamprou Katsoni',
+    		'Lordou Vyronos', 'Mantos Mavrogenous','Nikitara',
+    		'Palaion Patron Germano',	'Petrompei Mavromichali',
+    		'Porfyriou Dikaiou'];
+    	for (i = 0; i <names.length; i++){
+        	console.log(i);
+    	}
 
 
 	
