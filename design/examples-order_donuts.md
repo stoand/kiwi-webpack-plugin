@@ -8,6 +8,8 @@ The name of the fictitous company is `Yum Donuts`.
 
 This name will be displayed in a title bar that is at the top of the page.
 
+Also find a stylized picture of a donut and put it after the title.
+
 ## [[.start]]
 
 Before the customer can select what they want to order,
