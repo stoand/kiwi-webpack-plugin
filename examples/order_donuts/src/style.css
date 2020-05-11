@@ -1,5 +1,7 @@
 body {
     background: yellow;
+    padding: 0;
+    margin: 0;
 }
 
 .blue {
@@ -10,19 +12,27 @@ body {
 .red {
     background: red;
 }
+     
+
 .container {
-    display: flex;
-    background: pink;
-    padding: 5px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  background: pink;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 100%;
 }
 
 .item {
-    flex-grow: 1;
-    height: 100px;
-    background: purple;
-    color: white;
+  width: 48%;
+  height: 100px;
+  margin-bottom: 2%;
+  background: purple;
 }
 
-.item + .item {
-    margin-left: 2%;
+#centerElement {
+  width: 100%;
 }
+

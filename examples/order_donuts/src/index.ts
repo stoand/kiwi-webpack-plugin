@@ -6,16 +6,19 @@ document.title = 'YUM DONUTS';
    document.body.innerHTML = `<div class = "container">
    				<div class = "item"> Item 1 </div>
    				<div class = "item"> Item 2 </div>
-   				<div class = "item"> Item 3 </div>
+   				<div id="centerElement" class = "item"> Item 3 </div>
+   				<div class = "item"> Item 4 </div>
    				</div>`;
 
     let value = 0;
+
+    let centerElement: any = document.querySelector('#centerElement');
 
 
     let counter = document.createElement('div');
     counter.className = 'blue';
     counter.innerText = value.toString();
-    document.body.appendChild(counter);
+    centerElement.appendChild(counter);
 
     let button = document.createElement('input');
     button.className = 'red';
@@ -28,7 +31,7 @@ document.title = 'YUM DONUTS';
         counter.innerText = value.toString();
     });
 
-    document.body.appendChild(button);
+    centerElement.appendChild(button);
 
 }
 
