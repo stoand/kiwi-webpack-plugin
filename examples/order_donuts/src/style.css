@@ -10,3 +10,19 @@ body {
 .red {
     background: red;
 }
+.container {
+    display: flex;
+    background: pink;
+    padding: 5px;
+}
+
+.item {
+    flex-grow: 1;
+    height: 100px;
+    background: purple;
+    color: white;
+}
+
+.item + .item {
+    margin-left: 2%;
+}
