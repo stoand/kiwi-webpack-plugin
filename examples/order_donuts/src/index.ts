@@ -8,7 +8,7 @@ document.title = 'YUM DONUTS';
        				<img src = "https://www.pngitem.com/pimgs/m/375-3758460_file-emojione-f-svg-donut-clipart-png-transparent.png" alt = "Donut" width = "100" height = "100"> 
    				</div>
    				<div class = "item"> Item 2 </div>
-   				<div class = "centerElement item"> Item 3 </div>
+   				<div class = "centerElement item"> Enter Your Zip Code </div>
    				<div class = "item"> Item 4 </div>
    				</div>`;
 
@@ -25,7 +25,7 @@ document.title = 'YUM DONUTS';
     let button = document.createElement('input');
     button.className = 'red';
     button.type = 'button';
-    button.value = 'Choose your location';
+    button.value = 'Choose Your Location';
     
 
     button.addEventListener('click', () => {
