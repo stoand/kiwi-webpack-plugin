@@ -1,6 +1,6 @@
 body {
     background: yellow;
-    padding: 0;
+    paddin: 0;
     margin: 0;
 }
 
@@ -30,7 +30,7 @@ body {
   height: 100px;
   margin-bottom: 2%;
   background: purple;
-  class: 50px;
+ font-size: 50px;
 }
 
 #centerElement {
