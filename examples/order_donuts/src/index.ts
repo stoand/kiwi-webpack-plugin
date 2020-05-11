@@ -2,9 +2,15 @@ require('./style.css');
 
 export function runApp() {
 
-    document.body.innerHTML = 'todo make awesome app';
+document.title = 'YUM DONUTS';
+   document.body.innerHTML = `<div class = "container">
+   				<div class = "item"> Item 1 </div>
+   				<div class = "item"> Item 2 </div>
+   				<div class = "item"> Item 3 </div>
+   				</div>`;
 
     let value = 0;
+
 
     let counter = document.createElement('div');
     counter.className = 'blue';
@@ -14,7 +20,8 @@ export function runApp() {
     let button = document.createElement('input');
     button.className = 'red';
     button.type = 'button';
-    button.value = 'Asdf';
+    button.value = 'Choose your location';
+    
 
     button.addEventListener('click', () => {
         value++;
