@@ -8,7 +8,8 @@ document.title = 'YUM DONUTS';
        				<img src = "https://www.pngitem.com/pimgs/m/375-3758460_file-emojione-f-svg-donut-clipart-png-transparent.png" alt = "Donut" width = "100" height = "100"> 
    				</div>
    				<div class = "item"> Item 2 </div>
-			<div class = "centerElement item"> Enter Your Zip Code <label for = "name"> Street Name</label><br> <input type = "text" id="name" name ="name"<br> </div>
+			<div class = "centerElement item"> Enter Your Zip Code <label for = "name"> Street Name</label><br> <input type = "text" id="name" name ="name"<br> <select id = "name">
+		<option value="Ioanni Kapodistria>Ioanni Kapodistria </option> <option value="Kentavrou">Kentavrou</option></div>
    				<div class = "item"> Item 4 </div>
    				</div>`;
 
