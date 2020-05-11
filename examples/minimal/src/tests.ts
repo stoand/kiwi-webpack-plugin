@@ -50,7 +50,7 @@ function thirdModuleAction1() {
     return a;
 }
 
-// SPC-runner.bug_good_coverage_overriding_bad
+// SPC-actions.bug_good_coverage_overriding_bad
 describe('Demonstrate the presidence of failing test coverage', () => {
     it('first test fails', () => {
         expect(thirdModuleAction1()).to.equal(5);
