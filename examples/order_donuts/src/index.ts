@@ -4,8 +4,9 @@ export function runApp() {
 
 document.title = 'YUM DONUTS';
    document.body.innerHTML = `<div class = "container">
-   				<div class = "item page-title"> YUM DONUTS </div>
-   				<img src = "donut.png" alt = "Donut" width = "100" height = "100"> 
+   				<div class = "item page-title"> YUM DONUTS
+       				<img src = "https://www.pngitem.com/pimgs/m/375-3758460_file-emojione-f-svg-donut-clipart-png-transparent.png" alt = "Donut" width = "100" height = "100"> 
+   				</div>
    				<div class = "item"> Item 2 </div>
    				<div class = "centerElement item"> Item 3 </div>
    				<div class = "item"> Item 4 </div>
