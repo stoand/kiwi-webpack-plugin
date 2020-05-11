@@ -6,13 +6,13 @@ document.title = 'YUM DONUTS';
    document.body.innerHTML = `<div class = "container">
    				<div class = "item page-title"> YUM DONUTS </div>
    				<div class = "item"> Item 2 </div>
-   				<div id="centerElement" class = "item"> Item 3 </div>
+   				<div class = "centerElement item"> Item 3 </div>
    				<div class = "item"> Item 4 </div>
    				</div>`;
 
     let value = 0;
 
-    let centerElement: any = document.querySelector('#centerElement');
+    let centerElement: any = document.querySelector('.centerElement');
 
 
     let counter = document.createElement('div');
