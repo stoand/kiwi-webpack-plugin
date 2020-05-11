@@ -82,6 +82,12 @@ collected from multiple tests that were run.
 
 ## [[.bug_initial_coverage_association]]
 
+When any test fails, the initial coverage area should be marked as contributing to the failure.
+
+## [[.bug_good_coverage_overriding_bad]]
+
+Failing coverage should always override pass test coverage.
+
 ## [[.bug_stops_responding]]
 
 After a while it can happen that the runner doesn't process changes anymore.
