@@ -9,7 +9,8 @@
   "scripts": {
     "start": "webpack --mode development -w",
     "build": "webpack --mode production",
-    "test": "nodemon dist/unit_tests.js"
+    "test-once": "webpack --mode development && mocha dist/unit_tests.js",
+    "test": "nodemon -e ts --ignore dist -x 'npm run test-once'"
   },
   "files": [
     "dist/main.js",
@@ -41,6 +42,7 @@
   "homepage": "https://github.com/stoand/kiwi#readme",
   "dependencies": {
     "@types/chai": "^4.2.11",
+    "@types/mocha": "^7.0.2",
     "@types/node": "^13.9.0",
     "@types/source-map": "^0.5.7",
     "@types/webpack": "^4.41.7",
@@ -48,6 +50,7 @@
     "chai": "^4.2.0",
     "chrome-launcher": "^0.13.0",
     "chrome-remote-interface": "^0.28.1",
+    "mocha": "^7.1.2",
     "nodemon": "^2.0.3",
     "raw-loader": "^4.0.0",
     "source-map": "^0.7.3",

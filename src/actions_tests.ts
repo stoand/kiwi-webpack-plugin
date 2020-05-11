@@ -1,7 +1,6 @@
 import { computeLocationLists } from './actions';
 import { TestModule, TestResult } from './runner';
 import { expect } from 'chai';
-import { describe, it } from './unit_test_helpers';
 
 describe('Location List Computation', () => {
 
@@ -53,4 +52,9 @@ describe('Location List Computation', () => {
             { file: '/tmp/d', line: 35, message: '[10%] 0/1 - wrong', pass: 0, fail: 1, coveragePercent: 10 },
             { file: nonTestFileHomeRelative1, line: 1, message: '[20%] 1/0', pass: 1, fail: 0, coveragePercent: 20 }]);
     });
+});
+
+describe('Line Status Computation', () => {
+
+    // TODO
 });
