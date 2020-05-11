@@ -30,12 +30,15 @@ body {
   height: 100px;
   margin-bottom: 2%;
   background: purple;
- font-size: 50px;
+ 
 }
 
 .page-title {
     color: green;
+    font-size: 30px;
 }
+
+
 
 .centerElement {
   width: 100%;
