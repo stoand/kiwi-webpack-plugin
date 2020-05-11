@@ -33,6 +33,10 @@ body {
  font-size: 50px;
 }
 
+.page-title {
+    color: green;
+}
+
 #centerElement {
   width: 100%;
 }
