@@ -1,48 +1,21 @@
 import { expect } from 'chai';
-import { asdf,runApp } from './index';
+import { runApp } from './index';
 
-function a2() {
-    // throw 3;
-}
+describe('Start Page', () => {
 
-describe('First Module', () => {
-    it('this should work', () => {
-
-        a2();
-        expect(1).to.equal(1);
-
+    it('should load without problems', () => {
         runApp();
     });
-
-    it('this should fail', () => {
-
-        // asdf();
-        let a = 1;
-
-        // asdf();
-        // asdf();
+    
+    it('should display a title', () => {
+        let titleElement : any = document.querySelector('.page-title');
+        let expectedTitleText = 'YUM DONUTS';
         
-        expect(asdf()).to.equal(4);
+        // expect(titleElement.innerText).to.equal(expectedTitleText);
     });
-});
 
-describe('Second Module', () => {
-   
-
-    it('another working test', async () => {
-
-        await new Promise(resolve => setTimeout(resolve, 0));
-        expect(5).to.equal(5);
-
-        let a = true;
-
-        if (a) {
-            console.log(1);
-            console.log(2);
-        }
-
-        // for (let i = 0; i <= 6; i++) {
-        //     console.log(2);
-        // }
+    it('should display an image', () => {
+        let imageElement : any = document.querySelector('.page-title img');
+        // expect(imageElement != undefined).to.equal(true);
     });
 });
