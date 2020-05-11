@@ -53,12 +53,12 @@ export function runActions(runResult: RunResult) {
     addListCommands(modules, fileLengths);
 }
 
-// #SPC-actions.set_line_statuses
-function setLineStatuses(modules: TestModule[], initialCoverage: CoveredFiles) {
-
+function computeLineStatuses(runs: ({coverage: CoveredFiles, success: boolean})[]) {
+  
     let fileStatuses: FileStatuses = {};
 
-    let handleCoverage = (coverage: CoveredFiles, success: boolean) => {
+    for (let run of runs) {
+        let { coverage, success } = run;
         for (let filePath in coverage) {
             if (!fileStatuses[filePath]) fileStatuses[filePath] = {};
             let file = coverage[filePath];
@@ -83,16 +83,24 @@ function setLineStatuses(modules: TestModule[], initialCoverage: CoveredFiles) {
         }
     }
 
-    handleCoverage(initialCoverage, true);
+    return fileStatuses;
+}
 
+// #SPC-actions.set_line_statuses
+function setLineStatuses(modules: TestModule[], initialCoverage: CoveredFiles) {
+
+
+	let testCoverages = [{coverage: initialCoverage, success: true}];
+	
     for (let module of modules) {
         for (let test of module.tests) {
-            handleCoverage(test.coveredFiles, test.error == undefined);
+            testCoverages.push({ coverage: test.coveredFiles, success: test.error == undefined });
         }
     }
-
-
-    line_statuses(fileStatuses);
+    
+    let fileStatuses = computeLineStatuses(testCoverages);
+    
+    return line_statuses(fileStatuses);
 }
 
 // #SPC-actions.set_notifications
