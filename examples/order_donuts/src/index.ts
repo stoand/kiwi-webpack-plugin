@@ -2,6 +2,8 @@ require('./style.css');
 
 export function runApp() {
 
+    console.log('asdf');
+
 document.title = 'YUM DONUTS';
    document.body.innerHTML = `
    
@@ -25,7 +27,13 @@ document.title = 'YUM DONUTS';
    <div class = "item"> Item 4 </div>
 </div>
 `;
+	var i;
+	for (i = 0; i < 4; i++){
+    	console.log(i);
+    	
 
+
+	
     let value = 0;
 
     let centerElement: any = document.querySelector('.centerElement');
