@@ -80,6 +80,7 @@ A list of files that ran while the test executed with a run count for every line
 Ensures that correct coverage information is
 collected from multiple tests that were run.
 
+## [[.bug_initial_coverage_association]]
 
 ## [[.bug_stops_responding]]
 
