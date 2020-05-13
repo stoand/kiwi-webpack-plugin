@@ -40,13 +40,13 @@ export default function handleTestRun(runResult: RunResult) {
 }
 
 export function runActions(runResult: RunResult) {
-    let { modules, initialCoverage, fileLengths } = runResult;
+    let { modules, fileLengths } = runResult;
     
     recreateTmpDir();
 
 	init_highlighters();
 
-    setLineStatuses(modules, initialCoverage);
+    setLineStatuses(modules);
         
     setNotifications(modules);
 
@@ -87,10 +87,9 @@ export function computeLineStatuses(runs: ({coverage: CoveredFiles, success: boo
 }
 
 // #SPC-actions.set_line_statuses
-function setLineStatuses(modules: TestModule[], initialCoverage: CoveredFiles) {
+function setLineStatuses(modules: TestModule[]) {
 
-
-	let testCoverages = [{coverage: initialCoverage, success: true}];
+	let testCoverages = [];
 	
     for (let module of modules) {
         for (let test of module.tests) {

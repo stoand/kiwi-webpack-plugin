@@ -17,9 +17,9 @@ export type TestResult = { name: string, trace: Position, stack: Position[], raw
 export type TestModule = { name: string, tests: TestResult[] };
 export type InitRunner = Promise<(testSrc: string, mapSrc: any, lastRun: boolean) => Promise<RunResult>>;
 
-export type RunResult = { modules: TestModule[], initialCoverage: CoveredFiles, fileLengths: FileLengths };
+export type RunResult = { modules: TestModule[], fileLengths: FileLengths };
 
-export const emptyRunResult = { modules: [], initialCoverage: {}, fileLengths: {} };
+export const emptyRunResult = { modules: [], fileLengths: {} };
 
 let browserRuntime = require('./browser_runtime.raw.js').default;
 
@@ -177,13 +177,7 @@ export default async function launchInstance(headless: boolean) {
         let mapPosition = await loadSourceMap(srcMapConsumer);
 
         let testCoverages: any[] = [];
-
-        await Profiler.startPreciseCoverage({ callCount: true, detailed: true });
-
-        await Runtime.evaluate({ expression: testSrc });
-
-        testCoverages.push(await Profiler.takePreciseCoverage());
-
+        
         let testCounter = 0;
 
         let modules: TestModule[] = [];
@@ -250,11 +244,6 @@ export default async function launchInstance(headless: boolean) {
             }
         }
 
-        let initialCoverage: any;
-
-        initialCoverage = calculateCoverage(testCoverages.shift(), testSrc, mapPosition);
-
-
         function extractTrace(stack: string, startRow: number): Position[] {
             let positions = [];
             
@@ -303,6 +292,6 @@ export default async function launchInstance(headless: boolean) {
             });
         });
 
-        return { modules, initialCoverage, fileLengths };
+        return { modules, fileLengths };
     }
 }

@@ -25,7 +25,7 @@ let mockModules: TestModule[] = [{ name: 'mod1', tests: mockTests1 }, { name: 'm
 
 describe('Review App', () => {
 
-    let testResults = computeReviewAppTestResults({ modules: mockModules, initialCoverage: {}, fileLengths: mockFileLengths });
+    let testResults = computeReviewAppTestResults({ modules: mockModules, fileLengths: mockFileLengths });
 
     let { aggregations, test_files, covered_files } = testResults;
 
