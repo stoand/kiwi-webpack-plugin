@@ -18,14 +18,6 @@ __For other covered files:__
 
 Set line status indicators depending on coverage and involvement with failed tests.
 
-[[.bug_initial_coverage_association]]
-
-When any test fails, the initial coverage area should be marked as contributing to the failure.
-
-[[.bug_good_coverage_overriding_bad]]
-
-Failing coverage should always override pass test coverage.
-
 ## [[.list_failed_tests]]
 
 Displays an list of failed tests and what line each test was defined on.

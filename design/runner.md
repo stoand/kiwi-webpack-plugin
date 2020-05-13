@@ -80,6 +80,11 @@ A list of files that ran while the test executed with a run count for every line
 Ensures that correct coverage information is
 collected from multiple tests that were run.
 
+[[.tst-coverage_association]]
+
+When any test fails, all covered lines that ran previous to it should
+be marked as contributing to a failure.
+
 ## [[.bug_stops_responding]]
 
 After a while it can happen that the runner doesn't process changes anymore.
