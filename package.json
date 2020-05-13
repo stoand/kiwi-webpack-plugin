@@ -10,7 +10,7 @@
     "start": "webpack --mode development -w",
     "build": "webpack --mode production",
     "test-once": "webpack --mode development && mocha dist/unit_tests.js",
-    "test": "nodemon -e ts --ignore dist -x 'npm run test-once'"
+    "test": "webpack --mode development && webpack --mode development -w & mocha dist/unit_tests.js -w & wait"
   },
   "files": [
     "dist/main.js",
