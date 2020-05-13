@@ -188,14 +188,7 @@ export default async function launchInstance(headless: boolean) {
             
             await Runtime.evaluate({ expression: testSrc });
             
-            // await Profiler.stopPreciseCoverage();
-            
-            await Runtime.evaluate({ expression: '__kiwi_initModules()' });
-            
-            // await Profiler.startPreciseCoverage({ callCount: true, detailed: true });
-            
             // #SPC-runner.async
-            // Runtime.evaluate({ expression: 'location.reload()' });
             let testRun = (await Runtime.evaluate({ expression: `__kiwi_runNextTest(${testCounter})`, awaitPromise: true }))?.result?.value;
             
             if (!testRun || testRun == 'done') {
