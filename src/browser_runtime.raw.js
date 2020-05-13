@@ -1,9 +1,6 @@
 let __kiwi_testModules = [];
 let __kiwi_definingModule;
 
-let __kiwi_currentModule = 0;
-let __kiwi_currentTest = 0;
-
 let __kiwi_runningTest;
 let __kiwi_oldConsoleLog = console.log;
 
@@ -22,19 +19,22 @@ console.log = (...args) => {
     __kiwi_oldConsoleLog(...args);
 }
 
-async function __kiwi_runNextTest() {
-    let module = __kiwi_testModules[__kiwi_currentModule];
+async function __kiwi_runNextTest(counter) {
 
-    // No modules defined
-    if (!module) return '[]';
+    let testRefs = [];
 
-    let test = module.tests[__kiwi_currentTest];
+    for (let mod of __kiwi_testModules) {
+        for (let test of mod.tests) {
+            testRefs.push({ mod: mod.name, testRef: test });
+        }
+    }
 
-    // No tests defined
-    if (!test) return '[]';
-
+    let test = testRefs[counter].testRef;
+    
+    if (!test) return 'done';
+    
     __kiwi_runningTest = test;
-
+    
     // #SPC-runner.errors
     try {
         await test.run();
@@ -48,21 +48,7 @@ async function __kiwi_runNextTest() {
         }
     }
 
-    __kiwi_currentTest++;
-
-    if( !module.tests[__kiwi_currentTest]) {
-        __kiwi_currentTest = 0;
-        __kiwi_currentModule++;
-    }
-
-    if( !__kiwi_testModules[__kiwi_currentModule]) {
-        let modules = __kiwi_testModules.concat();
-        __kiwi_currentModule = 0;
-        __kiwi_testModules = [];
-        return JSON.stringify(modules);
-    }
-
-    return JSON.stringify(false);
+    return JSON.stringify(testRefs[counter]);
 }
 
 function describe(name, run) {

@@ -176,7 +176,6 @@ export default async function launchInstance(headless: boolean) {
         
         let mapPosition = await loadSourceMap(srcMapConsumer);
 
-        let testResult = 'false';
         let testCoverages: any[] = [];
 
         await Profiler.startPreciseCoverage({ callCount: true, detailed: true });
@@ -185,13 +184,38 @@ export default async function launchInstance(headless: boolean) {
 
         testCoverages.push(await Profiler.takePreciseCoverage());
 
-        while (testResult === 'false') {
+        let testCounter = 0;
+
+        let modules: TestModule[] = [];
+
+        while (true) {
             await Profiler.startPreciseCoverage({ callCount: true, detailed: true });
             // #SPC-runner.async
-            testResult = (await Runtime.evaluate({ expression: '__kiwi_runNextTest()', awaitPromise: true })).result.value;
+            // Runtime.evaluate({ expression: 'location.reload()' });
+            let testRun = (await Runtime.evaluate({ expression: `__kiwi_runNextTest(${testCounter})`, awaitPromise: true }))?.result?.value;
+            
+            if (!testRun || testRun == 'done') {
+                break;
+            } else {
+                let run = JSON.parse(testRun);
+                let mod = modules.find(m => m.name == run.mod);
+                if (!mod) {
+                    mod = { name: run.mod, tests: [] };
+                    modules.push(mod);
+                }
+
+                mod.tests.push(run.testRef);
+            }
+            
+            testCounter++;
 
             testCoverages.push(await Profiler.takePreciseCoverage());
+            
+            // await Page.reload();
+            // await Page.loadEventFired();
         }
+
+        console.log(modules);
 
         chrome.kill();
 
@@ -218,8 +242,6 @@ export default async function launchInstance(headless: boolean) {
                 	srcMapConsumer.sourcesContent[sourceIndex].split('\n').length - 1;
             }
         }
-
-        let modules: TestModule[] = JSON.parse(testResult);
 
         let initialCoverage: any;
 
