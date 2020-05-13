@@ -179,14 +179,14 @@ export default async function launchInstance(headless: boolean) {
         let testResult = 'false';
         let testCoverages: any[] = [];
 
-        await Profiler.startPreciseCoverage({ callCount: false, detailed: true });
+        await Profiler.startPreciseCoverage({ callCount: true, detailed: true });
 
         await Runtime.evaluate({ expression: testSrc });
 
         testCoverages.push(await Profiler.takePreciseCoverage());
 
         while (testResult === 'false') {
-            await Profiler.startPreciseCoverage({ callCount: false, detailed: true });
+            await Profiler.startPreciseCoverage({ callCount: true, detailed: true });
             // #SPC-runner.async
             testResult = (await Runtime.evaluate({ expression: '__kiwi_runNextTest()', awaitPromise: true })).result.value;
 

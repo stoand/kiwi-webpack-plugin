@@ -53,7 +53,7 @@ export function runActions(runResult: RunResult) {
     addListCommands(modules, fileLengths);
 }
 
-function computeLineStatuses(runs: ({coverage: CoveredFiles, success: boolean})[]) {
+export function computeLineStatuses(runs: ({coverage: CoveredFiles, success: boolean})[]) {
   
     let fileStatuses: FileStatuses = {};
 
