@@ -245,6 +245,9 @@ export default async function launchInstance(headless: boolean) {
             return positions;
         }
 
+        // #SPC-runner.tst-coverage_association
+        let filesCoveredSoFar: any = {};
+
         // Apply sourcemaps
         modules.forEach((module: TestModule) => {
             module.tests.forEach(test => {
@@ -253,7 +256,12 @@ export default async function launchInstance(headless: boolean) {
 
                 // takes the first item from testCoverages and computes what lines of what
                 // files where ran during the test
-                test.coveredFiles = calculateCoverage(testCoverages.shift(), testSrc, mapPosition);
+                let coverages = calculateCoverage(testCoverages.shift(), testSrc, mapPosition);
+                for (let file in coverages) {
+                    filesCoveredSoFar[file] = { ...coverages[file], ...(filesCoveredSoFar[file] || {}) }
+                }
+
+                test.coveredFiles = filesCoveredSoFar;
 
                 if (test.error) {
                     // if "throw 1" instead of "throw new Error(1)" is used
