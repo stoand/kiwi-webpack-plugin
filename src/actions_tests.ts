@@ -1,4 +1,4 @@
-import { computeLocationLists } from './actions';
+import { computeLocationLists, computeLineStatuses } from './actions';
 import { TestModule, TestResult } from './runner';
 import { expect } from 'chai';
 
@@ -56,5 +56,16 @@ describe('Location List Computation', () => {
 
 describe('Line Status Computation', () => {
 
-    // TODO
+    let runs: any = [
+        { coverage: { 'file1': { 1: true } }, success: true },
+        { coverage: { 'file1': { 2: true } }, success: true },
+        { coverage: {}, success: true }, 
+        { coverage: { 'file1': { 1: true } }, success: false },
+    ];
+
+    let fileStatuses = computeLineStatuses(runs);
+
+    it('coverage of failing tests takes precedence', () => {
+        expect(fileStatuses['file1'][0]).to.eql('fail');
+    });
 });
