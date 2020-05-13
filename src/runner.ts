@@ -189,7 +189,17 @@ export default async function launchInstance(headless: boolean) {
         let modules: TestModule[] = [];
 
         while (true) {
+            
             await Profiler.startPreciseCoverage({ callCount: true, detailed: true });
+            
+            await Runtime.evaluate({ expression: testSrc });
+            
+            // await Profiler.stopPreciseCoverage();
+            
+            await Runtime.evaluate({ expression: '__kiwi_initModules()' });
+            
+            // await Profiler.startPreciseCoverage({ callCount: true, detailed: true });
+            
             // #SPC-runner.async
             // Runtime.evaluate({ expression: 'location.reload()' });
             let testRun = (await Runtime.evaluate({ expression: `__kiwi_runNextTest(${testCounter})`, awaitPromise: true }))?.result?.value;
@@ -211,11 +221,8 @@ export default async function launchInstance(headless: boolean) {
 
             testCoverages.push(await Profiler.takePreciseCoverage());
             
-            // await Page.reload();
-            // await Page.loadEventFired();
+            await Page.reload();
         }
-
-        console.log(modules);
 
         chrome.kill();
 

@@ -4,6 +4,8 @@ let __kiwi_definingModule;
 let __kiwi_runningTest;
 let __kiwi_oldConsoleLog = console.log;
 
+let __kiwi_moduleFunctions = [];
+
 // #SPC-runner.logs
 console.log = (...args) => {
     if (__kiwi_runningTest) {
@@ -17,6 +19,17 @@ console.log = (...args) => {
     }
 
     __kiwi_oldConsoleLog(...args);
+}
+
+// keep this separate to avoid descriptions
+// showing involvement with failing tests
+function __kiwi_initModules() {
+    for (let m of __kiwi_moduleFunctions) {
+        let { run, module } = m;
+        __kiwi_definingModule = module;
+        run();
+        __kiwi_definingModule = undefined;
+    }
 }
 
 async function __kiwi_runNextTest(counter) {
@@ -54,9 +67,7 @@ async function __kiwi_runNextTest(counter) {
 function describe(name, run) {
     let module = { name, tests: [] };
     __kiwi_testModules.push(module);
-    __kiwi_definingModule = module;
-    run();
-    __kiwi_definingModule = undefined;
+    __kiwi_moduleFunctions.push({ module, run });
 }
 
 function it(name, run) {
