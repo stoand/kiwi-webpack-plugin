@@ -204,8 +204,10 @@ export function add_location_list_command(name: string, locations: Location[]) {
     
     writeFileSync(location, contents);
 
+    let nameWithDashes = name.replace(/_/g, '-');
+
     let commands = `
-        define-command -override kiwi_list_${name} %{
+        define-command -override kiwi-list-${nameWithDashes} %{
            edit! -readonly -existing "${location}"
            set-option buffer filetype grep
         }
