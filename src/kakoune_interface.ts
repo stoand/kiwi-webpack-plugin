@@ -240,7 +240,7 @@ export function register_full_notifications(notifications: FullNotification[]) {
         return `
             eval %sh{
                 sum=$(echo -n "$kak_buffile:$kak_cursor_line" | md5sum)
-                [ "$sum" = "${hashWithDash}" ] && echo "edit -existing ${contentsPath}"
+                [ "$sum" = "${hashWithDash}" ] && echo "edit! -existing ${contentsPath}"
             }
         `;
     });
