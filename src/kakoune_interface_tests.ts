@@ -6,7 +6,8 @@
 // in isolation while in development.
 
 import { init_highlighters, line_statuses, recreateTmpDir,
-	line_notifications, add_location_list_command, jump_to_line } from './kakoune_interface';
+	line_notifications, add_location_list_command, jump_to_line,
+	register_full_notifications } from './kakoune_interface';
 import path from 'path';
 
 // Test the editor interactions while editing this file
@@ -49,7 +50,17 @@ function test_add_location_list_command() {
 }
 /// #SPC-kakoune_interface.tst-jump_to_line
 function test_jump_to_line() {
-	jump_to_line('src/kakoune_interface_tests.ts', 60);    
+	jump_to_line('src/kakoune_interface_tests.ts', 60);
+}
+
+
+/// #SPC-kakoune_interface.tst-register_full_notifications
+function test_register_full_notifications() {
+    let notifications = [
+        { file: 'src/kakoune_interface_tests.ts', line: 70, json: '{a:1}'},
+    ];
+    
+    register_full_notifications(notifications);
 }
 
 init_highlighters();

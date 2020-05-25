@@ -69,7 +69,8 @@ Jumps to a given file and line.
 
 Ensure the command works but only on lines assigned to have jump navigation.
 
-## [[.open_full_notification]]
+## [[.register_full_notifications]]
 
-Add json files that will be invoked when the `kiwi-open-full-notification`
-command is invoked on the respective files and lines.
+Add json files that will be invoked when the `kiwi-open-notification` command is invoked on the respective files and lines.
+
+[[.tst-register_full_notifications]]

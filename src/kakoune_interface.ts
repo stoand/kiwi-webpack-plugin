@@ -39,6 +39,8 @@ export type FileLabels = { [file: string]: LineLabels };
 
 export type Location = { file: string, line: number, message: string }
 
+export type FullNotification = { file: string, line: number, json: string };
+
 export function recreateTmpDir() {
     rmdirSync(tempDir, { recursive: true });
     mkdirSync(tempDir, { recursive: true });
@@ -219,4 +221,9 @@ export function add_location_list_command(name: string, locations: Location[]) {
 /// #SPC-kakoune_interface.jump_to_line
 export function jump_to_line(file: string, line: number) {
     command_all(`edit! -existing "${file}" ${line}`);
+}
+
+/// #SPC-kakoune_interface.open_full_notification
+export function open_full_notification(notifications: FullNotification[]) {
+    console.log('TODO', notifications);
 }
