@@ -1,6 +1,6 @@
 import { RunResult, TestModule, CoveredFiles, TestError, FileLengths, FileCoverage } from './runner';
-import { init_highlighters, recreateTmpDir, add_location_list_command, line_notifications,
-        	line_statuses, running_instances, FileLabels, FileStatuses, Location } from './kakoune_interface';
+import { init_highlighters, recreateTmpDir, add_location_list_command, line_notifications, register_full_notifications,
+        	line_statuses, running_instances, FileLabels, FileStatuses, FullNotification, Location } from './kakoune_interface';
 
 export type LocationLists = {
     failed_tests: Location[],
@@ -107,6 +107,8 @@ function setNotifications(modules: TestModule[]) {
 
     let files: FileLabels = {};
 
+    let notificationFiles: FullNotification[] = [];
+
     modules.forEach(module => {
         module.tests.forEach(test => {
             test.consoleLogs.forEach(log => {
@@ -115,6 +117,8 @@ function setNotifications(modules: TestModule[]) {
                 let joinedArgs = log.args.join(', ');
                 let text = existing ? existing + ', ' + joinedArgs : joinedArgs;
                 files[log.trace.source][log.trace.line] = { text, color: 'normal' };
+
+                notificationFiles.push({ file: log.trace.source, line: log.trace.line, json: log.args[0] });
             });
 
             if (test.error) {
@@ -122,12 +126,16 @@ function setNotifications(modules: TestModule[]) {
                 for (let loc of test.error.stack) {
                     files[loc.source] = files[loc.source] || {};
                     files[loc.source][loc.line] = { text: test.error.message, color: 'error' };
+                    
+                    notificationFiles.push({ file: loc.source, line: loc.line, json: test.error.message });
                 }
             }
         });
     });
 
     line_notifications(files);
+
+    register_full_notifications(notificationFiles);
 }
 
 export function resolveTilde(src: string) {
