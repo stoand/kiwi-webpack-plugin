@@ -41,7 +41,7 @@ async function __kiwi_runNextTest(counter) {
     } catch(e) {
         if (e instanceof Error) {
             // trace: __kiwi_extractTrace(e.stack, 1), 
-            test.error = { message: e.message, rawStack: e.stack };
+            test.error = { message: e.message, rawStack: e.stack, expected: e.expected, actual: e.actual };
         } else {
             // The thrown value is not a real error and does not have a stack trace
             test.error = { message: e.toString(), notErrorInstance: true };

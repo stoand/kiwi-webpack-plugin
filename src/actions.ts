@@ -1,6 +1,7 @@
 import { RunResult, TestModule, CoveredFiles, TestError, FileLengths, FileCoverage } from './runner';
 import { init_highlighters, recreateTmpDir, add_location_list_command, line_notifications, register_full_notifications,
         	line_statuses, running_instances, FileLabels, FileStatuses, FullNotification, Location } from './kakoune_interface';
+import { inspect } from 'util';
 
 export type LocationLists = {
     failed_tests: Location[],
@@ -102,6 +103,11 @@ function setLineStatuses(modules: TestModule[]) {
     return line_statuses(fileStatuses);
 }
 
+function formatJson(items: any[]) {
+    let jsonItems = items.length == 1 ? items[0] : items;
+    return inspect(jsonItems, { compact: false, depth: 5, breakLength: 80 });
+}
+
 // #SPC-actions.set_notifications
 function setNotifications(modules: TestModule[]) {
 
@@ -118,7 +124,7 @@ function setNotifications(modules: TestModule[]) {
                 let text = existing ? existing + ', ' + joinedArgs : joinedArgs;
                 files[log.trace.source][log.trace.line] = { text, color: 'normal' };
 
-                notificationFiles.push({ file: log.trace.source, line: log.trace.line, json: log.args[0] });
+                notificationFiles.push({ file: log.trace.source, line: log.trace.line, json: formatJson(log.args) });
             });
 
             if (test.error) {
@@ -126,8 +132,15 @@ function setNotifications(modules: TestModule[]) {
                 for (let loc of test.error.stack) {
                     files[loc.source] = files[loc.source] || {};
                     files[loc.source][loc.line] = { text: test.error.message, color: 'error' };
+
+                    let json = test.error.message;
                     
-                    notificationFiles.push({ file: loc.source, line: loc.line, json: test.error.message });
+                    let assertionError : any = test.error;
+                    if (assertionError.expected && assertionError.actual) {
+                        json = formatJson([{ expected: assertionError.expected, actual: assertionError.actual }]);
+                    }
+                    
+                    notificationFiles.push({ file: loc.source, line: loc.line, json });
                 }
             }
         });

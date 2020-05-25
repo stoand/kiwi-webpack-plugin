@@ -12,7 +12,7 @@ describe('First Module', () => {
 });
 
 describe('Second Module', () => {
-   
+
 
     it('another working test', async () => {
 
@@ -21,14 +21,30 @@ describe('Second Module', () => {
 
         let a = true;
 
+
+        const o = {
+            a: [1, 2, [[
+                'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do ' +
+                'eiusmod tempor incididunt ut labore et dolore magna aliqua.',
+                'test',
+                'foo']], 4],
+            b: [[['za', 1], ['zb', 'test']]]
+        };
+
+
         if (a) {
-            console.log(1);
-            console.log(2);
+            console.log(Object.keys(o).slice(0, 5));
+
+            console.log({ a: 1, b: { c: 2 } }, []);
         }
 
         // for (let i = 0; i <= 6; i++) {
         //     console.log(2);
         // }
+    });
+
+    it('failing', () => {
+        expect({a: 1}).to.eql({a : 2});
     });
 });
 
@@ -52,7 +68,7 @@ describe('Demonstrate the presidence of failing test coverage', () => {
     it('first test succeeds', () => {
         v = 2;
         expect(thirdModuleAction1()).to.equal(5);
-        
+
     });
 
     it('ensure proper test isolation', () => {
