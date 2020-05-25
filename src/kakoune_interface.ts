@@ -1,7 +1,8 @@
 // #SPC-kakoune_interface
 import { execFileSync } from 'child_process';
-import { writeFileSync, mkdirSync, rmdirSync } from 'fs';
+import { writeFileSync, writeFile, mkdirSync, rmdirSync } from 'fs';
 import * as path from 'path';
+import { createHash } from 'crypto';
 
 
 const deadKakInstancePostfix = '(dead)';
@@ -223,7 +224,32 @@ export function jump_to_line(file: string, line: number) {
     command_all(`edit! -existing "${file}" ${line}`);
 }
 
-/// #SPC-kakoune_interface.open_full_notification
-export function open_full_notification(notifications: FullNotification[]) {
-    console.log('TODO', notifications);
+/// #SPC-kakoune_interface.register_full_notifications
+export function register_full_notifications(notifications: FullNotification[]) {
+
+    let notificationCommands = notifications.map(notification => {
+        
+        let hash = createHash('md5').update(notification.file + ':' + notification.line).digest('hex');
+        let contentsPath = path.join(tempDir, './notification_' + hash + '.json');
+
+        writeFile(contentsPath, notification.json.toString(), err =>
+            err && console.error('register_full_notifications write failed: ', err));
+
+        let hashWithDash = hash + '  -';
+
+        return `
+            eval %sh{
+                sum=$(echo -n "$kak_buffile:$kak_cursor_line" | md5sum)
+                [ "$sum" = "${hashWithDash}" ] && echo "edit -existing ${contentsPath}"
+            }
+        `;
+    });
+
+    let commands = `
+        define-command -override kiwi-open-notification %{
+            ${notificationCommands.join('\n')}
+        }
+    `;
+    
+    command_all(commands);
 }

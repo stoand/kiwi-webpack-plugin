@@ -57,7 +57,7 @@ function test_jump_to_line() {
 /// #SPC-kakoune_interface.tst-register_full_notifications
 function test_register_full_notifications() {
     let notifications = [
-        { file: 'src/kakoune_interface_tests.ts', line: 70, json: '{a:1}'},
+        { file: currentFile, line: 70, json: '{a:1}'},
     ];
     
     register_full_notifications(notifications);
@@ -73,4 +73,8 @@ test_line_statuses();
 recreateTmpDir();
 
 test_add_location_list_command();
+
+// Disabled - this test is disruptive
 // test_jump_to_line();
+
+test_register_full_notifications();
