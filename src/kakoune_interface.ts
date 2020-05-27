@@ -42,8 +42,8 @@ export type Location = { file: string, line: number, message: string }
 
 export type FullNotification = { file: string, line: number, json: string };
 
-export function recreateTmpDir() {
-    rmdirSync(tempDir, { recursive: true });
+export function createTmpDir() {
+    // rmdirSync(tempDir, { recursive: true });
     mkdirSync(tempDir, { recursive: true });
 }
 

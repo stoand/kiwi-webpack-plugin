@@ -5,7 +5,7 @@
 // Another purpose of these tests is to have a place to run this functionality
 // in isolation while in development.
 
-import { init_highlighters, line_statuses, recreateTmpDir,
+import { init_highlighters, line_statuses, createTmpDir,
 	line_notifications, add_location_list_command, jump_to_line,
 	register_full_notifications } from './kakoune_interface';
 import path from 'path';
@@ -70,7 +70,7 @@ test_line_notifications();
 
 test_line_statuses();
 
-recreateTmpDir();
+createTmpDir();
 
 test_add_location_list_command();
 

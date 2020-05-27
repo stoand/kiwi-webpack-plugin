@@ -1,5 +1,5 @@
 import { RunResult, TestModule, CoveredFiles, TestError, FileLengths, FileCoverage } from './runner';
-import { init_highlighters, recreateTmpDir, add_location_list_command, line_notifications, register_full_notifications,
+import { init_highlighters, createTmpDir, add_location_list_command, line_notifications, register_full_notifications,
         	line_statuses, running_instances, FileLabels, FileStatuses, FullNotification, Location } from './kakoune_interface';
 import { inspect } from 'util';
 
@@ -43,7 +43,7 @@ export default function handleTestRun(runResult: RunResult) {
 export function runActions(runResult: RunResult) {
     let { modules, fileLengths } = runResult;
     
-    recreateTmpDir();
+    createTmpDir();
 
 	init_highlighters();
 
@@ -105,7 +105,7 @@ function setLineStatuses(modules: TestModule[]) {
 
 function formatJson(items: any[]) {
     let jsonItems = items.length == 1 ? items[0] : items;
-    return inspect(jsonItems, { compact: false, depth: 5, breakLength: 80 });
+    return inspect(jsonItems, { compact: false, depth: 10, breakLength: 80 });
 }
 
 // #SPC-actions.set_notifications
