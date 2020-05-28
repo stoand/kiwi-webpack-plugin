@@ -213,14 +213,16 @@ export function computeLocationLists(modules: TestModule[], fileLengths: FileLen
                     }
                 }
 
-                if (test.error) {
-                    nonTestFile.fail++;
-                    if (!nonTestFile.firstError) {
-                        nonTestFile.firstError = test.error;
-                        nonTestFile.firstFailContribLine = firstContribLine;
+                if (Object.values(test.coveredFiles[coveredFile]).find(v => v === true)) {
+                    if (test.error) {
+                        nonTestFile.fail++;
+                        if (!nonTestFile.firstError) {
+                            nonTestFile.firstError = test.error;
+                            nonTestFile.firstFailContribLine = firstContribLine;
+                        }
+                    } else {
+                        nonTestFile.pass++;
                     }
-                } else {
-                    nonTestFile.pass++;
                 }
             }
         }
