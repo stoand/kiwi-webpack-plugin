@@ -14,7 +14,7 @@ A recent [Google Chrome](https://www.google.com/chrome/) browser should be insta
 
 Version 12 or greater of [NodeJS](https://nodejs.org/en/download/) should be installed
 
-The [Kakoune Editor](https://github.com/mawww/kakoune#2-getting-started) should be installed (Linux or Mac only; Doesn't work on Windows)
+The [Kakoune Editor](https://github.com/mawww/kakoune#2-getting-started) should be installed
 
 Python and [Virtualenv](https://packaging.python.org/guides/installing-using-pip-and-virtual-environments/#installing-virtualenv)
 should be installed (only needed for review app)
