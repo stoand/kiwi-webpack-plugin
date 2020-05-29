@@ -40,7 +40,7 @@ export default class KiwiPlugin {
 
         compiler.hooks.watchRun.tap("KiwiPlugin", () => {
             if (!watching) {
-                startReviewApp();
+                // startReviewApp();
             }
 
             watching = true;
@@ -77,7 +77,7 @@ export default class KiwiPlugin {
                                 if (watching) {
                                     handleTestRun(runResult);
                                     
-                                    updateReviewAppDataSource(runResult);
+                                    // updateReviewAppDataSource(runResult);
                                 } else {
                                     let failingTests = 0;
                                     for (let module of runResult.modules) {
