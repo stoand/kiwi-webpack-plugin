@@ -213,7 +213,13 @@ export default async function launchInstance(headless: boolean | undefined = tru
 
         while (true) {
 
-            await Profiler.startPreciseCoverage({ callCount: true, detailed: true });
+            if (runner == 'node') {
+                await Profiler.startPreciseCoverage({ callCount: false, detailed: false });
+            }
+                
+            if (runner == 'chrome') {
+                await Profiler.startPreciseCoverage({ callCount: true, detailed: true });
+            }
             
             await Runtime.evaluate({ expression: testSrc, awaitPromise: true });
             
