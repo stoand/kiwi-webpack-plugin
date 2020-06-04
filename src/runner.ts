@@ -137,7 +137,7 @@ export async function loadSourceMap(consumer: sourceMap.SourceMapConsumer) {
 }
 
 // #SPC-runner.launcher
-export default async function launchInstance(headless: boolean, runner: 'node' | 'chrome' = 'chrome') {
+export default async function launchInstance(headless: boolean | undefined = true, runner: 'node' | 'chrome' = 'chrome') {
 
     let chrome: any, node: any, Profiler: any, Page: any, Runtime: any;
     let lastRestart: Promise<any>;
@@ -150,7 +150,7 @@ export default async function launchInstance(headless: boolean, runner: 'node' |
                     if (runner == 'node') {
                         let port = randomNodePortBase + Math.floor(Math.random() * 1000);
                         
-                        node = spawn('node', [`--inspect=${port}`, '/tmp/b.js']);
+                        node = spawn('node', ['--cpu-prof', `--inspect=${port}`, '/tmp/b.js']);
 
                         let remote;
 
@@ -168,6 +168,7 @@ export default async function launchInstance(headless: boolean, runner: 'node' |
                         Runtime = remote.Runtime;
 
                         await Promise.all([Profiler.enable(), Runtime.enable()]);
+                        await Runtime.evaluate({ expression: runtime, awaitPromise: true });
                         
                     } else if (runner == 'chrome') {
                         
@@ -211,20 +212,14 @@ export default async function launchInstance(headless: boolean, runner: 'node' |
         let modules: TestModule[] = [];
 
         while (true) {
-            
+
             await Profiler.startPreciseCoverage({ callCount: true, detailed: true });
-            
-            if (runner == 'node') {
-                await Runtime.evaluate({ expression: runtime, awaitPromise: true });
-            }
             
             await Runtime.evaluate({ expression: testSrc, awaitPromise: true });
             
             // #SPC-runner.async
-            let rawRes = (await Runtime.evaluate({ expression: `__kiwi_runNextTest(${testCounter})`, awaitPromise: true }))
-             let testRun =  rawRes?.result?.value;
-
-            console.log(rawRes, 'tr')
+            let rawRes = (await Runtime.evaluate({ expression: `__kiwi_runTest(${testCounter})`, awaitPromise: true }))
+            let testRun = rawRes?.result?.value;
             
             if (!testRun || testRun == 'done') {
                 break;
@@ -238,6 +233,7 @@ export default async function launchInstance(headless: boolean, runner: 'node' |
 
                 mod.tests.push(run.testRef);
             }
+
             
             testCounter++;
 
@@ -248,12 +244,11 @@ export default async function launchInstance(headless: boolean, runner: 'node' |
             }
         }
 
-        console.log(modules);
-
         if (runner == 'chrome') {
             chrome.kill();
-        }
 
+        }
+        
         if (!lastRun) {
             // wait for this later
             lastRestart = restartRunner();

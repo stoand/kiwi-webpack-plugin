@@ -25,6 +25,7 @@ module.exports = {
             runner: 'node',
         }),
     ],
+    target: 'node',
     resolve: {
         extensions: ['.tsx', '.ts', '.js'],
     },

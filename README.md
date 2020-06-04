@@ -1,8 +1,8 @@
 # Kiwi - Javascript Test Runner for Kakoune
 
-# WARNING - this tool is in the experimental phase
-
-__Do not rely on it for anything other than experiments.__
+__Warning: This tool is under development. Breaking changes make occur anytime and some
+functionality might not be well tested.
+Do not rely on it for anything other than experiments.__
 
 
 [![demo](https://asciinema.org/a/QiWSFNU5tKpg1oB2tslFHT4Dn.svg)](https://asciinema.org/a/QiWSFNU5tKpg1oB2tslFHT4Dn?autoplay=1)
@@ -10,7 +10,7 @@ __Do not rely on it for anything other than experiments.__
 
 ## Getting Started Guide
 
-A recent [Google Chrome](https://www.google.com/chrome/) browser should be installed
+(if using the `chrome` runner) A recent [Google Chrome](https://www.google.com/chrome/) browser should be installed
 
 Version 12 or greater of [NodeJS](https://nodejs.org/en/download/) should be installed
 
@@ -38,6 +38,8 @@ const KiwiPlugin = require('kiwi-webpack-plugin');
 module.exports = {
     entry: './src/index.js',
     
+    // target: 'node',    // use this if using the 'node' runner
+    
     // Enable source maps
     devtool: 'source-map',
     
@@ -49,7 +51,7 @@ module.exports = {
         	// when building once (not watching) do process.exit(1)
         	// if any tests failed
         	stopBuildOnFail: true,
-        	runner: 'chrome', // use 'node' if you need speed but do not need browser APIs
+        	runner: 'chrome', // use 'node' if you need speed and do not need browser APIs
     	}),
     ],
 }

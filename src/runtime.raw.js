@@ -19,7 +19,7 @@ console.log = (...args) => {
     __kiwi_oldConsoleLog(...args);
 }
 
-async function __kiwi_runNextTest(counter) {
+async function __kiwi_runTest(counter) {
 
     let testRefs = [];
 
@@ -28,8 +28,9 @@ async function __kiwi_runNextTest(counter) {
             testRefs.push({ mod: mod.name, testRef: test });
         }
     }
+    __kiwi_testModules = [];
 
-    let test = testRefs[counter].testRef;
+    let test = testRefs[counter] && testRefs[counter].testRef;
     
     if (!test) return 'done';
     
@@ -49,6 +50,10 @@ async function __kiwi_runNextTest(counter) {
     }
 
     return JSON.stringify(testRefs[counter]);
+}
+
+function __kiwi_reset() {
+    __kiwi_testModules = [];
 }
 
 function describe(name, run) {
@@ -76,4 +81,5 @@ function it(name, run) {
 if (typeof 'global' !== undefined) {
     global.describe = describe;
     global.it = it;
+    global.__kiwi_runTest == __kiwi_runTest
 }

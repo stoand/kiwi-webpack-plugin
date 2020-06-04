@@ -18,7 +18,7 @@ const sourceMapOptions = {
     test: /\.(m?js|css)($|\?)/i
 }
 
-type PluginOptions = { testEntry: string, headless: boolean, stopBuildOnFail: boolean, runner?: 'node' | 'chrome' };
+type PluginOptions = { testEntry: string, headless?: boolean, stopBuildOnFail?: boolean, runner?: 'node' | 'chrome' };
 
 export default class KiwiPlugin {
 
@@ -33,7 +33,7 @@ export default class KiwiPlugin {
 
         this.testEntry = testEntry;
         this.initRunner = launchInstance(headless, runner);
-        this.stopBuildOnFail = stopBuildOnFail;
+        this.stopBuildOnFail = stopBuildOnFail || false;
     }
 
     apply(compiler: any) {
