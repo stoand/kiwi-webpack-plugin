@@ -18,19 +18,21 @@ const sourceMapOptions = {
     test: /\.(m?js|css)($|\?)/i
 }
 
+type PluginOptions = { testEntry: string, headless: boolean, stopBuildOnFail: boolean, runner?: 'node' | 'chrome' };
+
 export default class KiwiPlugin {
 
     stopBuildOnFail: boolean;
     testEntry: string;
     initRunner: InitRunner;
 
-    constructor({ testEntry, headless, stopBuildOnFail }: { testEntry: string, headless: boolean, stopBuildOnFail: boolean }) {
+    constructor({ testEntry, headless, stopBuildOnFail, runner }: PluginOptions) {
         if (typeof testEntry !== 'string') {
             throw 'The Kiwi plugin requires a single test entry path string to be supplied to the constructor.';
         }
 
         this.testEntry = testEntry;
-        this.initRunner = launchInstance(headless);
+        this.initRunner = launchInstance(headless, runner);
         this.stopBuildOnFail = stopBuildOnFail;
     }
 

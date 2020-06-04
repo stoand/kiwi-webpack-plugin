@@ -73,3 +73,7 @@ function it(name, run) {
     }
 }
 
+if (typeof 'global' !== undefined) {
+    global.describe = describe;
+    global.it = it;
+}

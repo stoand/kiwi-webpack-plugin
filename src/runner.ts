@@ -1,6 +1,7 @@
 // #SPC-runner
 let chromeLauncher = require('chrome-launcher');
 let chromeRemoteInterface = require('chrome-remote-interface');
+import { spawn } from 'child_process';
 import sourceMap from 'source-map';
 import path from 'path';
 
@@ -21,10 +22,12 @@ export type RunResult = { modules: TestModule[], fileLengths: FileLengths };
 
 export const emptyRunResult = { modules: [], fileLengths: {} };
 
-let browserRuntime = require('./browser_runtime.raw.js').default;
+let runtime = require('./runtime.raw.js').default;
 
 let sourceNamePrefix = 'webpack:///';
 let ignoreSourcePrefixes = ['node_modules', '(webpack)', 'webpack'];
+
+let randomNodePortBase = 9195;
 
 function htmlIndex() {
     return `
@@ -35,7 +38,7 @@ function htmlIndex() {
           <meta charset="utf-8">
 
           <title>Kiwi Tests</title>
-          <script>${browserRuntime}</script>
+          <script>${runtime}</script>
         </head>
 
         <body>
@@ -134,38 +137,63 @@ export async function loadSourceMap(consumer: sourceMap.SourceMapConsumer) {
 }
 
 // #SPC-runner.launcher
-export default async function launchInstance(headless: boolean) {
+export default async function launchInstance(headless: boolean, runner: 'node' | 'chrome' = 'chrome') {
 
-    let chrome: any, Profiler: any, Page: any, Runtime: any;
+    let chrome: any, node: any, Profiler: any, Page: any, Runtime: any;
     let lastRestart: Promise<any>;
 
-    async function restartChrome() {
+    async function restartRunner() {
         return new Promise(resolve =>
             // the code below contains blocking functions
             setTimeout(() => {
                 let run = async () => {
-                    chrome = await chromeLauncher.launch({ chromeFlags: ['--disable-gpu'].concat(headless ? ['--headless'] : []) });
+                    if (runner == 'node') {
+                        let port = randomNodePortBase + Math.floor(Math.random() * 1000);
+                        
+                        node = spawn('node', [`--inspect=${port}`, '/tmp/b.js']);
 
-                    let remote = await chromeRemoteInterface({ port: chrome.port });
+                        let remote;
 
-                    Profiler = remote.Profiler;
-                    Page = remote.Page;
-                    Runtime = remote.Runtime;
+                        for (let i = 0; i < 40; i++) {
+                            try {
+                                remote = await chromeRemoteInterface({ port });
+                                break;
+                            } catch (e) {
+                                // console.error(e);
+                            }
+                        }
 
-                    await Promise.all([Profiler.enable(), Page.enable(), Runtime.enable()]);
 
-                    // instead of starting a server and loading the page from it
-                    // directly load the index file with the embedded sources as a data object
-                    let encoded = new Buffer(htmlIndex()).toString('base64');
-                    Page.navigate({ url: 'data:text/html;base64,' + encoded });
-                    await Page.loadEventFired();
+                        Profiler = remote.Profiler;
+                        Runtime = remote.Runtime;
+
+                        await Promise.all([Profiler.enable(), Runtime.enable()]);
+                        
+                    } else if (runner == 'chrome') {
+                        
+                        chrome = await chromeLauncher.launch({ chromeFlags: ['--disable-gpu'].concat(headless ? ['--headless'] : []) });
+
+                        let remote = await chromeRemoteInterface({ port: chrome.port });
+
+                        Profiler = remote.Profiler;
+                        Page = remote.Page;
+                        Runtime = remote.Runtime;
+
+                        await Promise.all([Profiler.enable(), Page.enable(), Runtime.enable()]);
+
+                        // instead of starting a server and loading the page from it
+                        // directly load the index file with the embedded sources as a data object
+                        let encoded = new Buffer(htmlIndex()).toString('base64');
+                        Page.navigate({ url: 'data:text/html;base64,' + encoded });
+                        await Page.loadEventFired();
+                    }
                 }
 
                 resolve(run());
             }));
     }
 
-    lastRestart = restartChrome();
+    lastRestart = restartRunner();
 
     // Run on every change
     return async (testSrc: string, mapSrc: any, lastRun: boolean): Promise<RunResult> => {
@@ -186,10 +214,17 @@ export default async function launchInstance(headless: boolean) {
             
             await Profiler.startPreciseCoverage({ callCount: true, detailed: true });
             
-            await Runtime.evaluate({ expression: testSrc });
+            if (runner == 'node') {
+                await Runtime.evaluate({ expression: runtime, awaitPromise: true });
+            }
+            
+            await Runtime.evaluate({ expression: testSrc, awaitPromise: true });
             
             // #SPC-runner.async
-            let testRun = (await Runtime.evaluate({ expression: `__kiwi_runNextTest(${testCounter})`, awaitPromise: true }))?.result?.value;
+            let rawRes = (await Runtime.evaluate({ expression: `__kiwi_runNextTest(${testCounter})`, awaitPromise: true }))
+             let testRun =  rawRes?.result?.value;
+
+            console.log(rawRes, 'tr')
             
             if (!testRun || testRun == 'done') {
                 break;
@@ -208,14 +243,20 @@ export default async function launchInstance(headless: boolean) {
 
             testCoverages.push(await Profiler.takePreciseCoverage());
             
-            await Page.reload();
+            if (runner == 'chrome') {
+                await Page.reload();
+            }
         }
 
-        chrome.kill();
+        console.log(modules);
+
+        if (runner == 'chrome') {
+            chrome.kill();
+        }
 
         if (!lastRun) {
             // wait for this later
-            lastRestart = restartChrome();
+            lastRestart = restartRunner();
         }
 
         // #SPC-runner.file_lengths

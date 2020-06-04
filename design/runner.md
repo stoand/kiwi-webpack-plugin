@@ -2,16 +2,27 @@
 partof: REQ-purpose
 ###
 
-## [[.launcher]]
+## [[.laucher_chrome]]
 
 Instead of opting for mere browser api emulation, the runner
 executes tests in a headless Chrome process.
 
 https://gist.github.com/paulirish/78f46a302083dd757288b5fcc660d75c
 
-[[.tst-launcher]]
+[[.tst-launcher_chrome]]
 
 Ensure the runner can communicate with a headless Chrome instance.
+
+## [[.laucher_node]]
+
+Starts a node process to evaluate tests.
+
+This is much faster but some frontend apps will not work or
+will need to have mocks added.
+
+[[.tst-launcher_node]]
+
+Ensure the runner can communicate with a NodeJS instance.
 
 ## [[.sourcemap]]
 

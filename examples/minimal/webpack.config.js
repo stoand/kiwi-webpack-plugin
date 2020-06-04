@@ -21,8 +21,8 @@ module.exports = {
         }),
         new KiwiPlugin({
             testEntry: './src/tests.ts',
-            headless: true,
-            stopBuildOnFail: false
+            stopBuildOnFail: false,
+            runner: 'node',
         }),
     ],
     resolve: {
