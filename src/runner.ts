@@ -250,6 +250,10 @@ export default async function launchInstance(headless: boolean | undefined = tru
             }
         }
 
+        if (runner == 'node') {
+            node.kill();
+        }
+
         if (runner == 'chrome') {
             chrome.kill();
 
