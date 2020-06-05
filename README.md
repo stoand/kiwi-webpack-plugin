@@ -51,7 +51,7 @@ module.exports = {
         	// when building once (not watching) do process.exit(1)
         	// if any tests failed
         	stopBuildOnFail: true,
-        	runner: 'chrome', // use 'node' if you need speed and do not need browser APIs
+        	runner: 'chrome', // can also be 'node'
     	}),
     ],
 }
