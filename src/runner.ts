@@ -150,7 +150,7 @@ export default async function launchInstance(headless: boolean | undefined = tru
                     if (runner == 'node') {
                         let port = randomNodePortBase + Math.floor(Math.random() * 1000);
                         
-                        node = spawn('node', ['--cpu-prof', `--inspect=${port}`, '/tmp/b.js']);
+                        node = spawn('node', ['--cpu-prof', `--inspect=${port}`, '-e', 'setInterval(()=>{}, 500)']);
 
                         let remote;
 
