@@ -214,6 +214,10 @@ export default async function launchInstance(headless: boolean | undefined = tru
         while (true) {
 
             if (runner == 'node') {
+                // callCount needs to be true
+                // since having it false breaks nested blocks being empty
+                // having it true breaks everything though
+                // need to find a solution here
                 await Profiler.startPreciseCoverage({ callCount: false, detailed: false });
             }
                 
