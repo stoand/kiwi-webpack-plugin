@@ -22,12 +22,23 @@ console.log = (...args) => {
 async function __kiwi_runTest(counter) {
 
     let testRefs = [];
+    let focus = false;
 
     for (let mod of __kiwi_testModules) {
         for (let test of mod.tests) {
             testRefs.push({ mod: mod.name, testRef: test });
+            if (test.special == 'focus') {
+                focus = true;
+            }
         }
     }
+
+    if (focus) {
+        testRefs = testRefs.filter(tr => tr.testRef.special == 'focus');
+    } else {
+        testRefs = testRefs.filter(tr => tr.testRef.special != 'exclude');
+    }
+    
     __kiwi_testModules = [];
 
     let test = testRefs[counter] && testRefs[counter].testRef;
@@ -64,7 +75,7 @@ function describe(name, run) {
     __kiwi_definingModule = undefined;
 }
 
-function it(name, run) {
+function it(name, run, special) {
     let module = __kiwi_definingModule;
 
     try {
@@ -73,13 +84,25 @@ function it(name, run) {
 
         // let trace = __kiwi_extractTrace(e.stack, 2);
         if (module) {
-            module.tests.push({ name, rawStack: e.stack, run, error: undefined, consoleLogs: [] });
+            module.tests.push({ name, rawStack: e.stack, run, error: undefined, consoleLogs: [], special });
         }
     }
+}
+
+// #SPC-runner.special_focus
+function fit(name, run) {
+    return it(name, run, 'focus');
+}
+
+// #SPC-runner.special_exclude
+function xit(name, run) {
+    return it(name, run, 'exclude');
 }
 
 if (typeof 'global' !== undefined) {
     global.describe = describe;
     global.it = it;
+    global.fit = fit;
+    global.xit = xit;
     global.__kiwi_runTest == __kiwi_runTest
 }

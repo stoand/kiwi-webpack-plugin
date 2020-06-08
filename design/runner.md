@@ -51,6 +51,15 @@ Ensure the runner can detect and wait for async tests to finish.
 
 Ensure errors inside promises are handled correctly.
 
+## [[.special_focus]]
+
+If any test is marked as focused with `fit` instead of `it` only
+the focused tests will run.
+
+## [[.special_exclude]]
+
+If a test is marked with `xit` instead of `it` it will be excluded.
+
 # Resulting Data
 
 Takes the source code of compiled tests, runs them, and returns a list of modules.

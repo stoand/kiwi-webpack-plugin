@@ -9,6 +9,14 @@ describe('First Module', () => {
     it('this should fail', () => {
         expect(asdf()).to.equal(3);
     });
+
+    xit('this should be ignored', () => {
+        console.log(2);
+    });
+
+    // fit('only this test will run if enabled', () => {
+    // 	console.log(1)
+    // });
 });
 
 describe('Second Module', () => {
