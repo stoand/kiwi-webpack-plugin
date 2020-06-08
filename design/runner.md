@@ -60,6 +60,13 @@ the focused tests will run.
 
 If a test is marked with `xit` instead of `it` it will be excluded.
 
+## Possible Performance Improvements
+
+Protocol functions to examine:
+
+* setInstrumentationBreakpoint
+* evaluateOnCallFrame
+
 # Resulting Data
 
 Takes the source code of compiled tests, runs them, and returns a list of modules.
