@@ -99,10 +99,10 @@ kak src/tests.js
 
 ## Usage with Typescript 
 
-Install types - only the "describe" and "it" mocha globals are supported
+Install types - only the "describe" and "it" jasmine-like globals are supported
 
 ```
-npm i @types/mocha @types/chai
+npm i @types/jasmine @types/chai
 ```
 
 add to `tsconfig.json`

@@ -11,7 +11,7 @@
   "license": "MIT",
   "dependencies": {
     "@types/chai": "^4.2.10",
-    "@types/mocha": "^7.0.2",
+    "@types/jasmine": "^3.5.10",
     "@types/react": "^16.9.23",
     "@types/redux": "^3.6.0",
     "chai": "^4.2.0",
