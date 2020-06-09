@@ -11,7 +11,7 @@ describe('First Module', () => {
     });
 
     xit('this should be ignored', () => {
-        console.log(2);
+        console.log(4);
     });
 
     // fit('only this test will run if enabled', () => {

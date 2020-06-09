@@ -199,11 +199,28 @@ export default async function launchInstance(headless: boolean | undefined = tru
     // Run on every change
     return async (testSrc: string, mapSrc: any, lastRun: boolean): Promise<RunResult> => {
 
+        console.log('START -----------------------------------------------')
+            testSrc = `
+                window.asdf = function() { console.log('asdf') }
+                describe('asdf', () => {
+                    it('works', () => {
+                        window.asdf();
+                    });
+                });
+            `;
         await lastRestart;
+
+
+        let start = new Date().getTime();
+
+        let t = () => (new Date()).getTime() - start;
+
 
         let srcMapConsumer = await (new sourceMap.SourceMapConsumer(mapSrc));
         
         let mapPosition = await loadSourceMap(srcMapConsumer);
+
+        console.log('srcmap', t());
 
         let testCoverages: any[] = [];
         
@@ -211,6 +228,11 @@ export default async function launchInstance(headless: boolean | undefined = tru
 
         let modules: TestModule[] = [];
 
+        let tcStart = t();
+
+        console.log('tcstart', tcStart);
+
+        // todo evaluateOnCallFrame
         while (true) {
 
             if (runner == 'node') {
@@ -218,18 +240,25 @@ export default async function launchInstance(headless: boolean | undefined = tru
                 // since having it false breaks nested blocks being empty
                 // having it true breaks everything though
                 // need to find a solution here
-                await Profiler.startPreciseCoverage({ callCount: false, detailed: false });
+                await Profiler.startPreciseCoverage({ callCount: true, detailed: true });
             }
                 
             if (runner == 'chrome') {
                 await Profiler.startPreciseCoverage({ callCount: true, detailed: true });
             }
+
+
+            // console.log(testSrc);
             
-            await Runtime.evaluate({ expression: testSrc, awaitPromise: true });
+            // await Runtime.evaluate({ expression: testSrc, awaitPromise: true });
+            // await Runtime.evaluate({ expression: src, awaitPromise: true });
+            // console.log(testSrc.length)
             
             // #SPC-runner.async
-            let rawRes = (await Runtime.evaluate({ expression: `__kiwi_runTest(${testCounter})`, awaitPromise: true }))
+            let rawRes = (await Runtime.evaluate({ expression: testSrc + `__kiwi_runTest(${testCounter})`, awaitPromise: true }))
             let testRun = rawRes?.result?.value;
+
+            console.log(await Profiler.evaluateOnCallFrame('window.a'));
             
             if (!testRun || testRun == 'done') {
                 break;
@@ -246,13 +275,22 @@ export default async function launchInstance(headless: boolean | undefined = tru
 
             
             testCounter++;
+        console.log('tc', testCounter, t());
+            
 
             testCoverages.push(await Profiler.takePreciseCoverage());
+            
             
             if (runner == 'chrome') {
                 await Page.reload();
             }
         }
+
+        console.log('pertest:', (t() - tcStart) / testCounter);
+        console.log('pertest:', (t() - tcStart));
+        
+        console.log('afterwhile', t());
+        
 
         if (runner == 'node') {
             node.kill();

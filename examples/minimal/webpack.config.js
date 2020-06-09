@@ -22,10 +22,10 @@ module.exports = {
         new KiwiPlugin({
             testEntry: './src/tests.ts',
             stopBuildOnFail: false,
-            runner: 'node',
+            runner: 'chrome',
         }),
     ],
-    target: 'node',
+    // target: 'node',
     resolve: {
         extensions: ['.tsx', '.ts', '.js'],
     },
