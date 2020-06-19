@@ -201,6 +201,15 @@ export default async function launchInstance(headless: boolean | undefined = tru
 
         await lastRestart;
 
+        let s = new Date();
+
+        let d = (label = 'a') => {
+            let t = (new Date()).getTime() - s.getTime()
+            console.log(label, t, 'ms')
+        }
+
+        d('start')
+
         let srcMapConsumer = await (new sourceMap.SourceMapConsumer(mapSrc));
         
         let mapPosition = await loadSourceMap(srcMapConsumer);
@@ -210,26 +219,39 @@ export default async function launchInstance(headless: boolean | undefined = tru
         let testCounter = 0;
 
         let modules: TestModule[] = [];
+        
+
+        d('srcmap done')
+
+        if (runner == 'node') {
+            // callCount needs to be true
+            // since having it false breaks nested blocks being empty
+            // having it true breaks everything though
+            // need to find a solution here
+            await Profiler.startPreciseCoverage({ callCount: false, detailed: false });
+        }
+            
+        if (runner == 'chrome') {
+            await Profiler.startPreciseCoverage({ callCount: true, detailed: true });
+        }
+
+        let c = await Runtime.compileScript({ expression: testSrc, sourceURL: 'url1', persistScript: true });
+
+        console.log('CompiledScript', c);
 
         while (true) {
 
-            if (runner == 'node') {
-                // callCount needs to be true
-                // since having it false breaks nested blocks being empty
-                // having it true breaks everything though
-                // need to find a solution here
-                await Profiler.startPreciseCoverage({ callCount: false, detailed: false });
-            }
-                
-            if (runner == 'chrome') {
-                await Profiler.startPreciseCoverage({ callCount: true, detailed: true });
-            }
+            d('start script')
             
-            await Runtime.evaluate({ expression: testSrc, awaitPromise: true });
+            await Runtime.runScript({ scriptId: c.scriptId, awaitPromise: true });
+            
+            d('start ')
             
             // #SPC-runner.async
             let rawRes = (await Runtime.evaluate({ expression: `__kiwi_runTest(${testCounter})`, awaitPromise: true }))
             let testRun = rawRes?.result?.value;
+            
+            d('test done ')
             
             if (!testRun || testRun == 'done') {
                 break;

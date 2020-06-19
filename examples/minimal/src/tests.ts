@@ -61,7 +61,7 @@ function thirdModuleAction1() {
     return a;
 }
 
-let g = 1;
+let g = 3;
 
 function actionG() {
     g = 2;
