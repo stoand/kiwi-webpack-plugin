@@ -146,9 +146,14 @@ function setNotifications(modules: TestModule[]) {
         });
     });
 
+    let locations = notificationFiles.map(notification =>
+        ({ file: notification.file, line: notification.line, message: notification.json }));
+
     line_notifications(files);
 
     register_full_notifications(notificationFiles);
+
+    add_location_list_command('notifications', locations);
 }
 
 export function resolveTilde(src: string) {
