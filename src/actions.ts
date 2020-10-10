@@ -12,6 +12,8 @@ export type LocationLists = {
 
 const scanInterval = 350;
 
+const maxNotifications = 1000;
+
 let prevScanner: NodeJS.Timeout;
 
 export default function handleTestRun(runResult: RunResult) {
@@ -145,6 +147,8 @@ function setNotifications(modules: TestModule[]) {
             }
         });
     });
+
+    notificationFiles = notificationFiles.filter((_, index) => index < maxNotifications);
 
     let locations = notificationFiles.map(notification =>
         ({ file: notification.file, line: notification.line, message: notification.json }));
