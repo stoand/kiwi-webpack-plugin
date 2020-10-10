@@ -57,6 +57,8 @@ Displays a hyperlinked list of items consisting of:
 * line number
 * text
 
+Can optionally take a list of lines to select upon opening the file.
+
 [[.tst-add_location_list_command]]
 
 Ensure the command opens a list of links and these links can be followed.

@@ -40,7 +40,7 @@ export type LineLabel = { color: 'normal' | 'error', text: string };
 export type LineLabels = { [line: number]: LineLabel };
 export type FileLabels = { [file: string]: LineLabels };
 
-export type Location = { file: string, line: number, message: string }
+export type Location = { file: string, line: number, message: string, sel?: boolean }
 
 export type FullNotification = { file: string, line: number, json: string };
 
@@ -205,6 +205,11 @@ export function add_location_list_command(name: string, locations: Location[]) {
     let contents = locations.map(({file, line, message}) =>
     	`${file}:${line}: ${message}`).join('\n');
 
+    let selections = locations.map((location, locationIndex) => 
+        location.sel && `${locationIndex+1}.1,${locationIndex+1}.999`).filter(Boolean).join(' ');
+
+    let selectionCommand = selections ? `select ${selections}` : '';
+
     let location = path.join(tempDir, name);
     
     writeFileSync(location, contents);
@@ -213,8 +218,10 @@ export function add_location_list_command(name: string, locations: Location[]) {
 
     let commands = `
         define-command -override kiwi-list-${nameWithDashes} %{
-           edit! -readonly -existing "${location}"
-           set-option buffer filetype grep
+          edit! -readonly -existing "${location}"
+          set-option buffer filetype grep
+
+          ${selectionCommand}
         }
     `;
 

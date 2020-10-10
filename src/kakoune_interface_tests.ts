@@ -46,7 +46,11 @@ function test_line_notifications() {
 
 /// #SPC-kakoune_interface.tst-add_location_list_command
 function test_add_location_list_command() {
-    add_location_list_command('one', [{ file: 'src/kakoune_interface_tests.ts', line: 50, message: 'asdf' }]);
+    let data = [
+        { file: 'src/kakoune_interface_tests.ts', line: 50, message: 'asdf' },
+        { file: 'src/kakoune_interface_tests.ts', line: 90, message: 'more', sel: true },
+    ];
+    add_location_list_command('one', data);
 }
 /// #SPC-kakoune_interface.tst-jump_to_line
 function test_jump_to_line() {
