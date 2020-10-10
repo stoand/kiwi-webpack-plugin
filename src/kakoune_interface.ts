@@ -147,7 +147,7 @@ function escape_flag_lines(text: string) {
         .replace(/\{/g, "\\{")
         .replace(/\}/g, "\\}")
         .replace(/\\/g, "\\\\")
-        .replace(/\|/g, '||');
+        .replace(/\|/g, '\\||');
 }
 
 export function md5Hash(input: string) {
