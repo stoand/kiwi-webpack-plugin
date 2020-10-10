@@ -58,15 +58,10 @@ Lists what tests ran the current line in a non test file and failed.
 
 Lists all notifications in order by their location.
 
-Max notification limit is 1000.
-
-## [[.list_notifications_select_location]]
-
-Same as [[.list_notifications]] with some changes:
-
-* Can only be invoked if the current line has an associated notification
-* After the notifications are opened in a buffer, all notifications
+If the current line has an associated notification, all notifications
     with the same position as the current line are selected
+
+Max notification limit is 1000.
 
 ## [[.goto_first_failure_line]]
 
