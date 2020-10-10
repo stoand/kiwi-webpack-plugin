@@ -60,6 +60,8 @@ Lists all notifications in order by their location.
 
 If the current line has an associated notification, all notifications
     with the same position as the current line are selected
+    
+The user can then use '(' and ')' to navigate between selections.
 
 Max notification limit is 1000.
 
