@@ -19,6 +19,8 @@ const rightCurlyBraceLookalike = '｝';
 const leftCurlyBraceLookalike = '｛';
 const verticalLineLookalike = '｜';
 
+const notificationBufferName = '*kiwi-notifcation*';
+
 export const tempDir = '/tmp/__kiwi_tmp435398/';
 
 // When to update the highlighters
@@ -242,6 +244,9 @@ export function register_full_notifications(notifications: FullNotification[]) {
                 sum=$(echo -n "$kak_buffile:$kak_cursor_line" | md5sum)
                 [ "$sum" = "${hashWithDash}" ] && echo "edit! -existing ${contentsPath}"
             }
+            
+            try %{ delete-buffer! ${notificationBufferName} }
+            rename-buffer -scratch ${notificationBufferName}
         `;
     });
 

@@ -56,6 +56,10 @@ function test_jump_to_line() {
 
 /// #SPC-kakoune_interface.tst-register_full_notifications
 function test_register_full_notifications() {
+    // how to run this test:
+    // go to line 70 of this file
+    // and in kakoune run `kiwi-open-notification`
+    
     let notifications = [
         { file: currentFile, line: 70, json: '{a:1}'},
     ];
