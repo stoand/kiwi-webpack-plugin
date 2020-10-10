@@ -173,7 +173,10 @@ export function line_notifications(file_notifications: FileLabels) {
     `).join('\n');
 
     let set_highlighters = Object.keys(file_notifications).map((file, index) => `
-        eval %sh{ echo "kiwi_line_notifications_${md5Hash(file)}" }
+        eval %sh{
+            sum=$(echo -n "$kak_buffile" | md5sum)
+            [ "$sum" = "${md5Hash(file) + '  -'}" ] && \
+                echo "kiwi_line_notifications_${md5Hash(file)}" || echo nop }
     `).join('\n');
     
 
@@ -190,11 +193,11 @@ export function line_notifications(file_notifications: FileLabels) {
 
 		${update_highlighter_functions}
 
-    	define-command -hidden -override kiwi_line_notifications %|
+    	define-command -hidden -override kiwi_line_notifications %{
     	    ${set_highlighters}
     	
     		${remove_highlighters}
-    	|
+    	}
 
     	remove-hooks global kiwi-line-notifications-group
 
