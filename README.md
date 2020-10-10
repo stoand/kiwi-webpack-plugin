@@ -154,3 +154,9 @@ nodemon dist/kakoune_interface_tests.js
 # or
 nodemon dist/unit_tests.js
 ```
+
+__Using Kakoune Interface Tests:__
+
+`edit src/kakoune_interface_tests.ts`
+
+The test file itself is used to display interface items
