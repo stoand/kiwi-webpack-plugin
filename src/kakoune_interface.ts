@@ -19,7 +19,7 @@ const rightCurlyBraceLookalike = '｝';
 const leftCurlyBraceLookalike = '｛';
 const verticalLineLookalike = '｜';
 
-const notificationBufferName = '*kiwi-notifcation*';
+const notificationBufferName = '*kiwi-notification*';
 
 export const tempDir = '/tmp/__kiwi_tmp435398/';
 
@@ -242,11 +242,12 @@ export function register_full_notifications(notifications: FullNotification[]) {
         return `
             eval %sh{
                 sum=$(echo -n "$kak_buffile:$kak_cursor_line" | md5sum)
-                [ "$sum" = "${hashWithDash}" ] && echo "edit! -existing ${contentsPath}"
+                [ "$sum" = "${hashWithDash}" ] && \
+                    echo "try %{ delete-buffer! ${notificationBufferName} }; \
+                        edit! -existing ${contentsPath}; \
+                        rename-buffer -scratch ${notificationBufferName}; \
+                        try %{ delete-buffer! ${contentsPath} }"
             }
-            
-            try %{ delete-buffer! ${notificationBufferName} }
-            rename-buffer -scratch ${notificationBufferName}
         `;
     });
 
