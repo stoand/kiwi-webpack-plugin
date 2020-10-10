@@ -157,7 +157,7 @@ function setNotifications(modules: TestModule[]) {
 
     register_full_notifications(notificationFiles);
 
-    add_location_list_command('notifications', locations);
+    add_location_list_command('notifications', locations, true);
 }
 
 export function resolveTilde(src: string) {

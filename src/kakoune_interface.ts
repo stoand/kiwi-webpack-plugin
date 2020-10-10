@@ -201,35 +201,37 @@ export function line_notifications(file_notifications: FileLabels) {
 }
 
 /// #SPC-kakoune_interface.add_location_list_command
-export function add_location_list_command(name: string, locations: Location[]) {
+export function add_location_list_command(name: string, locations: Location[], selectCurrentLine = false) {
     let contents = locations.map(({file, line, message}) =>
     	`${file}:${line}: ${message}`).join('\n');
 
-    let locationLines: {[name: string]: { index: number, newLines: number }[] } = {};
-
-    let locationAcc = 1;
-
-    locations.forEach((location, locationIndex) => {
-        let locationName = location.file + ':' + location.line;
-        locationLines[locationName] = locationLines[locationName] || [];
-
-        let newLines = location.message.split('\n').length;
-        locationLines[locationName].push({ index: locationIndex + locationAcc, newLines } );
-        locationAcc += newLines - 1;
-    });
-
     let selectLocationCommands = '';
 
-    for (let locationName in locationLines) {
-        let selections = locationLines[locationName].map(loc =>
-            `${loc.index}.1,${loc.index + loc.newLines - 1}.999`).join(' ');
-        
-        selectLocationCommands += `
-            eval %sh{
-                [ "$kak_opt_prev_buffile:$kak_opt_prev_cursor_line" = "${locationName}" ] && \
-                    echo "select ${selections}"
-            }            
-        `;
+    if (selectCurrentLine) {
+        let locationLines: {[name: string]: { index: number, newLines: number }[] } = {};
+
+        let locationAcc = 1;
+
+        locations.forEach((location, locationIndex) => {
+            let locationName = location.file + ':' + location.line;
+            locationLines[locationName] = locationLines[locationName] || [];
+
+            let newLines = location.message.split('\n').length;
+            locationLines[locationName].push({ index: locationIndex + locationAcc, newLines } );
+            locationAcc += newLines - 1;
+        });
+
+        for (let locationName in locationLines) {
+            let selections = locationLines[locationName].map(loc =>
+                `${loc.index}.1,${loc.index + loc.newLines - 1}.999`).join(' ');
+            
+            selectLocationCommands += `
+                eval %sh{
+                    [ "$kak_opt_prev_buffile:$kak_opt_prev_cursor_line" = "${locationName}" ] && \
+                        echo "select ${selections}"
+                }            
+            `;
+        }
     }
 
     let location = path.join(tempDir, name);
