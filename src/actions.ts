@@ -105,9 +105,13 @@ function setLineStatuses(modules: TestModule[]) {
     return line_statuses(fileStatuses);
 }
 
-function formatJson(items: any[]) {
+function formatJsonMultiline(items: any[]) {
     let jsonItems = items.length == 1 ? items[0] : items;
     return inspect(jsonItems, { compact: false, depth: 10, breakLength: 80 });
+}
+
+function formatJsonSingleLine(item: any) {
+    return inspect(item, { compact: true, depth: 3 });
 }
 
 // #SPC-actions.set_notifications
@@ -122,11 +126,11 @@ function setNotifications(modules: TestModule[]) {
             test.consoleLogs.forEach(log => {
                 files[log.trace.source] = files[log.trace.source] || {};
                 let existing = files[log.trace.source][log.trace.line]?.text;
-                let joinedArgs = log.args.join(', ');
+                let joinedArgs = log.args.map(formatJsonSingleLine).join(', ');
                 let text = existing ? existing + ', ' + joinedArgs : joinedArgs;
                 files[log.trace.source][log.trace.line] = { text, color: 'normal' };
 
-                notificationFiles.push({ file: log.trace.source, line: log.trace.line, json: formatJson(log.args) });
+                notificationFiles.push({ file: log.trace.source, line: log.trace.line, json: formatJsonMultiline(log.args) });
             });
 
             if (test.error) {
@@ -139,7 +143,7 @@ function setNotifications(modules: TestModule[]) {
                     
                     let assertionError : any = test.error;
                     if (assertionError.expected && assertionError.actual) {
-                        json = formatJson([{ expected: assertionError.expected, actual: assertionError.actual }]);
+                        json = formatJsonMultiline([{ expected: assertionError.expected, actual: assertionError.actual }]);
                     }
                     
                     notificationFiles.push({ file: loc.source, line: loc.line, json });
