@@ -39,7 +39,7 @@ function test_line_notifications() {
             39: { text: 'this text goes here', color: 'normal' },
             40: { text: 'this text is too long because it should be truncated', color: 'normal' },
             // #SPC-kakoune_interface.tst-line_notifications_escaping
-            42: { text: `handl/.""'%%{{ correctly`, color: 'normal' },
+            42: { text: `handle \\ "' % { correctly`, color: 'normal' },
         }
     });
 }
@@ -56,6 +56,7 @@ function test_add_location_list_command() {
 function test_jump_to_line() {
 	jump_to_line('src/kakoune_interface_tests.ts', 60);
 }
+
 
 
 /// #SPC-kakoune_interface.tst-register_full_notifications

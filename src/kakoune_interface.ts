@@ -15,10 +15,6 @@ const uncoveredColors = 'StatusLine';
 const failedColors = 'Error';
 const successColors = 'string';
 
-const rightCurlyBraceLookalike = '｝';
-const leftCurlyBraceLookalike = '｛';
-const verticalLineLookalike = '｜';
-
 const notificationBufferName = '*kiwi-notification*';
 
 export const tempDir = '/tmp/__kiwi_tmp435398/';
@@ -148,11 +144,14 @@ function escape_flag_lines(text: string) {
         .replace(/"/g, '""')
         .replace(/'/g, "''")
         .replace(/\%/g, "%%")
-        // Since kakoune (apparently) provides no way of escaping these characters,
-        // we replace them with lookalikes
-        .replace(/\{/g, leftCurlyBraceLookalike)
-        .replace(/\}/g, rightCurlyBraceLookalike)
-        .replace(/\|/g, verticalLineLookalike);
+        .replace(/\{/g, "\\{")
+        .replace(/\}/g, "\\}")
+        .replace(/\\/g, "\\\\")
+        .replace(/\|/g, '||');
+}
+
+export function md5Hash(input: string) {
+    return createHash('md5').update(input).digest('hex')
 }
 
 // #SPC-kakoune_interface.line_notifications
@@ -164,16 +163,23 @@ export function line_notifications(file_notifications: FileLabels) {
         let escaped_text = escape_flag_lines(truncated_text);
         let color_opt = `kiwi_color_${color}_notification`;
         let num = Number(line);
-        return `"${num}|{Default} {%opt{${color_opt}}}${escaped_text}"`;
+        return `"${num}||{Default} {%opt{${color_opt}}}${escaped_text}"`;
     }).join(' ');
 
-    let set_highlighters = Object.keys(file_notifications).map((file, index) =>
-        `declare-option str-list kiwi_line_notifications_${index} ${format_lines(file_notifications[file])} \n` +
-        `eval %sh{ [ "$kak_buffile" = "${file}" ] && ` +
-        `echo "set-option buffer kiwi_line_notifications %val{timestamp} %opt{kiwi_line_notifications_${index}}" }`).join('\n');
+    let update_highlighter_functions = Object.keys(file_notifications).map((file, index) => `
+    	define-command -hidden -override kiwi_line_notifications_${md5Hash(file)} %|
+    	    set-option buffer kiwi_line_notifications %val{timestamp} ${format_lines(file_notifications[file])}
+    	|
+    `).join('\n');
 
-    let remove_highlighters = line_notificaitons_previous_files.filter(file => !file_notifications[file]).map(file => 'eval %sh{ [ "$kak_buffile" = "' + file + '" ] && ' +
-        'echo "set-option buffer kiwi_line_notifications %val{timestamp} " }').join('\n');
+    let set_highlighters = Object.keys(file_notifications).map((file, index) => `
+        eval %sh{ echo "kiwi_line_notifications_${md5Hash(file)}" }
+    `).join('\n');
+    
+
+    let remove_highlighters = line_notificaitons_previous_files.filter(file => !file_notifications[file]).map(file =>
+        'eval %sh{ [ "$kak_buffile" = "' + file + '" ] && ' +
+            'echo "set-option buffer kiwi_line_notifications %val{timestamp} " }').join('\n');
 
     let refresh_hooks = refreshHighlighting.map((name: string) =>
         `hook -group kiwi-line-notifications-group global ${name} .* kiwi_line_notifications`).join('\n');
@@ -181,12 +187,14 @@ export function line_notifications(file_notifications: FileLabels) {
     let commands = `
 		declare-option str kiwi_color_normal_notification "${inlineNormalTextColor}"
 		declare-option str kiwi_color_error_notification "${inlineErrorTextColor}"
-    		
-    	define-command -hidden -override kiwi_line_notifications %{
-    		${set_highlighters}
 
+		${update_highlighter_functions}
+
+    	define-command -hidden -override kiwi_line_notifications %|
+    	    ${set_highlighters}
+    	
     		${remove_highlighters}
-    	}
+    	|
 
     	remove-hooks global kiwi-line-notifications-group
 
@@ -265,7 +273,7 @@ export function register_full_notifications(notifications: FullNotification[]) {
 
     let notificationCommands = notifications.map(notification => {
         
-        let hash = createHash('md5').update(notification.file + ':' + notification.line).digest('hex');
+        let hash = md5Hash(notification.file + ':' + notification.line);
         let contentsPath = path.join(tempDir, './notification_' + hash + '.json');
 
         writeFile(contentsPath, notification.json.toString(), err =>
