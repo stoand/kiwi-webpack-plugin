@@ -205,6 +205,26 @@ export function add_location_list_command(name: string, locations: Location[]) {
     let contents = locations.map(({file, line, message}) =>
     	`${file}:${line}: ${message}`).join('\n');
 
+    let locationLines: {[name: string]: number[] } = {};
+
+    locations.forEach((location, locationIndex) => {
+        let locationName = location.file + ':' + location.line;
+        locationLines[locationName] = locationLines[locationName] || [];
+
+        locationLines[locationName].push(locationIndex + 1);
+    });
+
+    let selectLocationCommands = '';
+
+    for (let locationName in locationLines) {
+        selectLocationCommands += `
+            eval %sh{
+                [ "$kak_opt_prev_buffile:$kak_opt_prev_cursor_line" = "${locationName}" ] && \
+                    echo "echo found"
+            }            
+        `;
+    }
+
     let location = path.join(tempDir, name);
     
     writeFileSync(location, contents);
@@ -213,8 +233,13 @@ export function add_location_list_command(name: string, locations: Location[]) {
 
     let commands = `
         define-command -override kiwi-list-${nameWithDashes} %{
+          declare-option str prev_buffile %val{buffile} 
+          declare-option str prev_cursor_line %val{cursor_line} 
+          
           edit! -readonly -existing "${location}"
           set-option buffer filetype grep
+
+          ${selectLocationCommands}
         }
     `;
 
