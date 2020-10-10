@@ -161,6 +161,7 @@ function setNotifications(modules: TestModule[]) {
 
     register_full_notifications(notificationFiles);
 
+    // #SPC-actions.list_notifications
     add_location_list_command('notifications', locations, true);
 }
 
