@@ -141,12 +141,12 @@ let line_notificaitons_previous_files: string[] = [];
 function escape_flag_lines(text: string) {
     return text
         // Escape by doubling
+        .replace(/\\/g, "\\\\")
         .replace(/"/g, '""')
         .replace(/'/g, "''")
         .replace(/\%/g, "%%")
         .replace(/\{/g, "\\{")
-        .replace(/\}/g, "\\}")
-        .replace(/\\/g, "\\\\")
+        // .replace(/\}/g, "\\}") 
         .replace(/\|/g, '\\||');
 }
 
