@@ -62,8 +62,23 @@ function htmlIndex() {
     `;
 }
 
+export function calcAccumulatedLineLengths(src: string): number[] {
+    
+    let lengths = src.split('\n').map(line => line.length);
+    
+    let acc = 0;
+    for (let i = 0; i < lengths.length; i++) {
+        acc += lengths[i];
+        lengths[i] = acc;
+    }
+
+    return lengths;
+}
+
 // todo - extract into separate function, add tests, rewrite to use log search
 export function positionFromOffset (offset: number, accumulatedLineLengths: number[]): Position {
+
+    // console.log('count,', count++, offset)
     
     // very badly needs to be optimized - 'apply source maps' is severely slowed
     // return { line: 1, column: 1, source: '' };
@@ -363,10 +378,8 @@ export default async function launchInstance(headless: boolean | undefined = tru
 
         let beforeApplySourceMaps = now();
 
-        let accumulatedLineLengths = testSrc.split('\n')
-            .map(line => line.length)
-            .reduce((acc, item, index) => acc.length ? acc.concat(item + acc[index - 1]) : [item], [] as number[]);
-
+        let accumulatedLineLengths = calcAccumulatedLineLengths(testSrc);
+        
         // Apply sourcemaps
         modules.forEach((module: TestModule) => {
             module.tests.forEach(test => {

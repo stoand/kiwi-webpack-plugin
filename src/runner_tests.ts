@@ -1,7 +1,8 @@
 // important: run `npm i; npm run build` in `examples/minimal/`
 // so that the dist files are available
 
-import launchInstance, { positionFromOffset, calculateCoverage, loadSourceMap } from './runner';
+import launchInstance, { calcAccumulatedLineLengths, positionFromOffset,
+    calculateCoverage, loadSourceMap } from './runner';
 import { readFileSync } from 'fs';
 import { expect } from 'chai';
 import sourceMap from 'source-map';
@@ -38,5 +39,11 @@ describe('Runner', () => {
 
         let actualPosition = mapPosition({ line: 11370, column: 1, source: '' });
         expect(actualPosition).to.eql({ line: 22, column: 0, source: path.resolve('src/tests.ts') });
+    });
+
+    it('can calc accumulated line lengths', () => {
+        let src = `asdf\n12\nrandom`;
+        let accumulatedLineLengths = [4, 6, 12];
+        expect(calcAccumulatedLineLengths(src)).to.eql(accumulatedLineLengths);
     });
 });
