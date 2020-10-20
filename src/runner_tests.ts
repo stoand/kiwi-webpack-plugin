@@ -3,6 +3,7 @@
 
 import launchInstance, { positionFromOffset, calculateCoverage, loadSourceMap } from './runner';
 import { readFileSync } from 'fs';
+import { expect } from 'chai';
 
 let testSrc = readFileSync('examples/minimal/dist/kiwi-tests.js', { encoding: 'utf8' });
 let mapSrc = readFileSync('examples/minimal/dist/kiwi-tests.js.map', { encoding: 'utf8' });
@@ -19,7 +20,11 @@ describe('Runner', () => {
     });
 
     it('can calculate line and column from char offset', () => {
-        
+        let src = `asdf\n12\nrandom`;
+
+        let accumulatedLineLengths = [4, 6, 12];
+
+        expect(positionFromOffset(0, accumulatedLineLengths)).to.eql({ line: 1, column: 1, source: '' });
     });
 
     // #SPC-runner.tst-coverage
