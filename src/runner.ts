@@ -66,9 +66,9 @@ export function calcAccumulatedLineLengths(src: string): number[] {
     
     let lengths = src.split('\n').map(line => line.length);
     
-    let acc = 0;
+    let acc = -1;
     for (let i = 0; i < lengths.length; i++) {
-        acc += lengths[i];
+        acc += lengths[i] + 1;
         lengths[i] = acc;
     }
 
@@ -76,27 +76,24 @@ export function calcAccumulatedLineLengths(src: string): number[] {
 }
 
 // todo - extract into separate function, add tests, rewrite to use log search
-export function positionFromOffset (offset: number, accumulatedLineLengths: number[]): Position {
-
-    // console.log('count,', count++, offset)
-    
-    // very badly needs to be optimized - 'apply source maps' is severely slowed
+export function positionFromOffset(offset: number, accumulatedLineLengths: number[]): Position {
     // return { line: 1, column: 1, source: '' };
-    
-    // let currentOffset = 0;
-    // let previousOffset = 0;
-    // for (let i = 0; i < lineLengths.length; i++) {
-    //     let lineLength = lineLengths[i];
-    //     currentOffset += lineLength + 1;
 
-    //     if (currentOffset > offset) {
-    //         return { line: i + 1, column: (offset - previousOffset) + 1, source: '' };
-    //     }
+    let line = 1;
+    let column = 1;
 
-    //     previousOffset = currentOffset;
-    // }
+    for (let i = offset; i > 0; i--) {
+        let index = accumulatedLineLengths.indexOf(i);
+        if (index !== -1) {
+            line = index + 2;
+            column--;
+            break;
+        } else {
+            column++;
+        }
+    }
 
-    return { line: 1, column: 1, source: '' };
+    return { line, column, source: '' };
 }
 
 

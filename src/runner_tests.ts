@@ -25,11 +25,15 @@ describe('Runner', () => {
     it('can calculate line and column from char offset', () => {
         // let src = `asdf\n12\nrandom`;
 
-        let accumulatedLineLengths = [4, 6, 12];
+        let accumulatedLineLengths = [4, 7, 14];
 
         expect(positionFromOffset(0, accumulatedLineLengths)).to.eql({ line: 1, column: 1, source: '' });
+
+        expect(positionFromOffset(5, accumulatedLineLengths)).to.eql({ line: 2, column: 1, source: '' });
         
-        // expect(positionFromOffset(5, accumulatedLineLengths)).to.eql({ line: 2, column: 1, source: '' });
+        expect(positionFromOffset(8, accumulatedLineLengths)).to.eql({ line: 3, column: 1, source: '' });
+        
+        expect(positionFromOffset(10, accumulatedLineLengths)).to.eql({ line: 3, column: 3, source: '' });
     });
 
     // #SPC-runner.tst-coverage
@@ -43,7 +47,7 @@ describe('Runner', () => {
 
     it('can calc accumulated line lengths', () => {
         let src = `asdf\n12\nrandom`;
-        let accumulatedLineLengths = [4, 6, 12];
+        let accumulatedLineLengths = [4, 7, 14];
         expect(calcAccumulatedLineLengths(src)).to.eql(accumulatedLineLengths);
     });
 });
