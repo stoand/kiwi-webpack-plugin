@@ -115,3 +115,8 @@ be marked as contributing to a failure.
 ## [[.bug_stops_responding]]
 
 After a while it can happen that the runner doesn't process changes anymore.
+
+
+## [[.log_time]]
+
+When the KIWI_LOG_TIME env var is set, timings of various operations are logged to the console

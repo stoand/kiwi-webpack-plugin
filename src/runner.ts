@@ -29,6 +29,21 @@ let ignoreSourcePrefixes = ['node_modules', '(webpack)', 'webpack'];
 
 let randomNodePortBase = 9195;
 
+function now() {
+    return new Date();
+}
+
+// #SPC-runner.log_time
+function logTime(label: string, start?: Date, end: Date = now()) {
+    if (process.env['KIWI_LOG_TIME']) {
+        if (start) {
+            console.log(label, end.getTime() - start.getTime(), 'ms');
+        } else {
+            console.log(label);
+        }
+    }
+}
+
 function htmlIndex() {
     return `
         <!doctype html>
@@ -201,9 +216,14 @@ export default async function launchInstance(headless: boolean | undefined = tru
 
         await lastRestart;
 
+        let beforeLoadSrcMap = now();
+
         let srcMapConsumer = await (new sourceMap.SourceMapConsumer(mapSrc));
         
+        
         let mapPosition = await loadSourceMap(srcMapConsumer);
+        
+        let afterLoadSrcMap = now();
 
         let testCoverages: any[] = [];
         
@@ -211,7 +231,11 @@ export default async function launchInstance(headless: boolean | undefined = tru
 
         let modules: TestModule[] = [];
 
+        let beforeRunTests = now();
+
         while (true) {
+
+            let beforeCoverage = now();
 
             if (runner == 'node') {
                 // callCount needs to be true
@@ -224,12 +248,21 @@ export default async function launchInstance(headless: boolean | undefined = tru
             if (runner == 'chrome') {
                 await Profiler.startPreciseCoverage({ callCount: true, detailed: true });
             }
+
+            logTime('coverage', beforeCoverage);
+
+            let beforeEval = now();
             
             await Runtime.evaluate({ expression: testSrc, awaitPromise: true });
+            logTime('eval', beforeEval);
+            
+            let beforeRun = now();
             
             // #SPC-runner.async
             let rawRes = (await Runtime.evaluate({ expression: `__kiwi_runTest(${testCounter})`, awaitPromise: true }))
             let testRun = rawRes?.result?.value;
+            
+            logTime('run', beforeRun);
             
             if (!testRun || testRun == 'done') {
                 break;
@@ -247,12 +280,28 @@ export default async function launchInstance(headless: boolean | undefined = tru
             
             testCounter++;
 
+            let beforeTakeCoverage = now();
+
             testCoverages.push(await Profiler.takePreciseCoverage());
+
+            logTime('takecoverage', beforeTakeCoverage);
+
+            let beforeReload = now();
             
             if (runner == 'chrome') {
                 await Page.reload();
             }
+
+            logTime('beforeReload', beforeReload)
+
+            logTime('total', beforeCoverage)
+
+            logTime('----------');
         }
+
+        logTime('\n\nloadSrcMap', beforeLoadSrcMap, afterLoadSrcMap);
+
+        logTime('running all tests', beforeRunTests);
 
         if (runner == 'node') {
             node.kill();
@@ -267,6 +316,8 @@ export default async function launchInstance(headless: boolean | undefined = tru
             // wait for this later
             lastRestart = restartRunner();
         }
+
+        let beforeCalcLengths = now();
 
         // #SPC-runner.file_lengths
         // calculate file lengths
@@ -306,6 +357,10 @@ export default async function launchInstance(headless: boolean | undefined = tru
             return positions;
         }
 
+        logTime('calc lengths', beforeCalcLengths);
+
+        let beforeApplySourceMaps = now();
+
         // Apply sourcemaps
         modules.forEach((module: TestModule) => {
             module.tests.forEach(test => {
@@ -334,6 +389,8 @@ export default async function launchInstance(headless: boolean | undefined = tru
                 });
             });
         });
+
+        logTime('apply source maps', beforeApplySourceMaps);
 
         return { modules, fileLengths };
     }
