@@ -62,31 +62,33 @@ function htmlIndex() {
     `;
 }
 
+// todo - extract into separate function, add tests, rewrite to use log search
+export function positionFromOffset (offset: number, accumulatedLineLengths: number[]): Position {
+    
+    // very badly needs to be optimized - 'apply source maps' is severely slowed
+    // return { line: 1, column: 1, source: '' };
+    
+    // let currentOffset = 0;
+    // let previousOffset = 0;
+    // for (let i = 0; i < lineLengths.length; i++) {
+    //     let lineLength = lineLengths[i];
+    //     currentOffset += lineLength + 1;
+
+    //     if (currentOffset > offset) {
+    //         return { line: i + 1, column: (offset - previousOffset) + 1, source: '' };
+    //     }
+
+    //     previousOffset = currentOffset;
+    // }
+
+    return { line: 1, column: 1, source: '' };
+}
+
+
 // #SPC-runner.coverage
-export function calculateCoverage(profilerResult: any, lineLengths: number[], mapPosition: (p: Position) => Position): CoveredFiles {
+export function calculateCoverage(profilerResult: any, accumulatedLineLengths: number[], mapPosition: (p: Position) => Position): CoveredFiles {
     
     let functions = profilerResult.result.find((r: any) => r.url == '').functions;
-
-    let positionFromOffset = (offset: number): Position => {
-        
-        // very badly needs to be optimized - 'apply source maps' is severely slowed
-        // return { line: 1, column: 1, source: '' };
-        
-        let currentOffset = 0;
-        let previousOffset = 0;
-        for (let i = 0; i < lineLengths.length; i++) {
-            let lineLength = lineLengths[i];
-            currentOffset += lineLength + 1;
-
-            if (currentOffset > offset) {
-                return { line: i + 1, column: (offset - previousOffset) + 1, source: '' };
-            }
-
-            previousOffset = currentOffset;
-        }
-
-        return { line: 1, column: 1, source: '' };
-    };
 
     // convert offsets to sourcemapped positions
     functions = functions.map((fn: any) => {
@@ -94,8 +96,8 @@ export function calculateCoverage(profilerResult: any, lineLengths: number[], ma
             startOffset: range.startOffset,
             endOffset: range.endOffset,
 
-            startPosition: mapPosition(positionFromOffset(range.startOffset)),
-            endPosition: mapPosition(positionFromOffset(range.endOffset)),
+            startPosition: mapPosition(positionFromOffset(range.startOffset, accumulatedLineLengths)),
+            endPosition: mapPosition(positionFromOffset(range.endOffset, accumulatedLineLengths)),
             count: range.count,
         })).filter((range: any) =>
             range.startPosition.source && range.startPosition.source.indexOf('node_modules') == -1);
@@ -361,7 +363,9 @@ export default async function launchInstance(headless: boolean | undefined = tru
 
         let beforeApplySourceMaps = now();
 
-        let testSrcLineLengths = testSrc.split('\n').map(line => line.length);
+        let accumulatedLineLengths = testSrc.split('\n')
+            .map(line => line.length)
+            .reduce((acc, item, index) => acc.length ? acc.concat(item + acc[index - 1]) : [item], [] as number[]);
 
         // Apply sourcemaps
         modules.forEach((module: TestModule) => {
@@ -371,7 +375,7 @@ export default async function launchInstance(headless: boolean | undefined = tru
 
                 // takes the first item from testCoverages and computes what lines of what
                 // files where ran during the test
-                test.coveredFiles = calculateCoverage(testCoverages.shift(), testSrcLineLengths, mapPosition);
+                test.coveredFiles = calculateCoverage(testCoverages.shift(), accumulatedLineLengths, mapPosition);
 
                 if (test.error) {
                     // if "throw 1" instead of "throw new Error(1)" is used

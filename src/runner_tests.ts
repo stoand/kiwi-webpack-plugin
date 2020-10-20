@@ -1,7 +1,7 @@
 // important: run `npm i; npm run build` in `examples/minimal/`
 // so that the dist files are available
 
-import launchInstance, { calculateCoverage, loadSourceMap } from './runner';
+import launchInstance, { positionFromOffset, calculateCoverage, loadSourceMap } from './runner';
 import { readFileSync } from 'fs';
 
 let testSrc = readFileSync('examples/minimal/dist/kiwi-tests.js', { encoding: 'utf8' });
@@ -11,11 +11,15 @@ describe('Runner', () => {
 
     // #SPC-runner.tst-launcher
     it('can launch instance', () => {
-        launchInstance(true).then(handleSource => handleSource(testSrc, JSON.parse(mapSrc), true))
-        	.then(_results => {
-            	// console.log(results);
-            	// console.log(JSON.stringify(results));
-        	});
+        // launchInstance(true).then(handleSource => handleSource(testSrc, JSON.parse(mapSrc), true))
+        // 	.then(_results => {
+        //     	// console.log(results);
+        //     	// console.log(JSON.stringify(results));
+        // 	});
+    });
+
+    it('can calculate line and column from char offset', () => {
+        
     });
 
     // #SPC-runner.tst-coverage
