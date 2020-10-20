@@ -63,12 +63,15 @@ function htmlIndex() {
 }
 
 // #SPC-runner.coverage
-export function calculateCoverage(profilerResult: any, testSrc: string, mapPosition: (p: Position) => Position): CoveredFiles {
+export function calculateCoverage(profilerResult: any, lineLengths: number[], mapPosition: (p: Position) => Position): CoveredFiles {
+    
     let functions = profilerResult.result.find((r: any) => r.url == '').functions;
 
-    let lineLengths = testSrc.split('\n').map(line => line.length);
-
     let positionFromOffset = (offset: number): Position => {
+        
+        // very badly needs to be optimized - 'apply source maps' is severely slowed
+        // return { line: 1, column: 1, source: '' };
+        
         let currentOffset = 0;
         let previousOffset = 0;
         for (let i = 0; i < lineLengths.length; i++) {
@@ -90,9 +93,6 @@ export function calculateCoverage(profilerResult: any, testSrc: string, mapPosit
         let ranges = fn.ranges.map((range: any) => ({
             startOffset: range.startOffset,
             endOffset: range.endOffset,
-
-            startFromOffset: positionFromOffset(range.startOffset),
-            endFromOffset: positionFromOffset(range.endOffset),
 
             startPosition: mapPosition(positionFromOffset(range.startOffset)),
             endPosition: mapPosition(positionFromOffset(range.endOffset)),
@@ -361,6 +361,8 @@ export default async function launchInstance(headless: boolean | undefined = tru
 
         let beforeApplySourceMaps = now();
 
+        let testSrcLineLengths = testSrc.split('\n').map(line => line.length);
+
         // Apply sourcemaps
         modules.forEach((module: TestModule) => {
             module.tests.forEach(test => {
@@ -369,7 +371,7 @@ export default async function launchInstance(headless: boolean | undefined = tru
 
                 // takes the first item from testCoverages and computes what lines of what
                 // files where ran during the test
-                test.coveredFiles = calculateCoverage(testCoverages.shift(), testSrc, mapPosition);
+                test.coveredFiles = calculateCoverage(testCoverages.shift(), testSrcLineLengths, mapPosition);
 
                 if (test.error) {
                     // if "throw 1" instead of "throw new Error(1)" is used
