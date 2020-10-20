@@ -4,6 +4,8 @@
 import launchInstance, { positionFromOffset, calculateCoverage, loadSourceMap } from './runner';
 import { readFileSync } from 'fs';
 import { expect } from 'chai';
+import sourceMap from 'source-map';
+import path from 'path';
 
 let testSrc = readFileSync('examples/minimal/dist/kiwi-tests.js', { encoding: 'utf8' });
 let mapSrc = readFileSync('examples/minimal/dist/kiwi-tests.js.map', { encoding: 'utf8' });
@@ -20,17 +22,21 @@ describe('Runner', () => {
     });
 
     it('can calculate line and column from char offset', () => {
-        let src = `asdf\n12\nrandom`;
+        // let src = `asdf\n12\nrandom`;
 
         let accumulatedLineLengths = [4, 6, 12];
 
         expect(positionFromOffset(0, accumulatedLineLengths)).to.eql({ line: 1, column: 1, source: '' });
+        
+        // expect(positionFromOffset(5, accumulatedLineLengths)).to.eql({ line: 2, column: 1, source: '' });
     });
 
     // #SPC-runner.tst-coverage
-    it('can calculate coverage', async () => {
-        // let testCoverages: any = [];
-        // let mapPosition = await loadSourceMap(JSON.parse(mapSrc));
-        // calculateCoverage(testCoverages[0], testSrc, mapPosition);
+    it('source maps work', async () => {
+        let srcMapConsumer = await (new sourceMap.SourceMapConsumer(mapSrc));
+        let mapPosition = await loadSourceMap(srcMapConsumer);
+
+        let actualPosition = mapPosition({ line: 11370, column: 1, source: '' });
+        expect(actualPosition).to.eql({ line: 22, column: 0, source: path.resolve('src/tests.ts') });
     });
 });

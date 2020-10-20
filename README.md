@@ -142,7 +142,7 @@ __or__ for `console.log` debugging:
 
 add `console.log(1)` in a source file
 
-### Testing
+### Kakoune Interface Tests
 
 Replace `kakoune_interface_tests` with the test file of choice if needed.
 
@@ -160,3 +160,13 @@ __Using Kakoune Interface Tests:__
 `edit src/kakoune_interface_tests.ts`
 
 The test file itself is used to display interface items
+
+### Unit Tests
+
+```
+# Build the minimal example with source maps
+(cd examples/minimal && npm i && npm run build)
+
+npm i
+npm test
+```
