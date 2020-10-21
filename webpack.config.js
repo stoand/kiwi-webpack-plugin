@@ -26,6 +26,9 @@ module.exports = {
     resolve: {
         extensions: ['.tsx', '.ts', '.js'],
     },
+    externals: {
+        'source-map': 'commonjs source-map',
+    },
     output: {
         libraryExport: 'default',
         libraryTarget: 'commonjs2',

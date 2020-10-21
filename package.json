@@ -40,6 +40,9 @@
     "url": "https://github.com/stoand/kiwi/issues"
   },
   "homepage": "https://github.com/stoand/kiwi#readme",
+  "dependencies": {
+    "source-map": "^0.7.3"
+  },
   "devDependencies": {
     "@types/chai": "^4.2.11",
     "@types/mocha": "^7.0.2",
@@ -53,7 +56,6 @@
     "mocha": "^7.1.2",
     "nodemon": "^2.0.3",
     "raw-loader": "^4.0.0",
-    "source-map": "^0.7.3",
     "ts-loader": "^6.2.1",
     "typescript": "^3.8.3",
     "utf-8-validate": "^5.0.2",
