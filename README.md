@@ -4,6 +4,7 @@ __Warning: This tool is under development. Breaking changes make occur anytime a
 functionality might not be well tested.
 Do not rely on it for anything other than experiments.__
 
+__Supports only Webpack 4 not 5__
 
 [![demo](https://asciinema.org/a/QiWSFNU5tKpg1oB2tslFHT4Dn.svg)](https://asciinema.org/a/QiWSFNU5tKpg1oB2tslFHT4Dn?autoplay=1)
 
@@ -27,7 +28,7 @@ mkdir src
 npm init
 
 # Install the plugin and related dependencies
-npm i kiwi-webpack-plugin webpack webpack-dev-server source-map chai
+npm i kiwi-webpack-plugin webpack webpack-cli webpack-dev-server source-map chai
 ```
 
 create `webpack.config.js`
