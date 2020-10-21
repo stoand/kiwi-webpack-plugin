@@ -28,7 +28,7 @@ mkdir src
 npm init
 
 # Install the plugin and related dependencies
-npm i kiwi-webpack-plugin webpack webpack-cli webpack-dev-server chai
+npm i kiwi-webpack-plugin webpack@4 webpack-cli webpack-dev-server chai
 ```
 
 create `webpack.config.js`
