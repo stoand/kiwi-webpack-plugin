@@ -40,6 +40,9 @@
     "url": "https://github.com/stoand/kiwi/issues"
   },
   "homepage": "https://github.com/stoand/kiwi#readme",
+  "peerDependencies": {
+    "webpack": "4.x"
+  },
   "dependencies": {
     "source-map": "^0.7.3"
   },
