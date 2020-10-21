@@ -2,7 +2,7 @@
 // so that the dist files are available
 
 import launchInstance, { calcAccumulatedLineLengths, positionFromOffset,
-    calculateCoverage, loadSourceMap } from './runner';
+    calculateCoverage, loadSourceMap, findLowerIndexInRangeArray } from './runner';
 import { readFileSync } from 'fs';
 import { expect } from 'chai';
 import sourceMap from 'source-map';
@@ -25,7 +25,8 @@ describe('Runner', () => {
     it('can calculate line and column from char offset', () => {
         // let src = `asdf\n12\nrandom`;
 
-        let accumulatedLineLengths = [4, 7, 14];
+        let accumulatedLineLengths = [0, 4, 7, 14];
+        
 
         expect(positionFromOffset(0, accumulatedLineLengths)).to.eql({ line: 1, column: 1, source: '' });
 
@@ -47,7 +48,7 @@ describe('Runner', () => {
 
     it('can calc accumulated line lengths', () => {
         let src = `asdf\n12\nrandom`;
-        let accumulatedLineLengths = [4, 7, 14];
+        let accumulatedLineLengths = [0, 4, 7, 14];
         expect(calcAccumulatedLineLengths(src)).to.eql(accumulatedLineLengths);
     });
 });
