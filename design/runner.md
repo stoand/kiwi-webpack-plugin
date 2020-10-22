@@ -116,9 +116,13 @@ be marked as contributing to a failure.
 
 After a while it can happen that the runner doesn't process changes anymore.
 
-## [[.bug_missing_coverage]]
+## [[.bug_non_test_missing_coverage]]
 
 Non-test files don't show any coverage bars on the side.
+
+## [.bug_first_test_missing_coverage]]
+
+No coverage is displayed for the first test that is executed
 
 ## [[.log_time]]
 
