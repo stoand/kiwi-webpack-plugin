@@ -1,2 +1,4 @@
-export const a = 1234;
-export const b = 2;
+export const a = 440;
+export const b = 299;
+
+export const c = 33;
