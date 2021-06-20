@@ -4,14 +4,15 @@
   "description": "",
   "main": "app.js",
   "scripts": {
-    "build": "webpack --mode production -w",
+    "build": "webpack --mode production",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "webpack": "^5.39.1"
+    "webpack": "^5.39.1",
+    "webpack-cli": "^4.7.2"
   },
   "sideEffects": false
 }
