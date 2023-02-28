@@ -10,6 +10,10 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "kiwi-webpack-plugin": "file:../../",
+    "@types/chai": "^4.3.4",
+    "@types/jasmine": "^4.3.1",
+    "chai": "^4.3.7",
     "webpack": "^5.75.0",
     "webpack-cli": "^5.0.1",
     "webpack-dev-server": "^4.11.1"
