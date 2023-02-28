@@ -5,6 +5,7 @@
   "main": "src/main.ts",
   "scripts": {
     "start": "nodemon -w ../../dist/main.js -x 'webpack-dev-server -w'",
+    "start-log": "KIWI_LOG_TIME=1 npm start",
     "build": "webpack --mode development"
   },
   "author": "",
