@@ -13,8 +13,10 @@ export type FileCoverage = { [line: number]: boolean };
 export type CoveredFiles = { [path: string]: FileCoverage };
 export type TestError = { message: string, trace: Position, stack: Position[], rawStack: string, notErrorInstance?: boolean };
 export type TestLog = { args: string[], trace: Position, stack: Position[], rawStack: string };
-export type TestResult = { name: string, trace: Position, stack: Position[], rawStack: string, error?: TestError,
-	consoleLogs: TestLog[], coveredFiles: CoveredFiles };
+export type TestResult = {
+    name: string, trace: Position, stack: Position[], rawStack: string, error?: TestError,
+    consoleLogs: TestLog[], coveredFiles: CoveredFiles
+};
 export type TestModule = { name: string, tests: TestResult[] };
 export type InitRunner = Promise<(testSrc: string, mapSrc: any, lastRun: boolean) => Promise<RunResult>>;
 
@@ -63,9 +65,9 @@ function htmlIndex() {
 }
 
 export function calcAccumulatedLineLengths(src: string): number[] {
-    
+
     let lengths = src.split('\n').map(line => line.length);
-    
+
     let acc = -1;
     for (let i = 0; i < lengths.length; i++) {
         acc += lengths[i] + 1;
@@ -77,42 +79,42 @@ export function calcAccumulatedLineLengths(src: string): number[] {
 
 // copied from https://github.com/io-monad/line-column/blob/master/lib/line-column.js
 export function findLowerIndexInRangeArray(value: number, arr: number[]) {
-  if (value >= arr[arr.length - 1]) {
-    return arr.length - 1;
-  }
-
-  var min = 0, max = arr.length - 2, mid;
-  while (min < max) {
-    mid = min + ((max - min) >> 1);
-
-    if (value < arr[mid]) {
-      max = mid - 1;
-    } else if (value >= arr[mid + 1]) {
-      min = mid + 1;
-    } else { // value >= arr[mid] && value < arr[mid + 1]
-      min = mid;
-      break;
+    if (value >= arr[arr.length - 1]) {
+        return arr.length - 1;
     }
-  }
-  return min;
+
+    var min = 0, max = arr.length - 2, mid;
+    while (min < max) {
+        mid = min + ((max - min) >> 1);
+
+        if (value < arr[mid]) {
+            max = mid - 1;
+        } else if (value >= arr[mid + 1]) {
+            min = mid + 1;
+        } else { // value >= arr[mid] && value < arr[mid + 1]
+            min = mid;
+            break;
+        }
+    }
+    return min;
 }
 
 
 // todo - extract into separate function, add tests, rewrite to use log search
 export function positionFromOffset(offset: number, accumulatedLineLengths: number[]): Position {
-    
+
     // return { line: 1, column: 1, source: '' };
     let line = findLowerIndexInRangeArray(offset, accumulatedLineLengths) + 1;
     let column = offset - accumulatedLineLengths[line - 1];
     if (column == 0) column = 1;
-    
+
     return { line, column, source: '' };
 }
 
 
 // #SPC-runner.coverage
 export function calculateCoverage(profilerResult: any, accumulatedLineLengths: number[], mapPosition: (p: Position) => Position): CoveredFiles {
-    
+
     let functions = profilerResult.result.find((r: any) => r.url == '').functions;
 
     // convert offsets to sourcemapped positions
@@ -152,7 +154,7 @@ export function calculateCoverage(profilerResult: any, accumulatedLineLengths: n
     return coveredFiles;
 }
 
-function absoluteSourcePath(source : string) {
+function absoluteSourcePath(source: string) {
     return path.join(process.cwd(), source.slice(sourceNamePrefix.length));
 }
 
@@ -191,29 +193,34 @@ export default async function launchInstance(headless: boolean | undefined = tru
                 let run = async () => {
                     if (runner == 'node') {
                         let port = randomNodePortBase + Math.floor(Math.random() * 1000);
-                        
+
                         node = spawn('node', ['--cpu-prof', `--inspect=${port}`, '-e', 'setInterval(()=>{}, 500)']);
 
                         let remote;
 
                         for (let i = 0; i < 40; i++) {
-                            try {
-                                remote = await chromeRemoteInterface({ port });
-                                break;
-                            } catch (e) {
-                                // console.error(e);
+                            if (!remote) {
+                                try {
+                                    remote = await chromeRemoteInterface({ port });
+                                    break;
+                                } catch (e) {
+                                    // console.error(e);
+                                }
                             }
                         }
 
+                        if (!remote) {
+                            await run();
+                        } else {
+                            Profiler = remote.Profiler;
+                            Runtime = remote.Runtime;
 
-                        Profiler = remote.Profiler;
-                        Runtime = remote.Runtime;
+                            await Promise.all([Profiler.enable(), Runtime.enable()]);
+                            await Runtime.evaluate({ expression: runtime, awaitPromise: true });
+                        }
 
-                        await Promise.all([Profiler.enable(), Runtime.enable()]);
-                        await Runtime.evaluate({ expression: runtime, awaitPromise: true });
-                        
                     } else if (runner == 'chrome') {
-                        
+
                         chrome = await chromeLauncher.launch({ chromeFlags: ['--disable-gpu'].concat(headless ? ['--headless'] : []) });
 
                         let remote = await chromeRemoteInterface({ port: chrome.port });
@@ -246,14 +253,14 @@ export default async function launchInstance(headless: boolean | undefined = tru
         let beforeLoadSrcMap = now();
 
         let srcMapConsumer = await (new sourceMap.SourceMapConsumer(mapSrc));
-        
-        
+
+
         let mapPosition = await loadSourceMap(srcMapConsumer);
-        
+
         let afterLoadSrcMap = now();
 
         let testCoverages: any[] = [];
-        
+
         let testCounter = 0;
 
         let modules: TestModule[] = [];
@@ -271,7 +278,7 @@ export default async function launchInstance(headless: boolean | undefined = tru
                 // need to find a solution here
                 await Profiler.startPreciseCoverage({ callCount: false, detailed: false });
             }
-                
+
             if (runner == 'chrome') {
                 await Profiler.startPreciseCoverage({ callCount: true, detailed: true });
             }
@@ -279,18 +286,18 @@ export default async function launchInstance(headless: boolean | undefined = tru
             logTime('coverage', beforeCoverage);
 
             let beforeEval = now();
-            
+
             await Runtime.evaluate({ expression: testSrc, awaitPromise: true });
             logTime('eval', beforeEval);
-            
+
             let beforeRun = now();
-            
+
             // #SPC-runner.async
             let rawRes = (await Runtime.evaluate({ expression: `__kiwi_runTest(${testCounter})`, awaitPromise: true }))
             let testRun = rawRes?.result?.value;
-            
+
             logTime('run', beforeRun);
-            
+
             if (!testRun || testRun == 'done') {
                 break;
             } else {
@@ -304,7 +311,7 @@ export default async function launchInstance(headless: boolean | undefined = tru
                 mod.tests.push(run.testRef);
             }
 
-            
+
             testCounter++;
 
             let beforeTakeCoverage = now();
@@ -314,7 +321,7 @@ export default async function launchInstance(headless: boolean | undefined = tru
             logTime('takecoverage', beforeTakeCoverage);
 
             let beforeReload = now();
-            
+
             if (runner == 'chrome') {
                 await Page.reload();
             }
@@ -338,7 +345,7 @@ export default async function launchInstance(headless: boolean | undefined = tru
             chrome.kill();
 
         }
-        
+
         if (!lastRun) {
             // wait for this later
             lastRestart = restartRunner();
@@ -348,7 +355,7 @@ export default async function launchInstance(headless: boolean | undefined = tru
 
         // #SPC-runner.file_lengths
         // calculate file lengths
-		let fileLengths: FileLengths = {};
+        let fileLengths: FileLengths = {};
         for (let sourceIndex = 0; sourceIndex < srcMapConsumer.sources.length; sourceIndex++) {
             let source = srcMapConsumer.sources[sourceIndex];
             let ignore = false;
@@ -358,16 +365,16 @@ export default async function launchInstance(headless: boolean | undefined = tru
                     ignore = true;
                 }
             }
-            
+
             if (!ignore) {
                 fileLengths[absoluteSourcePath(source)] =
-                	srcMapConsumer.sourcesContent[sourceIndex].split('\n').length - 1;
+                    srcMapConsumer.sourcesContent[sourceIndex].split('\n').length - 1;
             }
         }
 
         function extractTrace(stack: string, startRow: number): Position[] {
             let positions = [];
-            
+
             let lines = stack.split('\n');
             for (let i = startRow; i < lines.length; i++) {
                 let item = lines[i];
@@ -389,7 +396,7 @@ export default async function launchInstance(headless: boolean | undefined = tru
         let beforeApplySourceMaps = now();
 
         let accumulatedLineLengths = calcAccumulatedLineLengths(testSrc);
-        
+
         // Apply sourcemaps
         modules.forEach((module: TestModule) => {
             module.tests.forEach(test => {
@@ -404,7 +411,7 @@ export default async function launchInstance(headless: boolean | undefined = tru
                     // if "throw 1" instead of "throw new Error(1)" is used
                     if (test.error.notErrorInstance) {
                         test.error.stack = extractTrace(test.rawStack, 2);
-                        
+
                         test.error.trace = test.error.stack[0];
                         test.error.trace.line += 1;
                     } else {
