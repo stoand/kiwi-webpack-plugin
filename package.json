@@ -13,7 +13,7 @@
     "test": "webpack --mode development && webpack --mode development -w & mocha dist/unit_tests.js -w & wait"
   },
   "files": [
-    "dist/main.js",
+    "dist/webpack_plugin.js",
     "review_app/requirements.txt",
     "review_app/src/*.py",
     "review_app/*.sh"
@@ -41,29 +41,28 @@
   },
   "homepage": "https://github.com/stoand/kiwi#readme",
   "peerDependencies": {
-    "webpack": "4.x"
+    "webpack": "^5.75.0"
   },
   "dependencies": {
-    "source-map": "^0.7.3"
+    "source-map": "^0.7.4"
   },
   "devDependencies": {
     "@types/chai": "^4.2.11",
     "@types/mocha": "^7.0.2",
     "@types/node": "^13.9.0",
     "@types/source-map": "^0.5.7",
-    "@types/webpack": "^4.41.7",
     "bufferutil": "^4.0.1",
     "chai": "^4.2.0",
     "chrome-launcher": "^0.13.0",
     "chrome-remote-interface": "^0.28.1",
     "mocha": "^7.1.2",
     "nodemon": "^2.0.3",
-    "raw-loader": "^4.0.0",
-    "ts-loader": "^6.2.1",
+    "raw-loader": "^4.0.2",
+    "ts-loader": "^9.4.2",
     "typescript": "^3.8.3",
     "utf-8-validate": "^5.0.2",
     "v8-to-istanbul": "^4.1.2",
-    "webpack": "^4.42.0",
-    "webpack-cli": "^3.3.11"
+    "webpack": "^5.75.0",
+    "webpack-cli": "^5.0.1"
   }
 }
